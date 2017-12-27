@@ -11,10 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import com.test.jwj.underMoon.DataBase.ContributesDao;
 import com.test.jwj.underMoon.DataBase.DBPool;
 import com.test.jwj.underMoon.DataBase.FriendDao;
 import com.test.jwj.underMoon.DataBase.SaveMsgDao;
 import com.test.jwj.underMoon.DataBase.UserDao;
+import com.test.jwj.underMoon.bean.MeetingDetail;
 import com.test.jwj.underMoon.bean.TranObject;
 import com.test.jwj.underMoon.bean.TranObjectType;
 import com.test.jwj.underMoon.bean.User;
@@ -199,6 +201,15 @@ public class ClientActivity {
 		send(tran);
 	}
 
+	/**
+	 * 获取列表
+	 */
+	public void getContributes(TranObject tran){
+		int userId = (Integer)tran.getObject();
+		ArrayList<MeetingDetail> list;
+		list = ContributesDao.selectContrbutesById(userId);
+	}
+	
 	/**
 	 * 处理好友请求
 	 */
