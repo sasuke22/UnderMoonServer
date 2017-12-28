@@ -19,5 +19,6 @@ public enum TranObjectType {
 	REFRESH, // 刷新
 	SEARCH_FRIEND,//找朋友
 	FRIEND_REQUEST,//好友申请
-	ALL_CONTRIBUTES;//获取item信息
+	ALL_CONTRIBUTES,
+	TODAY_CONTRIBUTES;//获取item信息
 }

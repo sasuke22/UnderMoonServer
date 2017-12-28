@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import com.test.jwj.underMoon.DataBase.ContributesDao;
@@ -202,10 +205,25 @@ public class ClientActivity {
 	}
 
 	/**
-	 * 获取列表
+	 * 获取所有列表
 	 */
-	public void getContributes(TranObject tran){
+	public void getAllContributes(TranObject tran){
 		int userId = (Integer)tran.getObject();
+		ArrayList<MeetingDetail> list;
+		list = ContributesDao.selectContrbutesById(userId);
+		tran.setObject(list);
+		send(tran);
+	}
+	
+	/**
+	 * 获取所有列表
+	 */
+	public void getTodayContributes(TranObject tran){
+		HashMap<Integer, Date> map = (HashMap<Integer, Date>) tran.getObject();
+		Set<Entry<Integer,Date>> sets = map.entrySet();
+		for(Entry<Integer,Date> set:sets){             //遍历HashMap键值对  
+              
+        } 
 		ArrayList<MeetingDetail> list;
 		list = ContributesDao.selectContrbutesById(userId);
 		tran.setObject(list);

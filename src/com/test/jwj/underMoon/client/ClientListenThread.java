@@ -61,7 +61,10 @@ public class ClientListenThread implements Runnable {
 			case MESSAGE:
 				client.sendMessage(tran);
 			case ALL_CONTRIBUTES:
-				client.getContributes(tran);
+				client.getAllContributes(tran);
+				break;
+			case TODAY_CONTRIBUTES:
+				client.getTodayContributes(tran);
 				break;
 			default:
 				break;
