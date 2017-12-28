@@ -208,6 +208,8 @@ public class ClientActivity {
 		int userId = (Integer)tran.getObject();
 		ArrayList<MeetingDetail> list;
 		list = ContributesDao.selectContrbutesById(userId);
+		tran.setObject(list);
+		send(tran);
 	}
 	
 	/**
