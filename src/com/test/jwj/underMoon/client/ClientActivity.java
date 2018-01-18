@@ -216,17 +216,31 @@ public class ClientActivity {
 	}
 	
 	/**
-	 * 获取所有列表
+	 * 获取当前日期所有列表
 	 */
 	public void getTodayContributes(TranObject tran){
 		HashMap<Integer, Date> map = (HashMap<Integer, Date>) tran.getObject();
 		Set<Entry<Integer,Date>> sets = map.entrySet();
+		int userId = -1;
+		Date curDate = null;
 		for(Entry<Integer,Date> set:sets){             //遍历HashMap键值对  
-              
+              userId = set.getKey();
+              curDate = set.getValue();
         } 
 		ArrayList<MeetingDetail> list;
-		list = ContributesDao.selectContrbutesById(userId);
+		list = ContributesDao.selectContrbutesByDate(userId,curDate);
 		tran.setObject(list);
+		send(tran);
+	}
+	
+	/**
+	 * 获取邀约细节
+	 */
+	public void getInvitationDetail(TranObject tran){
+		int meetingId = (Integer)tran.getObject();
+		MeetingDetail detail;
+		detail = ContributesDao.getInvitationDetailById(meetingId);
+		tran.setObject(detail);
 		send(tran);
 	}
 	

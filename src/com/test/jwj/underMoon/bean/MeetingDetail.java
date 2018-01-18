@@ -16,8 +16,89 @@ public class MeetingDetail implements Serializable{
     public String date;
     public boolean read;
     public boolean approve;
+    public String type;
+    public String loveType;
+    public int age;
+    public int marry;
+    public int height;
+    public String job;
+    public String figure;
+    public String xingzuo;
+    public String content;
     
-    public MeetingDetail(){}
+    public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getLoveType() {
+		return loveType;
+	}
+
+	public void setLoveType(String loveType) {
+		this.loveType = loveType;
+	}
+
+	public int getAge() {
+		return age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+
+	public int getMarry() {
+		return marry;
+	}
+
+	public void setMarry(int marry) {
+		this.marry = marry;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public String getJob() {
+		return job;
+	}
+
+	public void setJob(String job) {
+		this.job = job;
+	}
+
+	public String getFigure() {
+		return figure;
+	}
+
+	public void setFigure(String figure) {
+		this.figure = figure;
+	}
+
+	public String getXingzuo() {
+		return xingzuo;
+	}
+
+	public void setXingzuo(String xingzuo) {
+		this.xingzuo = xingzuo;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public MeetingDetail(){}
 
     public MeetingDetail(int meetingId, int id, String city, String summary, String date, boolean read, boolean approve) {
         this.meetingId = meetingId;

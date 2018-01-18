@@ -20,5 +20,6 @@ public enum TranObjectType {
 	SEARCH_FRIEND,//找朋友
 	FRIEND_REQUEST,//好友申请
 	ALL_CONTRIBUTES,
+	INVITATION_DETAIL,
 	TODAY_CONTRIBUTES;//获取item信息
 }
