@@ -243,6 +243,13 @@ public class ClientActivity {
 		tran.setObject(detail);
 		send(tran);
 	}
+
+	/**
+	 * 添加邀约信息到数据库
+	 */
+	public void addContribute(TranObject tran){
+		ContributesDao.addContribute(tran);
+	}
 	
 	/**
 	 * 处理好友请求
@@ -275,7 +282,7 @@ public class ClientActivity {
 		}
 		sendFriend(tran);
 	}
-
+	
 	/**
 	 * 转发消息 将转发的消息发送到 服务器与该客户端连接的 发送队列中
 	 */

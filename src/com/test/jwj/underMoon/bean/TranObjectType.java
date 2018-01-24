@@ -21,5 +21,6 @@ public enum TranObjectType {
 	FRIEND_REQUEST,//好友申请
 	ALL_CONTRIBUTES,
 	INVITATION_DETAIL,
+	ADD_CONTRIBUTE,
 	TODAY_CONTRIBUTES;//获取item信息
 }

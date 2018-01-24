@@ -4,9 +4,11 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.test.jwj.underMoon.bean.MeetingDetail;
+import com.test.jwj.underMoon.bean.TranObject;
 public class ContributesDao {
 	public static ArrayList<MeetingDetail> selectContrbutesById(int userId){
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
@@ -100,11 +102,57 @@ public class ContributesDao {
 				meetingDetail.setCity(rs.getString("city"));
 				meetingDetail.setDate(rs.getString("date"));
 				meetingDetail.setContent(rs.getString("content"));
+				meetingDetail.setXingzuo(rs.getString("xingzuo"));
 			}
 		} catch (Exception e) {
 			
 		}
 		DBPool.close(con);
 		return meetingDetail;
+	}
+	
+	public static void addContribute(TranObject tran){
+		String sql0 = "use first_mysql_test";
+		String sql1= "insert into SaveMsg(id,city,summary,date,read,approve,type,lovetype,age,marry,height,"
+				+ "job,figure,xingzuo,content)" +
+				"values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		Connection con = DBPool.getConnection();
+		try {
+			con.setAutoCommit(false);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		PreparedStatement ps;
+		MeetingDetail meetingDetail = (MeetingDetail) tran.getObject();
+		try {
+			ps = con.prepareStatement(sql0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, meetingDetail.id);
+			ps.setString(2, meetingDetail.city);
+			ps.setString(3, meetingDetail.summary);
+			ps.setString(4, meetingDetail.date);
+			ps.setBoolean(5, meetingDetail.read);
+			ps.setBoolean(6, meetingDetail.approve);
+			ps.setString(7, meetingDetail.type);
+			ps.setString(8, meetingDetail.loveType);
+			ps.setInt(9, meetingDetail.age);
+			ps.setInt(10, meetingDetail.marry);
+			ps.setInt(11, meetingDetail.height);
+			ps.setString(12, meetingDetail.job);
+			ps.setString(13, meetingDetail.figure);
+			ps.setString(14, meetingDetail.xingzuo);
+			ps.setString(15, meetingDetail.content);
+			ps.execute();
+			con.commit();
+		} catch (SQLException e) {
+			System.out.println("正在回滚");
+			try {
+				con.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		}
 	}
 }
