@@ -22,5 +22,6 @@ public enum TranObjectType {
 	ALL_CONTRIBUTES,
 	INVITATION_DETAIL,
 	ADD_CONTRIBUTE,
-	TODAY_CONTRIBUTES;//获取item信息
+	TODAY_CONTRIBUTES,
+	ENLIST;//获取item信息
 }

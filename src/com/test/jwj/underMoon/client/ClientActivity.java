@@ -248,7 +248,18 @@ public class ClientActivity {
 	 * 添加邀约信息到数据库
 	 */
 	public void addContribute(TranObject tran){
-		ContributesDao.addContribute(tran);
+		int res = ContributesDao.addContribute(tran);
+		TranObject tran1 = new TranObject();
+		tran1.setObject(res);
+		tran1.setTranType(tran.getTranType());
+		send(tran1);
+	}
+	
+	/**
+	 * 将报名人插入数据库中
+	 */
+	public void addEnlist(TranObject tran){
+		
 	}
 	
 	/**

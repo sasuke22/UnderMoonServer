@@ -111,11 +111,11 @@ public class ContributesDao {
 		return meetingDetail;
 	}
 	
-	public static void addContribute(TranObject tran){
+	public static int addContribute(TranObject tran){
 		String sql0 = "use first_mysql_test";
-		String sql1= "insert into SaveMsg(id,city,summary,date,read,approve,type,lovetype,age,marry,height,"
+		String sql1= "insert into meetings(id,city,summary,date,type,lovetype,age,marry,height,"
 				+ "job,figure,xingzuo,content)" +
-				"values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				"values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		Connection con = DBPool.getConnection();
 		try {
 			con.setAutoCommit(false);
@@ -132,19 +132,18 @@ public class ContributesDao {
 			ps.setString(2, meetingDetail.city);
 			ps.setString(3, meetingDetail.summary);
 			ps.setString(4, meetingDetail.date);
-			ps.setBoolean(5, meetingDetail.read);
-			ps.setBoolean(6, meetingDetail.approve);
-			ps.setString(7, meetingDetail.type);
-			ps.setString(8, meetingDetail.loveType);
-			ps.setInt(9, meetingDetail.age);
-			ps.setInt(10, meetingDetail.marry);
-			ps.setInt(11, meetingDetail.height);
-			ps.setString(12, meetingDetail.job);
-			ps.setString(13, meetingDetail.figure);
-			ps.setString(14, meetingDetail.xingzuo);
-			ps.setString(15, meetingDetail.content);
+			ps.setString(5, meetingDetail.type);
+			ps.setString(6, meetingDetail.loveType);
+			ps.setInt(7, meetingDetail.age);
+			ps.setInt(8, meetingDetail.marry);
+			ps.setInt(9, meetingDetail.height);
+			ps.setString(10, meetingDetail.job);
+			ps.setString(11, meetingDetail.figure);
+			ps.setString(12, meetingDetail.xingzuo);
+			ps.setString(13, meetingDetail.content);
 			ps.execute();
 			con.commit();
+			return 1;
 		} catch (SQLException e) {
 			System.out.println("正在回滚");
 			try {
@@ -153,6 +152,7 @@ public class ContributesDao {
 				e1.printStackTrace();
 			}
 			e.printStackTrace();
+			return -1;
 		}
 	}
 }
