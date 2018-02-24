@@ -155,4 +155,32 @@ public class ContributesDao {
 			return -1;
 		}
 	}
+	
+	public static int addEnlist(TranObject tran){
+		String sql0 = "use first_mysql_test";
+		String sql1 = "update meetings set backid= case when isnull(backid) or backid='' then ? else concat(backid,'|',?) end where meetingId =?";
+		int userId = tran.getSendId();
+		int meetingId = (Integer)tran.getObject();
+		Connection con = DBPool.getConnection();
+		try {
+			con.setAutoCommit(false);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		PreparedStatement ps;
+		try {
+			ps = con.prepareStatement(sql0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, userId);
+			ps.setInt(2, userId);
+			ps.setInt(3, meetingId);
+			System.out.println(ps.toString());
+			ps.execute();
+			con.commit();
+			return 1;
+		}catch (Exception e){
+			return 0;
+		}
+	}
 }

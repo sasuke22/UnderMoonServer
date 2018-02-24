@@ -259,7 +259,11 @@ public class ClientActivity {
 	 * 将报名人插入数据库中
 	 */
 	public void addEnlist(TranObject tran){
-		
+		int res = ContributesDao.addEnlist(tran);
+		TranObject tran1 = new TranObject();
+		tran1.setObject(res);
+		tran1.setTranType(tran.getTranType());
+		send(tran1);
 	}
 	
 	/**
