@@ -75,6 +75,9 @@ public class ClientListenThread implements Runnable {
 			case ENLIST:
 				client.addEnlist(tran);
 				break;
+			case MY_CONTRIBUTES:
+				client.getMyContributes(tran);
+				break;
 			default:
 				break;
 			}

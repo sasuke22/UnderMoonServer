@@ -267,6 +267,17 @@ public class ClientActivity {
 	}
 	
 	/**
+	 * 获取我的meeting
+	 */
+	public void getMyContributes(TranObject tran){
+		int userId = (Integer)tran.getObject();
+		ArrayList<MeetingDetail> list;
+		list = ContributesDao.getMyContributes(userId);
+		tran.setObject(list);
+		send(tran);
+	}
+	
+	/**
 	 * 处理好友请求
 	 */
 	public void friendRequset(TranObject tran) {
