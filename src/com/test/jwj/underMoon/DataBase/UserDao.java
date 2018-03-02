@@ -5,10 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
-import javax.print.attribute.standard.PresentationDirection;
 
+import com.test.jwj.underMoon.bean.TranObject;
 import com.test.jwj.underMoon.bean.User;
 
 
@@ -159,7 +158,6 @@ public class UserDao {
 			e1.printStackTrace();
 		}
 		PreparedStatement ps;
-		ResultSet rs;
 		try {
 			ps = con.prepareStatement(sql0);
 			ps.execute();
@@ -269,6 +267,38 @@ public class UserDao {
 		return list;
 	}
 
-
+	public static int saveUserInfo(TranObject tran){
+		User user = (User)tran.getObject();
+		String sql0 = "use first_mysql_test";
+		String sql1 = "update user SET age = ? ,height = ? ,figure = ? ,job = ? ,lovetype = ? ,marry = ? "
+				+ ",xingzuo = ? ,city = ? where id = ? ";
+		Connection con = DBPool.getConnection();
+		try {
+			con.setAutoCommit(false);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		PreparedStatement ps;
+		try{
+			ps = con.prepareStatement(sql0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, user.getAge());
+			ps.setInt(2, user.getHeight());
+			ps.setString(3, user.getFigure());
+			ps.setString(4, user.getJob());
+			ps.setString(5, user.getLoveType());
+			ps.setInt(6, user.getMarry());
+			ps.setString(7, user.getXingzuo());
+			ps.setString(8, user.getLocation());
+			ps.setInt(9, user.getId());
+			ps.executeUpdate();
+			con.commit();
+			return 1;
+		}catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
 
 }

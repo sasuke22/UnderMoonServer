@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import com.test.jwj.underMoon.bean.MeetingDetail;
 import com.test.jwj.underMoon.bean.TranObject;
+import com.test.jwj.underMoon.bean.User;
 public class ContributesDao {
 	public static ArrayList<MeetingDetail> selectContrbutesById(int userId){
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
@@ -216,4 +217,5 @@ public class ContributesDao {
 		DBPool.close(con);
 		return contributesList;
 	}
+	
 }

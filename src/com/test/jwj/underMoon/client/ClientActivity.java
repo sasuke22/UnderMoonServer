@@ -278,6 +278,17 @@ public class ClientActivity {
 	}
 	
 	/**
+	 * 保存user修改的信息
+	 */
+	public void saveUserInfo(TranObject tran){
+		int res = UserDao.saveUserInfo(tran);
+		TranObject tran1 = new TranObject();
+		tran1.setObject(res);
+		tran1.setTranType(tran.getTranType());
+		send(tran1);
+	}
+	
+	/**
 	 * 处理好友请求
 	 */
 	public void friendRequset(TranObject tran) {
