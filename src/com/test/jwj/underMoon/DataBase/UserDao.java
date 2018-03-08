@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-
 import com.test.jwj.underMoon.bean.TranObject;
 import com.test.jwj.underMoon.bean.User;
 
@@ -301,4 +300,13 @@ public class UserDao {
 		}
 	}
 
+	public static ArrayList<User> getEnlist(int meetingId){
+		String sql0 = "use first_mysql_test";
+		String sql1 = "select * " +
+				      "from user as f left outer join user as u " +
+				      "on f.friendid=u.id "+
+				      "where master=?";
+		return null;
+	}
+	
 }

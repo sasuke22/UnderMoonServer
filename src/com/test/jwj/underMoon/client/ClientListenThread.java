@@ -81,6 +81,9 @@ public class ClientListenThread implements Runnable {
 			case SAVE_USER_INFO:
 				client.saveUserInfo(tran);
 				break;
+			case GET_ENLIST:
+				client.getEnlist(tran);
+				break;
 			default:
 				break;
 			}

@@ -289,6 +289,14 @@ public class ClientActivity {
 	}
 	
 	/**
+	 * 获取报名列表
+	 */
+	public void getEnlist(TranObject tran){
+		int meetingId = (Integer)tran.getObject();
+		ArrayList<User> enlist = UserDao.getEnlist(meetingId);
+	}
+	
+	/**
 	 * 处理好友请求
 	 */
 	public void friendRequset(TranObject tran) {
