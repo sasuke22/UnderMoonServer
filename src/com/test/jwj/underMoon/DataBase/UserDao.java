@@ -309,4 +309,32 @@ public class UserDao {
 		return null;
 	}
 	
+	public static boolean updateRegist(TranObject tran){
+		String sql0 = "use first_mysql_test";
+		String sql1 = "update user set registId= case when isnull(registId) or registId='' then ? else concat(registId,'|',?) end where id =?";
+		int userId = tran.getSendId();
+		int meetingId = (Integer)tran.getObject();
+		Connection con = DBPool.getConnection();
+		try {
+			con.setAutoCommit(false);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		PreparedStatement ps;
+		try {
+			ps = con.prepareStatement(sql0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, userId);
+			ps.setInt(2, meetingId);
+			ps.setInt(3, userId);
+			System.out.println(ps.toString());
+			ps.execute();
+			con.commit();
+			return true;
+		}catch (Exception e){
+			return false;
+		}
+	}
+	
 }

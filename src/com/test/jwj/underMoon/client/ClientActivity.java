@@ -270,7 +270,7 @@ public class ClientActivity {
 	 * 获取我的meeting
 	 */
 	public void getMyContributes(TranObject tran){
-		int userId = (Integer)tran.getObject();
+		int userId = (Integer)tran.getSendId();
 		ArrayList<MeetingDetail> list;
 		list = ContributesDao.getMyContributes(userId);
 		tran.setObject(list);

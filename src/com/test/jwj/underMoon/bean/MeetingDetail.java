@@ -165,5 +165,9 @@ public class MeetingDetail implements Serializable{
 	public void setApprove(boolean approve) {
 		this.approve = approve;
 	}
+	
+	public String toString(){
+		return "city " + city + " id " + id + " meetingId " + meetingId;
+	}
     
 }

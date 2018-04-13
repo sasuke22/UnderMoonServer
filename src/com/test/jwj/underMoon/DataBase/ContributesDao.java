@@ -16,7 +16,7 @@ public class ContributesDao {
 		String sq0 = "use first_mysql_test";
 		String sql1 = "select * " +
 			      "from meetings " +
-			      "where id not in ?" ;
+			      "where id not in (?)" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
