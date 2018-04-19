@@ -337,4 +337,37 @@ public class UserDao {
 		}
 	}
 	
+	public static boolean queryRegist(TranObject tran){
+		String sql0 = "use first_mysql_test";
+		String sql1 = "select registId from user where id = ?";
+		int userId = tran.getSendId();
+		Connection con = DBPool.getConnection();
+		try {
+			con.setAutoCommit(false);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		PreparedStatement ps;
+		ResultSet rs;
+		try {
+			ps = con.prepareStatement(sql0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, userId);
+			System.out.println(ps.toString());
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				String id = rs.getString("registId");
+				String[] idArray = id.split("|");
+				for (String string : idArray) {
+					if (string.equals(String.valueOf(userId))) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}catch (Exception e){
+			return false;
+		}
+	}
 }
