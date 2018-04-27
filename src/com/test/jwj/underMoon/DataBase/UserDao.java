@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import com.test.jwj.underMoon.bean.TranObject;
 import com.test.jwj.underMoon.bean.User;
+import com.test.jwj.underMoon.global.Result;
 
 
 /**
@@ -309,7 +310,11 @@ public class UserDao {
 		return null;
 	}
 	
-	public static boolean updateRegist(TranObject tran){
+	public static Result updateRegist(TranObject tran){
+		ArrayList<String> registArray = queryRegist(tran);
+		if (registArray.contains(String.valueOf((Integer)tran.getObject()))) {
+			return Result.ENLIST_EXIST;
+		}
 		String sql0 = "use first_mysql_test";
 		String sql1 = "update user set registId= case when isnull(registId) or registId='' then ? else concat(registId,'|',?) end where id =?";
 		int userId = tran.getSendId();
@@ -331,15 +336,16 @@ public class UserDao {
 			System.out.println(ps.toString());
 			ps.execute();
 			con.commit();
-			return true;
+			return Result.ENLIST_SUCCESS;
 		}catch (Exception e){
-			return false;
+			return Result.ENLIST_FAILED;
 		}
 	}
 	
-	public static boolean queryRegist(TranObject tran){
+	public static ArrayList<String> queryRegist(TranObject tran){
 		String sql0 = "use first_mysql_test";
 		String sql1 = "select registId from user where id = ?";
+		ArrayList<String> registArray = new ArrayList<String>();
 		int userId = tran.getSendId();
 		Connection con = DBPool.getConnection();
 		try {
@@ -360,14 +366,17 @@ public class UserDao {
 				String id = rs.getString("registId");
 				String[] idArray = id.split("|");
 				for (String string : idArray) {
-					if (string.equals(String.valueOf(userId))) {
-						return false;
+					if (!string.equalsIgnoreCase("|")) {
+						if (string.equals(String.valueOf(userId))) {
+							continue;
+						}else
+							registArray.add(string);
 					}
 				}
 			}
-			return true;
+			return registArray;
 		}catch (Exception e){
-			return false;
+			return null;
 		}
 	}
 }
