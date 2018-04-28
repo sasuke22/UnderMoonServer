@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import com.test.jwj.underMoon.bean.MeetingDetail;
 import com.test.jwj.underMoon.bean.TranObject;
 import com.test.jwj.underMoon.bean.User;
+import com.test.jwj.underMoon.global.Result;
 public class ContributesDao {
 	public static ArrayList<MeetingDetail> selectContrbutesById(int userId){
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
@@ -157,7 +158,7 @@ public class ContributesDao {
 		}
 	}
 	
-	public static int addEnlist(TranObject tran){
+	public static Result addEnlist(TranObject tran){
 		String sql0 = "use first_mysql_test";
 		String sql1 = "update meetings set backid= case when isnull(backid) or backid='' then ? else concat(backid,'|',?) end where meetingId =?";
 		int userId = tran.getSendId();
@@ -179,9 +180,9 @@ public class ContributesDao {
 			System.out.println(ps.toString());
 			ps.execute();
 			con.commit();
-			return 1;
+			return Result.ENLIST_SUCCESS;
 		}catch (Exception e){
-			return 0;
+			return Result.ENLIST_FAILED;
 		}
 	}
 	

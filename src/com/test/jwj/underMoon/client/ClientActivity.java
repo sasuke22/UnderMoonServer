@@ -259,10 +259,12 @@ public class ClientActivity {
 	 * 将报名人插入数据库中
 	 */
 	public void addEnlist(TranObject tran){
-		//先查询自己是否报名过，去重后再添加报名
-		int res = ContributesDao.addEnlist(tran);
+		Result registRes = UserDao.updateRegist(tran);
+		if (registRes == Result.ENLIST_SUCCESS) {
+			registRes = ContributesDao.addEnlist(tran);
+		}
 		TranObject tran1 = new TranObject();
-		tran1.setObject(res);
+		tran1.setObject(registRes);
 		tran1.setTranType(tran.getTranType());
 		send(tran1);
 	}
