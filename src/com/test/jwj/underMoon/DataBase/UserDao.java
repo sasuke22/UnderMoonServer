@@ -300,15 +300,6 @@ public class UserDao {
 			return 0;
 		}
 	}
-
-	public static ArrayList<User> getEnlist(int meetingId){
-		String sql0 = "use first_mysql_test";
-		String sql1 = "select * " +
-				      "from user as f left outer join user as u " +
-				      "on f.friendid=u.id "+
-				      "where master=?";
-		return null;
-	}
 	
 	public static Result updateRegist(TranObject tran){
 		ArrayList<String> registArray = queryRegist(tran);

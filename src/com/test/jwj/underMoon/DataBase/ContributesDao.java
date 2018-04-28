@@ -218,5 +218,42 @@ public class ContributesDao {
 		DBPool.close(con);
 		return contributesList;
 	}
+
+	public static void getMyEnlistMeetings(ArrayList<String> enlist) {
+		StringBuilder idBuilder = new StringBuilder();
+		for (int i = 0;i < enlist.size();i++) {
+			if (i != enlist.size()-1) 
+				idBuilder.append(enlist.get(i)).append(",");
+			else
+				idBuilder.append(enlist.get(i));
+		}
+		String sq0 = "use first_mysql_test";
+		String sql1 = "select * " +
+			      "from meetings " +
+			      "where id in (" + idBuilder + ")";
+		Connection con = DBPool.getConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		//TODO 还没弄完
+		try {
+			ps = con.prepareStatement(sq0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				MeetingDetail meetingDetail = new MeetingDetail();
+				meetingDetail.setMeetingId(rs.getInt("meetingId"));
+				meetingDetail.setId(rs.getInt("id"));//?
+				meetingDetail.setCity(rs.getString("city"));
+				meetingDetail.setSummary(rs.getString("summary"));
+				meetingDetail.setDate(rs.getString("date"));
+				meetingDetail.setRead(rs.getBoolean("read"));
+				meetingDetail.setApprove(rs.getBoolean("approve"));
+			}
+		} catch (Exception e) {
+			
+		}
+		DBPool.close(con);
+	}
 	
 }

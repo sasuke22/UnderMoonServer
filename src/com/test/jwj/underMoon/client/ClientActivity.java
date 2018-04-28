@@ -292,11 +292,12 @@ public class ClientActivity {
 	}
 	
 	/**
-	 * 获取报名列表
+	 * 获取报名过的邀约列表
 	 */
-	public void getEnlist(TranObject tran){
-		int meetingId = (Integer)tran.getObject();
-		ArrayList<User> enlist = UserDao.getEnlist(meetingId);
+	public ArrayList<String> getEnlist(TranObject tran){
+		ArrayList<String> enlist = UserDao.queryRegist(tran);
+		ContributesDao.getMyEnlistMeetings(enlist);
+		return enlist;
 	}
 	
 	/**
