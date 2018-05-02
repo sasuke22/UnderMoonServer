@@ -219,7 +219,8 @@ public class ContributesDao {
 		return contributesList;
 	}
 
-	public static void getMyEnlistMeetings(ArrayList<String> enlist) {
+	public static ArrayList<MeetingDetail> getMyEnlistMeetings(ArrayList<String> enlist) {
+		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
 		StringBuilder idBuilder = new StringBuilder();
 		for (int i = 0;i < enlist.size();i++) {
 			if (i != enlist.size()-1) 
@@ -249,11 +250,14 @@ public class ContributesDao {
 				meetingDetail.setDate(rs.getString("date"));
 				meetingDetail.setRead(rs.getBoolean("read"));
 				meetingDetail.setApprove(rs.getBoolean("approve"));
+				contributesList.add(meetingDetail);
 			}
+			
 		} catch (Exception e) {
 			
 		}
 		DBPool.close(con);
+		return contributesList;
 	}
 	
 }
