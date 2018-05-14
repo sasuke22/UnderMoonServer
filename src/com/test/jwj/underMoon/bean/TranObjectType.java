@@ -26,5 +26,7 @@ public enum TranObjectType {
 	MY_CONTRIBUTES,
 	SAVE_USER_INFO,
 	GET_ENLIST,
-	ENLIST;//获取item信息
+	ENLIST,
+	GET_ENLIST_NAME,
+	GET_USER_INFO;//获取item信息
 }

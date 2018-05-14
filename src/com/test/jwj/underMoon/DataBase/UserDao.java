@@ -370,4 +370,34 @@ public class UserDao {
 			return null;
 		}
 	}
+	
+	public static User getUserInfo(TranObject tran){
+		int userId = (Integer) tran.getObject();
+		String sql0 = "use first_mysql_test";
+		String sql1 = "select * from user where id=?";
+		Connection con = DBPool.getConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		User enlister = new User();
+		try {
+			ps = con.prepareStatement(sql0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, userId);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				enlister.setId(rs.getInt("id"));
+				enlister.setAccount(rs.getString("account"));
+				enlister.setBirthday(rs.getDate("birthday"));
+				enlister.setGender(rs.getInt("gender"));
+				enlister.setUserName(rs.getString("name"));
+				enlister.setPhoto(rs.getBytes("photo"));
+				enlister.setLocation(rs.getString("location"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		DBPool.close(con);
+		return enlister;
+	}
 }

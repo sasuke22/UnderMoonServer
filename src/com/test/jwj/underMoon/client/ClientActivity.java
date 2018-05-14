@@ -240,6 +240,8 @@ public class ClientActivity {
 		int meetingId = (Integer)tran.getObject();
 		MeetingDetail detail;
 		detail = ContributesDao.getInvitationDetailById(meetingId);
+		ArrayList<String> enlist = UserDao.queryRegist(tran);
+		detail.registId = enlist;
 		tran.setObject(detail);
 		send(tran);
 	}
@@ -294,10 +296,36 @@ public class ClientActivity {
 	/**
 	 * 获取报名过的邀约列表
 	 */
-	public ArrayList<MeetingDetail> getEnlist(TranObject tran){
+	public void getEnlist(TranObject tran){
 		ArrayList<String> enlist = UserDao.queryRegist(tran);
 		ArrayList<MeetingDetail> enlistedContributes = ContributesDao.getMyEnlistMeetings(enlist);
-		return enlistedContributes;
+		TranObject tran1 = new TranObject();
+		tran1.setObject(enlistedContributes);
+		tran1.setTranType(tran.getTranType());
+		send(tran1);
+	}
+	
+	/**
+	 * 获取报名过的邀约名字
+	 * 这里应该是跟meetingDetail一起发送给客户端的
+	 */
+	public void getEnlistName(TranObject tran){
+		ArrayList<String> enlist = UserDao.queryRegist(tran);
+		TranObject tran1 = new TranObject();
+		tran1.setObject(enlist);
+		tran1.setTranType(tran.getTranType());
+		send(tran1);
+	}
+	
+	/**
+	 * 获取报名的个人信息
+	 */
+	public void getUserInfo(TranObject tran){
+		User enlister = UserDao.getUserInfo(tran);
+		TranObject tran1 = new TranObject();
+		tran1.setObject(enlister);
+		tran1.setTranType(tran.getTranType());
+		send(tran1);
 	}
 	
 	/**
