@@ -27,6 +27,7 @@ public class MeetingDetail implements Serializable{
     public String xingzuo;
     public String content;
     public ArrayList<String> registId;
+    public ArrayList<String> enlistersName;
     
     public String getType() {
 		return type;
@@ -168,6 +169,14 @@ public class MeetingDetail implements Serializable{
 		this.approve = approve;
 	}
 	
+	public ArrayList<String> getEnlistersName() {
+		return enlistersName;
+	}
+
+	public void setEnlistersName(ArrayList<String> enlistersName) {
+		this.enlistersName = enlistersName;
+	}
+
 	public String toString(){
 		return "city " + city + " id " + id + " meetingId " + meetingId;
 	}

@@ -78,7 +78,8 @@ public class ContributesDao {
 		return contributesList;
 	}
 	
-	public static MeetingDetail getInvitationDetailById(int meetingId){
+	public static MeetingDetail getInvitationDetailById(TranObject tran){
+		int meetingId = (Integer)tran.getObject();
 		String sq0 = "use first_mysql_test";
 		String sql1 = "select * " +
 			      "from meetings " +
@@ -106,8 +107,10 @@ public class ContributesDao {
 				meetingDetail.setContent(rs.getString("content"));
 				meetingDetail.setXingzuo(rs.getString("xingzuo"));
 			}
+			ArrayList<String> enlisters = queryRegistName(tran);
+			meetingDetail.setEnlistersName(enlisters);
 		} catch (Exception e) {
-			
+			return null;
 		}
 		DBPool.close(con);
 		return meetingDetail;
@@ -161,8 +164,10 @@ public class ContributesDao {
 	public static Result addEnlist(TranObject tran){
 		String sql0 = "use first_mysql_test";
 		String sql1 = "update meetings set backid= case when isnull(backid) or backid='' then ? else concat(backid,'|',?) end where meetingId =?";
+		String sql2 = "update meetings set backName= case when isnull(backName) or backName='' then ? else concat(backName,'|',?) end where meetingId =?";
 		int userId = tran.getSendId();
 		int meetingId = (Integer)tran.getObject();
+		String enlisterName = tran.getSendName();
 		Connection con = DBPool.getConnection();
 		try {
 			con.setAutoCommit(false);
@@ -176,6 +181,12 @@ public class ContributesDao {
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, userId);
 			ps.setInt(2, userId);
+			ps.setInt(3, meetingId);
+			System.out.println(ps.toString());
+			ps.execute();
+			ps = con.prepareStatement(sql2);
+			ps.setString(1, enlisterName);
+			ps.setString(2, enlisterName);
 			ps.setInt(3, meetingId);
 			System.out.println(ps.toString());
 			ps.execute();
@@ -260,4 +271,38 @@ public class ContributesDao {
 		return contributesList;
 	}
 	
+	public static ArrayList<String> queryRegistName(TranObject tran){
+		String sql0 = "use first_mysql_test";
+		String sql1 = "select backName from meetings where meetingId = ?";
+		ArrayList<String> backNameList = new ArrayList<String>();
+		int meetingId = (Integer)tran.getObject();
+		Connection con = DBPool.getConnection();
+		try {
+			con.setAutoCommit(false);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		PreparedStatement ps;
+		ResultSet rs;
+		try {
+			ps = con.prepareStatement(sql0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, meetingId);
+			System.out.println(ps.toString());
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				String id = rs.getString("backName");
+				String[] idArray = id.split("|");
+				for (String string : idArray) {
+					if (!string.equalsIgnoreCase("|")) {
+						backNameList.add(string);
+					}
+				}
+			}
+			return backNameList;
+		}catch (Exception e){
+			return null;
+		}
+	}
 }

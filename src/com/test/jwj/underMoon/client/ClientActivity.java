@@ -237,9 +237,8 @@ public class ClientActivity {
 	 * 获取邀约细节
 	 */
 	public void getInvitationDetail(TranObject tran){
-		int meetingId = (Integer)tran.getObject();
 		MeetingDetail detail;
-		detail = ContributesDao.getInvitationDetailById(meetingId);
+		detail = ContributesDao.getInvitationDetailById(tran);
 		ArrayList<String> enlist = UserDao.queryRegist(tran);
 		detail.registId = enlist;
 		tran.setObject(detail);
@@ -310,7 +309,7 @@ public class ClientActivity {
 	 * 这里应该是跟meetingDetail一起发送给客户端的
 	 */
 	public void getEnlistName(TranObject tran){
-		ArrayList<String> enlist = UserDao.queryRegist(tran);
+		ArrayList<String> enlist = ContributesDao.queryRegistName(tran);
 		TranObject tran1 = new TranObject();
 		tran1.setObject(enlist);
 		tran1.setTranType(tran.getTranType());
