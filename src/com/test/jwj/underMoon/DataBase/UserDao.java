@@ -51,8 +51,8 @@ public class UserDao {
 	 */
 	public static int insertInfo(User user) {
 		String sql0 = "use first_mysql_test";
-		String sql1 = "insert into user (account,name,photo,birthday,password,gender)"
-				+ " values(?,?,?,?,?,?)";
+		String sql1 = "insert into user (account,name,photo,birthday,password,gender,city,age,height,marry,job,figure,xingzuo)"
+				+ " values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		Connection con = DBPool.getConnection();
 		try {
 			con.setAutoCommit(false);
@@ -71,6 +71,13 @@ public class UserDao {
 			ps.setDate(4, new java.sql.Date(user.getBirthday().getTime()));
 			ps.setString(5, user.getPassword());
 			ps.setInt(6, user.getGender());
+			ps.setString(7, user.getLocation());
+			ps.setInt(8, user.getAge());
+			ps.setInt(9, user.getHeight());
+			ps.setInt(10, user.getMarry());
+			ps.setString(11, user.getJob());
+			ps.setString(12, user.getFigure());
+			ps.setString(13, user.getXingzuo());
 			ps.executeUpdate();
 			con.commit();
 		} catch (SQLException e) {
@@ -137,6 +144,14 @@ public class UserDao {
 				user.setPassword(rs.getString("password"));
 				user.setUserName(rs.getString("name"));
 				user.setPhoto(rs.getBytes("photo"));
+				user.setLocation(rs.getString("city"));
+				user.setAge(rs.getInt("age"));
+				user.setHeight(rs.getInt("height"));
+				user.setMarry(rs.getInt("marry"));
+				user.setJob(rs.getString("job"));
+				user.setFigure(rs.getString("figure"));
+				user.setXingzuo(rs.getString("xingzuo"));
+				user.setLoveType(rs.getString("lovetype"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -184,7 +199,7 @@ public class UserDao {
 		String sql1 = "";
 		int conFlag = 0;// 默认是0 表示使用id查找 1为使用id
 		if (condition instanceof String) {
-			sql1 = "select * from user where account=?";
+			sql1 = "select * from user where id=?";
 			conFlag = 1;
 		} else if (condition instanceof Integer)
 			sql1 = "select * from user where id=?";
@@ -212,7 +227,7 @@ public class UserDao {
 				else
 					friend.setIsOnline(false);
 				friend.setPhoto(rs.getBytes("photo"));
-				friend.setLocation(rs.getString("location"));
+				friend.setLocation(rs.getString("city"));
 				list.add(friend);
 			}
 		} catch (SQLException e) {
