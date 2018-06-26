@@ -302,6 +302,7 @@ public class ClientActivity {
 		tran1.setObject(enlistedContributes);
 		tran1.setTranType(tran.getTranType());
 		send(tran1);
+		System.out.println("send success");
 	}
 	
 	/**

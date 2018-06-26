@@ -195,4 +195,17 @@ public class User implements Serializable {
 	public void setLocation(String location) {
 		this.location = location;
 	}
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", account=" + account + ", userName="
+				+ userName + ", password=" + password + ", birthday="
+				+ birthday + ", gender=" + gender + ", isOnline=" + isOnline
+				+ ", location=" + location + ", age=" + age
+				+ ", userBriefIntro=" + userBriefIntro + ", height=" + height
+				+ ", marry=" + marry + ", job=" + job + ", figure=" + figure
+				+ ", xingzuo=" + xingzuo + ", loveType=" + loveType
+				+ ", friendList=" + friendList + "]";
+	}
+	
 }

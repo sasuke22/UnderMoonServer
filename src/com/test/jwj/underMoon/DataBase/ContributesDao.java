@@ -33,13 +33,13 @@ public class ContributesDao {
 				meetingDetail.setId(rs.getInt("id"));//?
 				meetingDetail.setCity(rs.getString("city"));
 				meetingDetail.setSummary(rs.getString("summary"));
-				meetingDetail.setDate(rs.getString("date"));
+				meetingDetail.setDate(rs.getDate("date"));
 				meetingDetail.setRead(rs.getBoolean("read"));
 				meetingDetail.setApprove(rs.getBoolean("approve"));
 				contributesList.add(meetingDetail);
 			}
 		} catch (Exception e) {
-			
+			System.out.println(e.getMessage().toString());
 		}
 		DBPool.close(con);
 		return contributesList;
@@ -66,7 +66,7 @@ public class ContributesDao {
 				meetingDetail.setId(rs.getInt("id"));//?
 				meetingDetail.setCity(rs.getString("city"));
 				meetingDetail.setSummary(rs.getString("summary"));
-				meetingDetail.setDate(rs.getString("date"));
+				meetingDetail.setDate(rs.getDate("date"));
 				meetingDetail.setRead(rs.getBoolean("read"));
 				meetingDetail.setApprove(rs.getBoolean("approve"));
 				contributesList.add(meetingDetail);
@@ -103,7 +103,7 @@ public class ContributesDao {
 				meetingDetail.setJob(rs.getString("job"));
 				meetingDetail.setFigure(rs.getString("figure"));
 				meetingDetail.setCity(rs.getString("city"));
-				meetingDetail.setDate(rs.getString("date"));
+				meetingDetail.setDate(rs.getDate("date"));
 				meetingDetail.setContent(rs.getString("content"));
 				meetingDetail.setXingzuo(rs.getString("xingzuo"));
 			}
@@ -136,7 +136,7 @@ public class ContributesDao {
 			ps.setInt(1, meetingDetail.id);
 			ps.setString(2, meetingDetail.city);
 			ps.setString(3, meetingDetail.summary);
-			ps.setString(4, meetingDetail.date);
+			ps.setDate(4, meetingDetail.date);
 			ps.setString(5, meetingDetail.type);
 			ps.setString(6, meetingDetail.loveType);
 			ps.setInt(7, meetingDetail.age);
@@ -218,7 +218,7 @@ public class ContributesDao {
 				meetingDetail.setId(rs.getInt("id"));//?
 				meetingDetail.setCity(rs.getString("city"));
 				meetingDetail.setSummary(rs.getString("summary"));
-				meetingDetail.setDate(rs.getString("date"));
+				meetingDetail.setDate(rs.getDate("date"));
 				meetingDetail.setRead(rs.getBoolean("read"));
 				meetingDetail.setApprove(rs.getBoolean("approve"));
 				contributesList.add(meetingDetail);
@@ -231,6 +231,9 @@ public class ContributesDao {
 	}
 
 	public static ArrayList<MeetingDetail> getMyEnlistMeetings(ArrayList<String> enlist) {
+		if (enlist.size() <= 0) {
+			return null;
+		}
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
 		StringBuilder idBuilder = new StringBuilder();
 		for (int i = 0;i < enlist.size();i++) {
@@ -258,14 +261,14 @@ public class ContributesDao {
 				meetingDetail.setId(rs.getInt("id"));//?
 				meetingDetail.setCity(rs.getString("city"));
 				meetingDetail.setSummary(rs.getString("summary"));
-				meetingDetail.setDate(rs.getString("date"));
+				meetingDetail.setDate(rs.getDate("date"));
 				meetingDetail.setRead(rs.getBoolean("read"));
 				meetingDetail.setApprove(rs.getBoolean("approve"));
 				contributesList.add(meetingDetail);
 			}
 			
 		} catch (Exception e) {
-			
+			System.out.println("get myenilst " + e.getMessage().toString());
 		}
 		DBPool.close(con);
 		return contributesList;

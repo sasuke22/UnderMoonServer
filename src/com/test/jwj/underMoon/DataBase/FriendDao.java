@@ -40,7 +40,7 @@ public class FriendDao {
 				else
 					user.setIsOnline(false);
 				user.setUserName(rs.getString("name"));
-				user.setLocation(rs.getString("location"));
+				user.setLocation(rs.getString("city"));
 				list.add(user);
 			}
 		} catch (SQLException e) {

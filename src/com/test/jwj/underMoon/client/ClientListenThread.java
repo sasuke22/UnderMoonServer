@@ -48,9 +48,7 @@ public class ClientListenThread implements Runnable {
 				client.regist(tran);
 				break;
 			case LOGIN:
-				System.out.println("read login");
 				client.login(tran);
-				System.out.println("read login fail");
 				break;
 			case SEARCH_FRIEND:
 				client.searchFriend(tran);

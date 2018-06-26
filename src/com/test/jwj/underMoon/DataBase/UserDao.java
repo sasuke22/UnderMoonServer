@@ -382,6 +382,7 @@ public class UserDao {
 			}
 			return registArray;
 		}catch (Exception e){
+			System.out.println("select regist " + e.getMessage().toString());
 			return null;
 		}
 	}

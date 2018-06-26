@@ -1,6 +1,7 @@
 package com.test.jwj.underMoon.bean;
 
 import java.io.Serializable;
+import java.sql.Date;
 import java.util.ArrayList;
 
 /**
@@ -14,7 +15,7 @@ public class MeetingDetail implements Serializable{
     public int id;
     public String city;
     public String summary;
-    public String date;
+    public Date date;
     public boolean read;
     public boolean approve;
     public String type;
@@ -103,7 +104,7 @@ public class MeetingDetail implements Serializable{
 
 	public MeetingDetail(){}
 
-    public MeetingDetail(int meetingId, int id, String city, String summary, String date, boolean read, boolean approve) {
+    public MeetingDetail(int meetingId, int id, String city, String summary, Date date, boolean read, boolean approve) {
         this.meetingId = meetingId;
         this.id = id;
         this.city = city;
@@ -145,11 +146,11 @@ public class MeetingDetail implements Serializable{
 		this.summary = summary;
 	}
 
-	public String getDate() {
+	public Date getDate() {
 		return date;
 	}
 
-	public void setDate(String date) {
+	public void setDate(Date date) {
 		this.date = date;
 	}
 
