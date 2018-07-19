@@ -3,6 +3,10 @@ package com.test.jwj.underMoon.bean;
 import java.io.Serializable;
 
 public class ChatEntity implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final int  RECEIVE = 0;
 	public static final int SEND = 1;
 	private int senderId;

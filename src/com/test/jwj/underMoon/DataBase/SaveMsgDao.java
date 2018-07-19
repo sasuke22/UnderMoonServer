@@ -1,13 +1,11 @@
 package com.test.jwj.underMoon.DataBase;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 import com.test.jwj.underMoon.bean.ChatEntity;
 import com.test.jwj.underMoon.bean.TranObject;
@@ -24,6 +22,7 @@ public class SaveMsgDao {
 	private static HashMap<Result,Integer> resultId = new HashMap<Result, Integer>();
 	private static HashMap<Integer,TranObjectType> idTrantype = new HashMap<Integer, TranObjectType>();
 	private static HashMap<TranObjectType,Integer> trantypeId = new HashMap<TranObjectType, Integer>(); 
+	private static DBPool poolImpl = PoolManager.getInstance();
 	
 	static{
 		//为Result枚举添加映射
@@ -56,7 +55,8 @@ public class SaveMsgDao {
 		String sql0 = "use first_mysql_test";
 		String sql1= "insert into SaveMsg(sendid,getid,msg,trantype,time,resultType,messageType,sendname)" +
 				"values(?,?,?,?,?,?,?,?)";
-		Connection con = DBPool.getConnection();
+		PooledConnection poolcon = poolImpl.getConnection();
+		Connection con = poolcon.getConnection();
 		try {
 			con.setAutoCommit(false);
 		} catch (SQLException e1) {
@@ -88,6 +88,7 @@ public class SaveMsgDao {
 			ps.setString(8, tran.getSendName());
 			ps.execute();
 			con.commit();
+			poolcon.close();
 		} catch (SQLException e) {
 			System.out.println("正在回滚");
 			try {
@@ -96,6 +97,7 @@ public class SaveMsgDao {
 				e1.printStackTrace();
 			}
 			e.printStackTrace();
+			poolcon.close();
 		}
 	}
 	/**
@@ -105,21 +107,18 @@ public class SaveMsgDao {
 		String sql0 = "use first_mysql_test";
 		String sql1 = "delete from saveMsg " +
 				      "where getid=?";
-		Connection con = DBPool.getConnection();
+		PooledConnection poolcon = poolImpl.getConnection();
+		Connection con = poolcon.getConnection();
 		PreparedStatement ps;
 		try {
 			con.setAutoCommit(false);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		try {
 			ps = con.prepareStatement(sql0);
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, getid);
 			ps.execute();
 			con.commit();
-			
+			poolcon.close();
 		} catch (SQLException e) {
 			try {
 				con.rollback();
@@ -127,6 +126,7 @@ public class SaveMsgDao {
 				e1.printStackTrace();
 			}
 			e.printStackTrace();
+			poolcon.close();
 		}
 	}
 	/**
@@ -139,7 +139,8 @@ public class SaveMsgDao {
 		String sql1 = "select * " +
 				      "from saveMsg " +
 				      "where getid=?";
-		Connection con = DBPool.getConnection();
+		PooledConnection poolcon = poolImpl.getConnection();
+		Connection con = poolcon.getConnection();
 		PreparedStatement ps ;
 		ResultSet rs;
 		try {
@@ -173,9 +174,10 @@ public class SaveMsgDao {
 			}
 			
 		} catch (SQLException e) {
-			
+			poolcon.close();
 			e.printStackTrace();
 		}
+		poolcon.close();
 		return msgList;
 	}
 }

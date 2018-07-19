@@ -1,7 +1,6 @@
 package com.test.jwj.underMoon.bean;
 
 import java.io.Serializable;
-import java.sql.Date;
 
 import com.test.jwj.underMoon.global.Result;
 

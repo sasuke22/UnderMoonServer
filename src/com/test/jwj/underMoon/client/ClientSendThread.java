@@ -1,7 +1,5 @@
 package com.test.jwj.underMoon.client;
 
-import java.io.ObjectOutputStream;
-import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
 import com.test.jwj.underMoon.bean.TranObject;

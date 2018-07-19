@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import com.test.jwj.underMoon.bean.User;
 
 public class FriendDao {
+	private static DBPool poolImpl = PoolManager.getInstance();
 	//防止初始化
 	private FriendDao() {
 	}
@@ -19,7 +20,8 @@ public class FriendDao {
 				      "from friendlist as f left outer join user as u " +
 				      "on f.friendid=u.id "+
 				      "where master=?";
-		Connection con = DBPool.getConnection();
+		PooledConnection poolcon = poolImpl.getConnection();
+		Connection con = poolcon.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
 		try {
@@ -46,14 +48,15 @@ public class FriendDao {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}	
-		DBPool.close(con);
+		poolcon.close();
 		return list;
 	}
 	public static void addFriend(int id, int friendID) {
 		String sql0 = "use first_mysql_test";
 		String sql1 = "insert into friendlist(master,friendid) " +
 				"values(?,?)";
-		Connection con = DBPool.getConnection();
+		PooledConnection poolcon = poolImpl.getConnection();
+		Connection con = poolcon.getConnection();
 		try {
 			con.setAutoCommit(false);
 		} catch (SQLException e1) {
@@ -76,8 +79,9 @@ public class FriendDao {
 					e1.printStackTrace();
 				}
 				e.printStackTrace();
+				poolcon.close();
 			}	
-		DBPool.close(con);
+		poolcon.close();
 	}
 	
 }

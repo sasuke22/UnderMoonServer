@@ -9,16 +9,17 @@ import java.util.ArrayList;
 
 import com.test.jwj.underMoon.bean.MeetingDetail;
 import com.test.jwj.underMoon.bean.TranObject;
-import com.test.jwj.underMoon.bean.User;
 import com.test.jwj.underMoon.global.Result;
 public class ContributesDao {
+	private static DBPool poolImpl = PoolManager.getInstance();
 	public static ArrayList<MeetingDetail> selectContrbutesById(int userId){
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
 		String sq0 = "use first_mysql_test";
 		String sql1 = "select * " +
 			      "from meetings " +
 			      "where id not in (?)" ;
-		Connection con = DBPool.getConnection();
+		PooledConnection poolcon = poolImpl.getConnection();
+		Connection con = poolcon.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
 		try {
@@ -34,14 +35,14 @@ public class ContributesDao {
 				meetingDetail.setCity(rs.getString("city"));
 				meetingDetail.setSummary(rs.getString("summary"));
 				meetingDetail.setDate(rs.getDate("date"));
-				meetingDetail.setRead(rs.getBoolean("read"));
+//				meetingDetail.setRead(rs.getBoolean("read"));
 				meetingDetail.setApprove(rs.getBoolean("approve"));
 				contributesList.add(meetingDetail);
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage().toString());
 		}
-		DBPool.close(con);
+		poolcon.close();
 		return contributesList;
 	}
 	
@@ -51,7 +52,8 @@ public class ContributesDao {
 		String sql1 = "select * " +
 			      "from meetings " +
 			      "where date = ?" ;
-		Connection con = DBPool.getConnection();
+		PooledConnection poolcon = poolImpl.getConnection();
+		Connection con = poolcon.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
 		try {
@@ -67,14 +69,14 @@ public class ContributesDao {
 				meetingDetail.setCity(rs.getString("city"));
 				meetingDetail.setSummary(rs.getString("summary"));
 				meetingDetail.setDate(rs.getDate("date"));
-				meetingDetail.setRead(rs.getBoolean("read"));
+//				meetingDetail.setRead(rs.getBoolean("read"));
 				meetingDetail.setApprove(rs.getBoolean("approve"));
 				contributesList.add(meetingDetail);
 			}
 		} catch (Exception e) {
 			
 		}
-		DBPool.close(con);
+		poolcon.close();
 		return contributesList;
 	}
 	
@@ -84,7 +86,8 @@ public class ContributesDao {
 		String sql1 = "select * " +
 			      "from meetings " +
 			      "where meetingId = ?" ;
-		Connection con = DBPool.getConnection();
+		PooledConnection poolcon = poolImpl.getConnection();
+		Connection con = poolcon.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
 		MeetingDetail meetingDetail = new MeetingDetail();
@@ -110,9 +113,10 @@ public class ContributesDao {
 			ArrayList<String> enlisters = queryRegistName(tran);
 			meetingDetail.setEnlistersName(enlisters);
 		} catch (Exception e) {
+			poolcon.close();
 			return null;
 		}
-		DBPool.close(con);
+		poolcon.close();
 		return meetingDetail;
 	}
 	
@@ -121,7 +125,8 @@ public class ContributesDao {
 		String sql1= "insert into meetings(id,city,summary,date,type,lovetype,age,marry,height,"
 				+ "job,figure,xingzuo,content)" +
 				"values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		Connection con = DBPool.getConnection();
+		PooledConnection poolcon = poolImpl.getConnection();
+		Connection con = poolcon.getConnection();
 		try {
 			con.setAutoCommit(false);
 		} catch (SQLException e1) {
@@ -148,6 +153,7 @@ public class ContributesDao {
 			ps.setString(13, meetingDetail.content);
 			ps.execute();
 			con.commit();
+			poolcon.close();
 			return 1;
 		} catch (SQLException e) {
 			System.out.println("正在回滚");
@@ -157,6 +163,7 @@ public class ContributesDao {
 				e1.printStackTrace();
 			}
 			e.printStackTrace();
+			poolcon.close();
 			return -1;
 		}
 	}
@@ -168,7 +175,8 @@ public class ContributesDao {
 		int userId = tran.getSendId();
 		int meetingId = (Integer)tran.getObject();
 		String enlisterName = tran.getSendName();
-		Connection con = DBPool.getConnection();
+		PooledConnection poolcon = poolImpl.getConnection();
+		Connection con = poolcon.getConnection();
 		try {
 			con.setAutoCommit(false);
 		} catch (SQLException e1) {
@@ -191,8 +199,10 @@ public class ContributesDao {
 			System.out.println(ps.toString());
 			ps.execute();
 			con.commit();
+			poolcon.close();
 			return Result.ENLIST_SUCCESS;
 		}catch (Exception e){
+			poolcon.close();
 			return Result.ENLIST_FAILED;
 		}
 	}
@@ -203,7 +213,8 @@ public class ContributesDao {
 		String sql1 = "select * " +
 			      "from meetings " +
 			      "where id = ?" ;
-		Connection con = DBPool.getConnection();
+		PooledConnection poolcon = poolImpl.getConnection();
+		Connection con = poolcon.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
 		try {
@@ -219,14 +230,14 @@ public class ContributesDao {
 				meetingDetail.setCity(rs.getString("city"));
 				meetingDetail.setSummary(rs.getString("summary"));
 				meetingDetail.setDate(rs.getDate("date"));
-				meetingDetail.setRead(rs.getBoolean("read"));
+//				meetingDetail.setRead(rs.getBoolean("read"));
 				meetingDetail.setApprove(rs.getBoolean("approve"));
 				contributesList.add(meetingDetail);
 			}
 		} catch (Exception e) {
 			
 		}
-		DBPool.close(con);
+		poolcon.close();
 		return contributesList;
 	}
 
@@ -246,7 +257,8 @@ public class ContributesDao {
 		String sql1 = "select * " +
 			      "from meetings " +
 			      "where id in (" + idBuilder + ")";
-		Connection con = DBPool.getConnection();
+		PooledConnection poolcon = poolImpl.getConnection();
+		Connection con = poolcon.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
 		//TODO 还没弄完
@@ -262,7 +274,7 @@ public class ContributesDao {
 				meetingDetail.setCity(rs.getString("city"));
 				meetingDetail.setSummary(rs.getString("summary"));
 				meetingDetail.setDate(rs.getDate("date"));
-				meetingDetail.setRead(rs.getBoolean("read"));
+//				meetingDetail.setRead(rs.getBoolean("read"));
 				meetingDetail.setApprove(rs.getBoolean("approve"));
 				contributesList.add(meetingDetail);
 			}
@@ -270,7 +282,7 @@ public class ContributesDao {
 		} catch (Exception e) {
 			System.out.println("get myenilst " + e.getMessage().toString());
 		}
-		DBPool.close(con);
+		poolcon.close();
 		return contributesList;
 	}
 	
@@ -279,7 +291,8 @@ public class ContributesDao {
 		String sql1 = "select backName from meetings where meetingId = ?";
 		ArrayList<String> backNameList = new ArrayList<String>();
 		int meetingId = (Integer)tran.getObject();
-		Connection con = DBPool.getConnection();
+		PooledConnection poolcon = poolImpl.getConnection();
+		Connection con = poolcon.getConnection();
 		try {
 			con.setAutoCommit(false);
 		} catch (SQLException e1) {
@@ -303,8 +316,10 @@ public class ContributesDao {
 					}
 				}
 			}
+			poolcon.close();
 			return backNameList;
 		}catch (Exception e){
+			poolcon.close();
 			return null;
 		}
 	}

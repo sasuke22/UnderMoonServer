@@ -28,5 +28,6 @@ public enum TranObjectType {
 	GET_ENLIST,
 	ENLIST,
 	GET_ENLIST_NAME,
-	GET_USER_INFO;//获取item信息
+	GET_USER_INFO, GET_USER_PHOTOS,
+	UPLOAD_USER_PHOTOS, UPLOAD_RESULT;//获取item信息
 }

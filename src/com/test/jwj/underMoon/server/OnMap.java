@@ -1,7 +1,6 @@
 package com.test.jwj.underMoon.server;
 import java.util.HashMap;
 
-import com.test.jwj.underMoon.*;
 import com.test.jwj.underMoon.client.ClientActivity;
 
 /**

@@ -1,5 +1,9 @@
 package com.test.jwj.underMoon.client;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -8,14 +12,10 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import com.test.jwj.underMoon.DataBase.ContributesDao;
-import com.test.jwj.underMoon.DataBase.DBPool;
 import com.test.jwj.underMoon.DataBase.FriendDao;
 import com.test.jwj.underMoon.DataBase.SaveMsgDao;
 import com.test.jwj.underMoon.DataBase.UserDao;
@@ -50,7 +50,7 @@ public class ClientActivity {
 			mOutput = new ObjectOutputStream(mClient.getOutputStream());
 			mInput = new ObjectInputStream(mClient.getInputStream());
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("IO " + e.getMessage());
 		}
 		mClientListen = new ClientListenThread(mInput, this);
 		mClientSend = new ClientSendThread(this);
@@ -219,6 +219,7 @@ public class ClientActivity {
 	 * 获取当前日期所有列表
 	 */
 	public void getTodayContributes(TranObject tran){
+		@SuppressWarnings("unchecked")
 		HashMap<Integer, Date> map = (HashMap<Integer, Date>) tran.getObject();
 		Set<Entry<Integer,Date>> sets = map.entrySet();
 		int userId = -1;
@@ -329,6 +330,66 @@ public class ClientActivity {
 	}
 	
 	/**
+	 * 获取需要的人的相册信息string
+	 */
+	public void getUserPhotos(TranObject tran){
+		int userId = (Integer)tran.getObject();
+		String photolist = UserDao.getUserPhotosAddress(userId);
+		TranObject tran1 = new TranObject();
+		tran1.setObject(photolist);
+		tran1.setTranType(tran.getTranType());
+		send(tran1);
+	}
+	
+	/**
+	 * 上传图片
+	 */
+	public void uploadUserPhotos(TranObject tran){
+		int userId = tran.getSendId();
+		String photolist = UserDao.getUserPhotosAddress(userId);
+		String[] photoId = photolist.split("|");
+		File picFile = new File("D:\\images"+File.separator+tran.getSendId()+File.separator+photoId.length+".jpg");
+		FileOutputStream fos = null;
+		BufferedOutputStream bos = null;
+		try {
+			if (!picFile.exists() && !picFile.isDirectory()) {
+				picFile.createNewFile();
+			}
+			fos = new FileOutputStream(picFile);
+			bos = new BufferedOutputStream(fos);
+			ByteArrayOutputStream bao = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(bao);
+			oos.writeObject(tran.getObject());
+			bos.write(bao.toByteArray());
+			bos.flush();
+		} catch (IOException e) {
+			System.out.print("ex " + e.getMessage().toString());
+			e.printStackTrace();
+		} finally{
+			try {
+				if (fos!=null) {
+					fos.close();
+				}
+				if (bos!=null) {
+					bos.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * 回复上传图片的成功或失败
+	 */
+	public void uploadFileSuccess(boolean success) {
+		TranObject tran1 = new TranObject();
+		tran1.setObject(success ? 1 : 0);
+		tran1.setTranType(TranObjectType.UPLOAD_RESULT);
+		send(tran1);
+	}
+	
+	/**
 	 * 处理好友请求
 	 */
 	public void friendRequset(TranObject tran) {
@@ -398,4 +459,5 @@ public class ClientActivity {
 	public synchronized TranObject removeQueueEle(int i) {
 		return sendQueue.remove(i);
 	}
+
 }
