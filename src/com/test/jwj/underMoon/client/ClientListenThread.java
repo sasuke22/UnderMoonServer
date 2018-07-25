@@ -37,10 +37,7 @@ public class ClientListenThread implements Runnable {
 //		SocketAddress s = client.getmClient().getRemoteSocketAddress();
 		try {
 			int msgType = read.readInt();
-			if (msgType != -1) {
-				uploadFile(msgType);
-				System.out.println("finish");
-			}else{
+			if (msgType == -1) {
 				TranObject tran = (TranObject) read.readObject();
 				TranObjectType type = tran.getTranType();
 				switch (type) {

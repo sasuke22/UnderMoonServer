@@ -463,4 +463,33 @@ public class UserDao {
 			return null;
 		}
 	}
+	
+	public static Result updatePhotos(int userId,int lastPhoto){
+		String sql0 = "use first_mysql_test";
+		String sql1 = "update user set photos= case when isnull(photos) or photos='' then ? else concat(photos,'|',?) end where id =?";
+		PooledConnection poolcon = poolImpl.getConnection();
+		Connection con = poolcon.getConnection();
+		try {
+			con.setAutoCommit(false);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		PreparedStatement ps;
+		try {
+			ps = con.prepareStatement(sql0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, userId);
+			ps.setInt(2, lastPhoto);
+			ps.setInt(3, userId);
+			System.out.println(ps.toString());
+			ps.execute();
+			con.commit();
+			poolcon.close();
+			return Result.ENLIST_SUCCESS;
+		}catch (Exception e){
+			poolcon.close();
+			return Result.ENLIST_FAILED;
+		}
+	}
 }

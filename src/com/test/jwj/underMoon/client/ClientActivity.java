@@ -333,12 +333,15 @@ public class ClientActivity {
 	 * 获取需要的人的相册信息string
 	 */
 	public void getUserPhotos(TranObject tran){
+		System.out.println("get photos");
 		int userId = (Integer)tran.getObject();
 		String photolist = UserDao.getUserPhotosAddress(userId);
+		System.out.println("get photos1 " + photolist);
 		TranObject tran1 = new TranObject();
 		tran1.setObject(photolist);
 		tran1.setTranType(tran.getTranType());
 		send(tran1);
+		System.out.println("send success ");
 	}
 	
 	/**

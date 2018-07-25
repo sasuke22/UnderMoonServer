@@ -98,6 +98,7 @@ public class ContributesDao {
 			ps.setInt(1, meetingId);
 			rs = ps.executeQuery();
 			while (rs.next()) {
+				meetingDetail.setId(rs.getInt("id"));
 				meetingDetail.setType(rs.getString("type"));
 				meetingDetail.setLoveType(rs.getString("lovetype"));
 				meetingDetail.setAge(rs.getInt("age"));

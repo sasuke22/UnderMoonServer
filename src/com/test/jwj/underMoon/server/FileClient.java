@@ -2,8 +2,6 @@ package com.test.jwj.underMoon.server;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.LinkedList;
@@ -80,6 +78,7 @@ public class FileClient {
 		tran1.setObject(success ? 1 : 0);
 		tran1.setTranType(TranObjectType.UPLOAD_RESULT);
 		send(tran1);
+		close();
 	}
 	
 	/******************************** 对发送队列的异步处理 ***********************************/
