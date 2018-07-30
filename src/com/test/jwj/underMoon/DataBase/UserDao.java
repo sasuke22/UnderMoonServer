@@ -155,6 +155,7 @@ public class UserDao {
 				user.setFigure(rs.getString("figure"));
 				user.setXingzuo(rs.getString("xingzuo"));
 				user.setLoveType(rs.getString("lovetype"));
+				user.setScore(rs.getInt("score"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -383,7 +384,7 @@ public class UserDao {
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				String id = rs.getString("registId");
-				String[] idArray = id.split("|");
+				String[] idArray = id.split("\\|");
 				for (String string : idArray) {
 					if (!string.equalsIgnoreCase("|")) {
 						if (string.equals(String.valueOf(userId))) {
@@ -396,7 +397,6 @@ public class UserDao {
 			poolcon.close();
 			return registArray;
 		}catch (Exception e){
-			System.out.println("select regist " + e.getMessage().toString());
 			poolcon.close();
 			return null;
 		}
@@ -425,6 +425,9 @@ public class UserDao {
 				enlister.setUserName(rs.getString("name"));
 				enlister.setPhoto(rs.getBytes("photo"));
 				enlister.setLocation(rs.getString("city"));
+				enlister.setAge(rs.getInt("age"));
+				enlister.setJob(rs.getString("job"));
+				enlister.setPhotoAddress(rs.getString("photos"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

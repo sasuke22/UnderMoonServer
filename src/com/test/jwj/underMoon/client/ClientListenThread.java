@@ -124,7 +124,7 @@ public class ClientListenThread implements Runnable {
 		String photolist = UserDao.getUserPhotosAddress(userId);
 		if (photolist == null) 
 			return;
-		String[] photoId = photolist.split("|");
+		String[] photoId = photolist.split("\\|");
 		System.out.println("userid " + userId);
 		byte[] buffer = new byte[1024];
 		int len = -1;

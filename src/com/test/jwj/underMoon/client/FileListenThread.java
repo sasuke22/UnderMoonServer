@@ -47,7 +47,7 @@ public class FileListenThread implements Runnable {
 		if (photolist == null || photolist.equals("")) 
 			lastPhoto = 1;
 		else{
-			String[] photoId = photolist.split("|");
+			String[] photoId = photolist.split("\\|");
 			lastPhoto = Integer.parseInt(photoId[photoId.length-1]) + 1;
 		}
 		System.out.println("userid " + userId);

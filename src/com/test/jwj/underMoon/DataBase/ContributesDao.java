@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.test.jwj.underMoon.bean.MeetingDetail;
 import com.test.jwj.underMoon.bean.TranObject;
@@ -110,10 +111,19 @@ public class ContributesDao {
 				meetingDetail.setDate(rs.getDate("date"));
 				meetingDetail.setContent(rs.getString("content"));
 				meetingDetail.setXingzuo(rs.getString("xingzuo"));
+				meetingDetail.setEnlistersName(rs.getString("backName"));
+				meetingDetail.setRegistId(rs.getString("backId"));
 			}
-			ArrayList<String> enlisters = queryRegistName(tran);
-			meetingDetail.setEnlistersName(enlisters);
+//			HashMap<String,String> enlisters = queryRegistName(tran);
+//			if (enlisters != null) {
+//				ArrayList<String> enlisterNames = new ArrayList<String>();
+//				for (Map.Entry<String, String> entry : enlisters.entrySet()) {
+//					enlisterNames.add(entry.getValue());
+//				}
+//				meetingDetail.setEnlistersName(enlisterNames);
+//			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			poolcon.close();
 			return null;
 		}
@@ -287,10 +297,10 @@ public class ContributesDao {
 		return contributesList;
 	}
 	
-	public static ArrayList<String> queryRegistName(TranObject tran){
+	public static HashMap<String,String> queryRegistName(TranObject tran){
 		String sql0 = "use first_mysql_test";
-		String sql1 = "select backName from meetings where meetingId = ?";
-		ArrayList<String> backNameList = new ArrayList<String>();
+		String sql1 = "select backId,backName from meetings where meetingId = ?";
+		HashMap<String,String> backNameList = new HashMap<String,String>();
 		int meetingId = (Integer)tran.getObject();
 		PooledConnection poolcon = poolImpl.getConnection();
 		Connection con = poolcon.getConnection();
@@ -309,17 +319,21 @@ public class ContributesDao {
 			System.out.println(ps.toString());
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				String id = rs.getString("backName");
-				String[] idArray = id.split("|");
-				for (String string : idArray) {
-					if (!string.equalsIgnoreCase("|")) {
-						backNameList.add(string);
-					}
+				String id = rs.getString("backid");
+				String name = rs.getString("backName");
+				if (id == null || name == null || id.equals("") || name.equals("")) {
+					return null;
+				}
+				String[] idArray = id.split("\\|");
+				String[] nameArray = name.split("\\|");
+				for (int i = 0;i < idArray.length;i++) {
+					backNameList.put(idArray[i], nameArray[i]);
 				}
 			}
 			poolcon.close();
 			return backNameList;
 		}catch (Exception e){
+			e.printStackTrace();
 			poolcon.close();
 			return null;
 		}

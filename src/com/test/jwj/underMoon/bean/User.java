@@ -35,6 +35,24 @@ public class User implements Serializable {
 	private String figure;
 	private String xingzuo;
 	private String loveType;
+	private String photoAddress;
+	private int score;
+
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
+	}
+
+	public String getPhotoAddress() {
+		return photoAddress;
+	}
+
+	public void setPhotoAddress(String photoAddress) {
+		this.photoAddress = photoAddress;
+	}
 
 	public int getHeight() {
 		return height;

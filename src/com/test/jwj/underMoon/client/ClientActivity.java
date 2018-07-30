@@ -240,8 +240,6 @@ public class ClientActivity {
 	public void getInvitationDetail(TranObject tran){
 		MeetingDetail detail;
 		detail = ContributesDao.getInvitationDetailById(tran);
-		ArrayList<String> enlist = UserDao.queryRegist(tran);
-		detail.registId = enlist;
 		tran.setObject(detail);
 		send(tran);
 	}
@@ -311,9 +309,9 @@ public class ClientActivity {
 	 * 这里应该是跟meetingDetail一起发送给客户端的
 	 */
 	public void getEnlistName(TranObject tran){
-		ArrayList<String> enlist = ContributesDao.queryRegistName(tran);
+		HashMap<String,String> enlisters = ContributesDao.queryRegistName(tran);
 		TranObject tran1 = new TranObject();
-		tran1.setObject(enlist);
+		tran1.setObject(enlisters);
 		tran1.setTranType(tran.getTranType());
 		send(tran1);
 	}
@@ -350,7 +348,7 @@ public class ClientActivity {
 	public void uploadUserPhotos(TranObject tran){
 		int userId = tran.getSendId();
 		String photolist = UserDao.getUserPhotosAddress(userId);
-		String[] photoId = photolist.split("|");
+		String[] photoId = photolist.split("\\|");
 		File picFile = new File("D:\\images"+File.separator+tran.getSendId()+File.separator+photoId.length+".jpg");
 		FileOutputStream fos = null;
 		BufferedOutputStream bos = null;

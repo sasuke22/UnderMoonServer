@@ -2,7 +2,6 @@ package com.test.jwj.underMoon.bean;
 
 import java.io.Serializable;
 import java.sql.Date;
-import java.util.ArrayList;
 
 /**
  * Created by Administrator on 2017/7/20.
@@ -27,8 +26,8 @@ public class MeetingDetail implements Serializable{
     public String figure;
     public String xingzuo;
     public String content;
-    public ArrayList<String> registId;
-    public ArrayList<String> enlistersName;
+    public String registId;
+    public String enlistersName;
     
     public String getType() {
 		return type;
@@ -170,16 +169,24 @@ public class MeetingDetail implements Serializable{
 		this.approve = approve;
 	}
 	
-	public ArrayList<String> getEnlistersName() {
+	public String getEnlistersName() {
 		return enlistersName;
 	}
 
-	public void setEnlistersName(ArrayList<String> enlistersName) {
+	public void setEnlistersName(String enlistersName) {
 		this.enlistersName = enlistersName;
 	}
 
 	public String toString(){
 		return "city " + city + " id " + id + " meetingId " + meetingId;
+	}
+
+	public String getRegistId() {
+		return registId;
+	}
+
+	public void setRegistId(String registId) {
+		this.registId = registId;
 	}
     
 }
