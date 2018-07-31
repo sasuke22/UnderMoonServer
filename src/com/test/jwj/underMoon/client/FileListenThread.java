@@ -50,7 +50,7 @@ public class FileListenThread implements Runnable {
 			String[] photoId = photolist.split("\\|");
 			lastPhoto = Integer.parseInt(photoId[photoId.length-1]) + 1;
 		}
-		System.out.println("userid " + userId);
+		System.out.println("last " + lastPhoto);
 		byte[] buffer = new byte[1024];
 		int len = -1;
 		RandomAccessFile fileOutStream = null;

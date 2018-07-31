@@ -482,7 +482,7 @@ public class UserDao {
 			ps = con.prepareStatement(sql0);
 			ps.execute();
 			ps = con.prepareStatement(sql1);
-			ps.setInt(1, userId);
+			ps.setInt(1, lastPhoto);
 			ps.setInt(2, lastPhoto);
 			ps.setInt(3, userId);
 			System.out.println(ps.toString());
