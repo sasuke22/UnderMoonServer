@@ -97,6 +97,9 @@ public class ClientListenThread implements Runnable {
 				case UPLOAD_USER_PHOTOS:
 					client.uploadUserPhotos(tran);
 					break;
+				case UPDATE_SCORE:
+					client.updateUserScore(tran);
+					break;
 				default:
 					break;
 				}

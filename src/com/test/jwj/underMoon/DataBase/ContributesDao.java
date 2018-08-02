@@ -165,7 +165,8 @@ public class ContributesDao {
 			ps.execute();
 			con.commit();
 			poolcon.close();
-			return 1;
+			int res = UserDao.updateScore(meetingDetail.id, meetingDetail.score - 100);
+			return res;
 		} catch (SQLException e) {
 			System.out.println("正在回滚");
 			try {

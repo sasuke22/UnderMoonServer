@@ -495,4 +495,32 @@ public class UserDao {
 			return Result.ENLIST_FAILED;
 		}
 	}
+	
+	public static int updateScore(int id,int value){
+		String sql0 = "use first_mysql_test";
+		String sql1 = "update user SET score = " + value + " where id = ?";
+		PooledConnection poolcon = poolImpl.getConnection();
+		Connection con = poolcon.getConnection();
+		try {
+			con.setAutoCommit(false);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		PreparedStatement ps;
+		try{
+			ps = con.prepareStatement(sql0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, id);
+			System.out.println(ps);
+			ps.executeUpdate();
+			con.commit();
+			poolcon.close();
+			return 1;
+		}catch (SQLException e) {
+			e.printStackTrace();
+			poolcon.close();
+			return 0;
+		}
+	}
 }

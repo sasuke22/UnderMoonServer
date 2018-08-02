@@ -28,6 +28,7 @@ public class MeetingDetail implements Serializable{
     public String content;
     public String registId;
     public String enlistersName;
+    public int score;
     
     public String getType() {
 		return type;

@@ -381,6 +381,16 @@ public class ClientActivity {
 	}
 	
 	/**
+	 * 更新用户积分
+	 */
+	public void updateUserScore(TranObject tran) {
+		int userId = tran.getSendId();
+		int score = (Integer)tran.getObject();
+		int res = UserDao.updateScore(userId, score);
+		System.out.println("update " + userId + "'s score success " + res);
+	}
+	
+	/**
 	 * 回复上传图片的成功或失败
 	 */
 	public void uploadFileSuccess(boolean success) {
