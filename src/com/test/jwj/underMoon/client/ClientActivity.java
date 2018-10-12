@@ -198,8 +198,6 @@ public class ClientActivity {
 			list = UserDao.selectFriendByMix(values);
 		System.out.println((String) tran.getObject());
 		System.out.println("发送客户端查找的好友列表...");
-		for (int i = 0; i < list.size(); i++)
-			System.out.println(list.get(i));
 		tran.setObject(list);
 		send(tran);
 	}

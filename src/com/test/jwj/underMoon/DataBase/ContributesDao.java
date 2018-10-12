@@ -339,4 +339,64 @@ public class ContributesDao {
 			return null;
 		}
 	}
+	
+	public static String getMeetingPhotosAddress(int meetingId) {
+		String sql0 = "use first_mysql_test";
+		String sql1 = "select photos from user where meetingid = ?";
+		PooledConnection poolcon = poolImpl.getConnection();
+		Connection con = poolcon.getConnection();
+		try {
+			con.setAutoCommit(false);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		PreparedStatement ps;
+		ResultSet rs;
+		String id = null;
+		try {
+			ps = con.prepareStatement(sql0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, meetingId);
+			System.out.println(ps.toString());
+			rs = ps.executeQuery();
+			if (rs.first())
+				id = rs.getString("photos");
+			poolcon.close();
+			return id;
+		}catch (Exception e){
+			System.out.println("select regist " + e.getMessage().toString());
+			poolcon.close();
+			return null;
+		}
+	}
+	
+	public static Result updateMeetingPhotos(int meetingId,int lastPhoto){
+		String sql0 = "use first_mysql_test";
+		String sql1 = "update user set photos= case when isnull(photos) or photos='' then ? else concat(photos,'|',?) end where meetingid =?";
+		PooledConnection poolcon = poolImpl.getConnection();
+		Connection con = poolcon.getConnection();
+		try {
+			con.setAutoCommit(false);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		PreparedStatement ps;
+		try {
+			ps = con.prepareStatement(sql0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, lastPhoto);
+			ps.setInt(2, lastPhoto);
+			ps.setInt(3, meetingId);
+			System.out.println(ps.toString());
+			ps.execute();
+			con.commit();
+			poolcon.close();
+			return Result.ENLIST_SUCCESS;
+		}catch (Exception e){
+			poolcon.close();
+			return Result.ENLIST_FAILED;
+		}
+	}
 }
