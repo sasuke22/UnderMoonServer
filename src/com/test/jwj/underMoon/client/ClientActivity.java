@@ -125,7 +125,6 @@ public class ClientActivity {
 		/*try {
 				TimeUnit.SECONDS.sleep(5);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}*/
 		// 获取离线信息

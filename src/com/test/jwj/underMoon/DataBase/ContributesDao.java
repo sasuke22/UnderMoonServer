@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -148,7 +149,7 @@ public class ContributesDao {
 		try {
 			ps = con.prepareStatement(sql0);
 			ps.execute();
-			ps = con.prepareStatement(sql1);
+			ps = con.prepareStatement(sql1,Statement.RETURN_GENERATED_KEYS);
 			ps.setInt(1, meetingDetail.id);
 			ps.setString(2, meetingDetail.city);
 			ps.setString(3, meetingDetail.summary);
@@ -165,8 +166,12 @@ public class ContributesDao {
 			ps.execute();
 			con.commit();
 			poolcon.close();
-			int res = UserDao.updateScore(meetingDetail.id, meetingDetail.score - 100);
-			return res;
+//			int res = UserDao.updateScore(meetingDetail.id, meetingDetail.score - 100);
+			ResultSet rs = ps.getGeneratedKeys();
+			if (rs.next()) {
+				return rs.getInt(1);
+			}
+			return 0;
 		} catch (SQLException e) {
 			System.out.println("正在回滚");
 			try {
