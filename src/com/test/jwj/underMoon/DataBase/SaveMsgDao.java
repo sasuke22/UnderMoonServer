@@ -18,10 +18,10 @@ import com.test.jwj.underMoon.global.*;
  *          
  */
 public class SaveMsgDao {
-	private static HashMap<Integer,Result> idResult = new HashMap<Integer, Result>();
-	private static HashMap<Result,Integer> resultId = new HashMap<Result, Integer>();
-	private static HashMap<Integer,TranObjectType> idTrantype = new HashMap<Integer, TranObjectType>();
-	private static HashMap<TranObjectType,Integer> trantypeId = new HashMap<TranObjectType, Integer>(); 
+	private static HashMap<Integer,Integer> idResult = new HashMap<Integer, Integer>();
+	private static HashMap<Integer,Integer> resultId = new HashMap<Integer, Integer>();
+	private static HashMap<Integer,Integer> idTrantype = new HashMap<Integer, Integer>();
+	private static HashMap<Integer,Integer> trantypeId = new HashMap<Integer, Integer>(); 
 	private static DBPool poolImpl = PoolManager.getInstance();
 	
 	static{

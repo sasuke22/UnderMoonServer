@@ -2,14 +2,12 @@ package com.test.jwj.underMoon.bean;
 
 import java.io.Serializable;
 
-import com.test.jwj.underMoon.global.Result;
-
 public class TranObject implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private Object object;
-	private TranObjectType tranType;
-	private Result result;
+	private int tranType;
+	private int result;
 	private String sendTime;
 	private int sendId;
 	private int receiveId;
@@ -42,15 +40,15 @@ public class TranObject implements Serializable {
 	public void setReceiveId(int receiveId) {
 		this.receiveId = receiveId;
 	}
-	public TranObject(Object object,TranObjectType tranType) {
+	public TranObject(Object object,int tranType) {
 	
 		this.object = object;
 		this.tranType = tranType;
 	}
-	public Result getResult() {
+	public int getResult() {
 		return result;
 	}
-	public void setResult(Result result) {
+	public void setResult(int result) {
 		this.result = result;
 	}
 	public Object getObject() {
@@ -59,10 +57,10 @@ public class TranObject implements Serializable {
 	public void setObject(Object object) {
 		this.object = object;
 	}
-	public TranObjectType getTranType() {
+	public int getTranType() {
 		return tranType;
 	}
-	public void setTranType(TranObjectType tranType) {
+	public void setTranType(int tranType) {
 		this.tranType = tranType;
 	}
 	

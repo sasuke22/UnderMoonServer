@@ -11,7 +11,6 @@ import java.util.HashMap;
 
 import com.test.jwj.underMoon.bean.MeetingDetail;
 import com.test.jwj.underMoon.bean.TranObject;
-import com.test.jwj.underMoon.global.Result;
 public class ContributesDao {
 	private static DBPool poolImpl = PoolManager.getInstance();
 	public static ArrayList<MeetingDetail> selectContrbutesById(int userId){
@@ -185,45 +184,6 @@ public class ContributesDao {
 		}
 	}
 	
-	public static Result addEnlist(TranObject tran){
-		String sql0 = "use first_mysql_test";
-		String sql1 = "update meetings set backid= case when isnull(backid) or backid='' then ? else concat(backid,'|',?) end where meetingId =?";
-		String sql2 = "update meetings set backName= case when isnull(backName) or backName='' then ? else concat(backName,'|',?) end where meetingId =?";
-		int userId = tran.getSendId();
-		int meetingId = (Integer)tran.getObject();
-		String enlisterName = tran.getSendName();
-		PooledConnection poolcon = poolImpl.getConnection();
-		Connection con = poolcon.getConnection();
-		try {
-			con.setAutoCommit(false);
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		PreparedStatement ps;
-		try {
-			ps = con.prepareStatement(sql0);
-			ps.execute();
-			ps = con.prepareStatement(sql1);
-			ps.setInt(1, userId);
-			ps.setInt(2, userId);
-			ps.setInt(3, meetingId);
-			System.out.println(ps.toString());
-			ps.execute();
-			ps = con.prepareStatement(sql2);
-			ps.setString(1, enlisterName);
-			ps.setString(2, enlisterName);
-			ps.setInt(3, meetingId);
-			System.out.println(ps.toString());
-			ps.execute();
-			con.commit();
-			poolcon.close();
-			return Result.ENLIST_SUCCESS;
-		}catch (Exception e){
-			poolcon.close();
-			return Result.ENLIST_FAILED;
-		}
-	}
-	
 	public static ArrayList<MeetingDetail> getMyContributes(int userId){
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
 		String sq0 = "use first_mysql_test";
@@ -376,32 +336,4 @@ public class ContributesDao {
 		}
 	}
 	
-	public static Result updateMeetingPhotos(int meetingId,int lastPhoto){
-		String sql0 = "use first_mysql_test";
-		String sql1 = "update user set photos= case when isnull(photos) or photos='' then ? else concat(photos,'|',?) end where meetingid =?";
-		PooledConnection poolcon = poolImpl.getConnection();
-		Connection con = poolcon.getConnection();
-		try {
-			con.setAutoCommit(false);
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		PreparedStatement ps;
-		try {
-			ps = con.prepareStatement(sql0);
-			ps.execute();
-			ps = con.prepareStatement(sql1);
-			ps.setInt(1, lastPhoto);
-			ps.setInt(2, lastPhoto);
-			ps.setInt(3, meetingId);
-			System.out.println(ps.toString());
-			ps.execute();
-			con.commit();
-			poolcon.close();
-			return Result.ENLIST_SUCCESS;
-		}catch (Exception e){
-			poolcon.close();
-			return Result.ENLIST_FAILED;
-		}
-	}
 }

@@ -326,41 +326,6 @@ public class UserDao {
 		}
 	}
 	
-	public static Result updateRegist(TranObject tran){
-		ArrayList<String> registArray = queryRegist(tran);
-		if (registArray.contains(String.valueOf((Integer)tran.getObject()))) {
-			return Result.ENLIST_EXIST;
-		}
-		String sql0 = "use first_mysql_test";
-		String sql1 = "update user set registId= case when isnull(registId) or registId='' then ? else concat(registId,'|',?) end where id =?";
-		int userId = tran.getSendId();
-		int meetingId = (Integer)tran.getObject();
-		PooledConnection poolcon = poolImpl.getConnection();
-		Connection con = poolcon.getConnection();
-		try {
-			con.setAutoCommit(false);
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		PreparedStatement ps;
-		try {
-			ps = con.prepareStatement(sql0);
-			ps.execute();
-			ps = con.prepareStatement(sql1);
-			ps.setInt(1, userId);
-			ps.setInt(2, meetingId);
-			ps.setInt(3, userId);
-			System.out.println(ps.toString());
-			ps.execute();
-			con.commit();
-			poolcon.close();
-			return Result.ENLIST_SUCCESS;
-		}catch (Exception e){
-			poolcon.close();
-			return Result.ENLIST_FAILED;
-		}
-	}
-	
 	public static ArrayList<String> queryRegist(TranObject tran){
 		String sql0 = "use first_mysql_test";
 		String sql1 = "select registId from user where id = ?";
@@ -467,7 +432,7 @@ public class UserDao {
 		}
 	}
 	
-	public static Result updatePhotos(int userId,int lastPhoto){
+	public static int updatePhotos(int userId,int lastPhoto){
 		String sql0 = "use first_mysql_test";
 		String sql1 = "update user set photos= case when isnull(photos) or photos='' then ? else concat(photos,'|',?) end where id =?";
 		PooledConnection poolcon = poolImpl.getConnection();
@@ -489,10 +454,10 @@ public class UserDao {
 			ps.execute();
 			con.commit();
 			poolcon.close();
-			return Result.ENLIST_SUCCESS;
+			return Result.SUCCESS;
 		}catch (Exception e){
 			poolcon.close();
-			return Result.ENLIST_FAILED;
+			return Result.FAILED;
 		}
 	}
 	

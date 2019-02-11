@@ -2,7 +2,6 @@ package com.test.jwj.underMoon.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
 
 import com.test.jwj.underMoon.client.ClientActivity;
 
@@ -12,9 +11,9 @@ import com.test.jwj.underMoon.client.ClientActivity;
  */
 public class ServerListen {
 	private final int PORT = 8399;
-	private final int FilePort = 8400;
+	private final int WsPort = 8400;
 	private ServerSocket server;
-	private ServerSocket fileServer;
+	private WsServer wsServer;
 
 	public static void main(String args[]) {
 		new ServerListen().begin();
@@ -23,34 +22,36 @@ public class ServerListen {
 	public void begin(){
 		try {
 			server = new ServerSocket(PORT);
-			fileServer = new ServerSocket(FilePort);
+			wsServer = new WsServer(WsPort);
+			wsServer.start();
+			new ClientActivity(this,wsServer);
 			System.out.println("服务器已经启动...");
 		} catch (IOException e) {
 			System.out.println("服务器启动失败");
 			e.printStackTrace();
 		}
-		new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				try {
-					while (true) {
-						Socket fileClient = fileServer.accept();
-						new FileClient(ServerListen.this,fileClient);
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				}
-		}).start();
-		while(true){
-			try {
-				Socket client = server.accept();
-				new ClientActivity(this,client);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+//		new Thread(new Runnable() {
+//			
+//			@Override
+//			public void run() {
+//				try {
+//					while (true) {
+//						Socket fileClient = fileServer.accept();
+//						new FileClient(ServerListen.this,fileClient);
+//					}
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//				}
+//		}).start();
+//		while(true){
+//			try {
+//				Socket client = server.accept();
+//				new ClientActivity(this,client);
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
 	}
 
 	/*
@@ -75,7 +76,10 @@ public class ServerListen {
 	public void close() {
 		try {
 			server.close();
+			wsServer.stop();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}

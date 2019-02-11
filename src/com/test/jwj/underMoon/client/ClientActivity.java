@@ -5,26 +5,24 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.Socket;
-import java.sql.Date;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map.Entry;
-import java.util.Set;
 
-import com.test.jwj.underMoon.DataBase.ContributesDao;
+import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
+
+import org.java_websocket.WebSocket;
+
+import com.google.gson.Gson;
 import com.test.jwj.underMoon.DataBase.FriendDao;
 import com.test.jwj.underMoon.DataBase.SaveMsgDao;
 import com.test.jwj.underMoon.DataBase.UserDao;
-import com.test.jwj.underMoon.bean.MeetingDetail;
 import com.test.jwj.underMoon.bean.TranObject;
-import com.test.jwj.underMoon.bean.TranObjectType;
 import com.test.jwj.underMoon.bean.User;
 import com.test.jwj.underMoon.global.Result;
 import com.test.jwj.underMoon.server.ServerListen;
+import com.test.jwj.underMoon.server.WsServer;
 
 /**
  * @author Administrator 客户端线程
@@ -35,38 +33,49 @@ public class ClientActivity {
 	private LinkedList<TranObject> sendQueue;
 	private ServerListen mServer; // 服务器
 	private User user;
-	private Socket mClient; // 客户端连接
+//	private Socket mClient; // 客户端连接
+	private WsServer mClient;
 	private ClientListenThread mClientListen; // 客户端监听进程
 	private ClientSendThread mClientSend; // 客户端发送进程
-	private ObjectOutputStream mOutput;
-	private ObjectInputStream mInput;
+	private JsonConfig jsonConfig;
+//	private ObjectOutputStream mOutput;
+//	private ObjectInputStream mInput;
 
-	public ClientActivity(ServerListen mServer, Socket mClient) {
+//	public ClientActivity(ServerListen mServer, Socket mClient) {
+//		user = new User();
+//		sendQueue = new LinkedList<TranObject>();
+//		this.mServer = mServer;
+//		this.mClient = mClient;
+//		try {
+//			mOutput = new ObjectOutputStream(mClient.getOutputStream());
+//			mInput = new ObjectInputStream(mClient.getInputStream());
+//		} catch (IOException e) {
+//			System.out.println("IO " + e.getMessage());
+//		}
+//		mClientListen = new ClientListenThread(mInput, this);
+//		mClientSend = new ClientSendThread(this);
+//		Thread listen = new Thread(mClientListen);
+//		Thread send = new Thread(mClientSend);
+//		listen.start();
+//		send.start();
+//	}
+	public ClientActivity(ServerListen mServer,WsServer mClient){
+		mClient.setClient(this);
 		user = new User();
 		sendQueue = new LinkedList<TranObject>();
 		this.mServer = mServer;
 		this.mClient = mClient;
-		try {
-			mOutput = new ObjectOutputStream(mClient.getOutputStream());
-			mInput = new ObjectInputStream(mClient.getInputStream());
-		} catch (IOException e) {
-			System.out.println("IO " + e.getMessage());
-		}
-		mClientListen = new ClientListenThread(mInput, this);
-		mClientSend = new ClientSendThread(this);
-		Thread listen = new Thread(mClientListen);
-		Thread send = new Thread(mClientSend);
-		listen.start();
-		send.start();
+		jsonConfig = new JsonConfig();
+		jsonConfig.registerJsonValueProcessor(java.sql.Date.class, new DateJsonValueProcessor("yyyy-MM-dd HH:mm:ss"));
 	}
 
-	public Socket getmClient() {
-		return mClient;
-	}
-
-	public void setmClient(Socket mClient) {
-		this.mClient = mClient;
-	}
+//	public Socket getmClient() {
+//		return mClient;
+//	}
+//
+//	public void setmClient(Socket mClient) {
+//		this.mClient = mClient;
+//	}
 
 	public User getUser() {
 		return user;
@@ -84,80 +93,54 @@ public class ClientActivity {
 	}
 
 	/**
-	 * 检查注册账号是否存在
-	 */
-	public void checkAccount(String account) {
-		mServer.addClient(user.getId(), this);
-		boolean isExisted = UserDao.selectAccount(account);
-		TranObject tran = new TranObject("", TranObjectType.REGISTER_ACCOUNT);
-		if (isExisted)
-			tran.setResult(Result.ACCOUNT_EXISTED);
-		else
-			tran.setResult(Result.ACCOUNT_CAN_USE);
-		send(tran);
-	}
-
-	/**
 	 * 检查账号和用户名是否存在
 	 */
 
 
-	public void login(TranObject tran) {
-		User user = (User) tran.getObject();
+	public void login(WebSocket conn,TranObject tran) {
+		User user = new Gson().fromJson(tran.getObject().toString(),User.class);
 		// 验证密码和用户名是否存在，若存在则为user对象赋值
 		boolean isExisted = UserDao.login(user);
+		mClient.addClient(user.getAccount(), conn);
 		if (isExisted == true) {
 			UserDao.updateIsOnline(user.getId(), 1);
 			setUser(user);
 			System.out.println(user.getAccount() + "上线了");
 			tran.setResult(Result.LOGIN_SUCCESS);
-			mServer.addClient(user.getId(), this);
-			System.out.println("当前在线人数：" + mServer.size());
+			System.out.println("当前在线人数：" + mClient.size());
 			// 获取好友列表
-			ArrayList<User> friendList = FriendDao.getFriend(user.getId());
-			user.setFriendList(friendList);
-
+//			ArrayList<User> friendList = FriendDao.getFriend(user.getId());
+//			user.setFriendList(friendList);
 			tran.setObject(user);
-
 		} else
 			tran.setResult(Result.LOGIN_FAILED);
-		send(tran);
+		send(user.getAccount(),tran);
 		/*try {
 				TimeUnit.SECONDS.sleep(5);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}*/
 		// 获取离线信息
-		ArrayList<TranObject> offMsg = SaveMsgDao.selectMsg(user.getId());
-		for (int i = 0; i < offMsg.size(); i++)
-			insertQueue(offMsg.get(i));
-		SaveMsgDao.deleteSaveMsg(user.getId());
-
+//		System.out.println("12 ");
+//		ArrayList<TranObject> offMsg = SaveMsgDao.selectMsg(user.getId());
+//		for (int i = 0; i < offMsg.size(); i++)
+//			insertQueue(offMsg.get(i));
+//		SaveMsgDao.deleteSaveMsg(user.getId());
+//		System.out.println("13 ");
 	}
 
-	public synchronized void send(TranObject tran) {
-		try {
-			mOutput.writeObject(tran);
-			mOutput.flush();
-			notify();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * 注册
-	 */
-	public void regist(TranObject tran) {
-		User user = (User) tran.getObject();
-		int id = UserDao.insertInfo(user);
-		user.setId(id);
-		if (id == -1)
-			tran.setResult(Result.REGISTER_FAILED);
-		else
-			tran.setResult(Result.REGISTER_SUCCESS);
-		System.out.println("发送注册结果...");
-		send(tran);
+	public synchronized void send(String account,TranObject tran) {
+//		try {
+//			mOutput.writeObject(tran);
+//			mOutput.flush();
+//			notify();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+		JSONObject json = JSONObject.fromObject(tran,jsonConfig);
+		mClient.getClientByAccount(account).send(json.toString());
+		if (tran.getResult() == Result.LOGIN_FAILED)
+			mClient.removeClientByAccount(account);
 	}
 
 	/**
@@ -173,7 +156,7 @@ public class ClientActivity {
 	 */
 	public void close() {
 		try {
-			mClient.close();// socket关闭后，他所在的流也都自动关闭
+			mClient.stop();// socket关闭后，他所在的流也都自动关闭
 			mClientListen.close();
 			mClientSend.close();
 			if (user.getId() != 0)
@@ -181,6 +164,8 @@ public class ClientActivity {
 			System.out.println(user.getAccount() + "下线了...");
 		} catch (IOException e) {
 			System.out.println("关闭失败.....");
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
@@ -198,147 +183,9 @@ public class ClientActivity {
 		System.out.println((String) tran.getObject());
 		System.out.println("发送客户端查找的好友列表...");
 		tran.setObject(list);
-		send(tran);
+//		send(tran);
 	}
 
-	/**
-	 * 获取所有列表
-	 */
-	public void getAllContributes(TranObject tran){
-		int userId = (Integer)tran.getObject();
-		ArrayList<MeetingDetail> list;
-		list = ContributesDao.selectContrbutesById(userId);
-		tran.setObject(list);
-		send(tran);
-	}
-	
-	/**
-	 * 获取当前日期所有列表
-	 */
-	public void getTodayContributes(TranObject tran){
-		@SuppressWarnings("unchecked")
-		HashMap<Integer, Date> map = (HashMap<Integer, Date>) tran.getObject();
-		Set<Entry<Integer,Date>> sets = map.entrySet();
-		int userId = -1;
-		Date curDate = null;
-		for(Entry<Integer,Date> set:sets){             //遍历HashMap键值对  
-              userId = set.getKey();
-              curDate = set.getValue();
-        } 
-		ArrayList<MeetingDetail> list;
-		list = ContributesDao.selectContrbutesByDate(userId,curDate);
-		tran.setObject(list);
-		send(tran);
-	}
-	
-	/**
-	 * 获取邀约细节
-	 */
-	public void getInvitationDetail(TranObject tran){
-		MeetingDetail detail;
-		detail = ContributesDao.getInvitationDetailById(tran);
-		tran.setObject(detail);
-		send(tran);
-	}
-
-	/**
-	 * 添加邀约信息到数据库
-	 */
-	public void addContribute(TranObject tran){
-		int res = ContributesDao.addContribute(tran);
-		TranObject tran1 = new TranObject();
-		tran1.setObject(res);
-		tran1.setTranType(tran.getTranType());
-		send(tran1);
-	}
-	
-	/**
-	 * 将报名人插入数据库中
-	 */
-	public void addEnlist(TranObject tran){
-		Result registRes = UserDao.updateRegist(tran);
-		if (registRes == Result.ENLIST_SUCCESS) {
-			registRes = ContributesDao.addEnlist(tran);
-		}
-		TranObject tran1 = new TranObject();
-		tran1.setObject(registRes);
-		tran1.setTranType(tran.getTranType());
-		send(tran1);
-	}
-	
-	/**
-	 * 获取我的meeting
-	 */
-	public void getMyContributes(TranObject tran){
-		int userId = (Integer)tran.getSendId();
-		ArrayList<MeetingDetail> list;
-		list = ContributesDao.getMyContributes(userId);
-		tran.setObject(list);
-		send(tran);
-	}
-	
-	/**
-	 * 保存user修改的信息
-	 */
-	public void saveUserInfo(TranObject tran){
-		int res = UserDao.saveUserInfo(tran);
-		TranObject tran1 = new TranObject();
-		tran1.setObject(res);
-		tran1.setTranType(tran.getTranType());
-		send(tran1);
-	}
-	
-	/**
-	 * 获取报名过的邀约列表
-	 */
-	public void getEnlist(TranObject tran){
-		ArrayList<String> enlist = UserDao.queryRegist(tran);
-		ArrayList<MeetingDetail> enlistedContributes = ContributesDao.getMyEnlistMeetings(enlist);
-		TranObject tran1 = new TranObject();
-		tran1.setObject(enlistedContributes);
-		tran1.setTranType(tran.getTranType());
-		send(tran1);
-		System.out.println("send success");
-	}
-	
-	/**
-	 * 获取报名过的邀约名字
-	 * 这里应该是跟meetingDetail一起发送给客户端的
-	 */
-	public void getEnlistName(TranObject tran){
-		HashMap<String,String> enlisters = ContributesDao.queryRegistName(tran);
-		TranObject tran1 = new TranObject();
-		tran1.setObject(enlisters);
-		tran1.setTranType(tran.getTranType());
-		send(tran1);
-	}
-	
-	/**
-	 * 获取报名的个人信息
-	 */
-	public void getUserInfo(TranObject tran){
-		User enlister = UserDao.getUserInfo(tran);
-		TranObject tran1 = new TranObject();
-		tran1.setObject(enlister);
-		tran1.setTranType(tran.getTranType());
-		send(tran1);
-	}
-	
-	/**
-	 * 获取需要的人的相册信息string
-	 */
-	public void getUserPhotos(TranObject tran){
-		System.out.println("get photos");
-		int userId = (Integer)tran.getObject();
-		String photolist = UserDao.getUserPhotosAddress(userId);
-		System.out.println("get photos1 " + photolist);
-		TranObject tran1 = new TranObject();
-		tran1.setObject(photolist);
-		tran1.setTranType(tran.getTranType());
-		send(tran1);
-		System.out.println("send success ");
-	}
-	
 	/**
 	 * 上传图片
 	 */
@@ -388,21 +235,11 @@ public class ClientActivity {
 	}
 	
 	/**
-	 * 回复上传图片的成功或失败
-	 */
-	public void uploadFileSuccess(boolean success) {
-		TranObject tran1 = new TranObject();
-		tran1.setObject(success ? 1 : 0);
-		tran1.setTranType(TranObjectType.UPLOAD_RESULT);
-		send(tran1);
-	}
-	
-	/**
 	 * 处理好友请求
 	 */
 	public void friendRequset(TranObject tran) {
 		System.out.println("添加好友");
-		Result result = tran.getResult();
+		int result = tran.getResult();
 		if (result == Result.FRIEND_REQUEST_RESPONSE_ACCEPT) {
 			System.out.println("接收方id" + tran.getReceiveId());
 			FriendDao.addFriend(tran.getReceiveId(), tran.getSendId());
@@ -424,7 +261,7 @@ public class ClientActivity {
 			tran2.setSendName(friend.get(0).getUserName());
 			tran2.setTranType(tran.getTranType());
 			tran2.setSendTime(tran2.getSendTime());
-			send(tran2);
+//			send(tran2);
 		}
 		sendFriend(tran);
 	}

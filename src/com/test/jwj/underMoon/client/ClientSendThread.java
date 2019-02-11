@@ -25,7 +25,7 @@ public class ClientSendThread implements Runnable {
 				}
 			else {
 				TranObject tran = mClient.removeQueueEle(0);
-				mClient.send(tran);
+//				mClient.send(tran);
 
 			}
 		}
