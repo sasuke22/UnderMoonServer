@@ -8,20 +8,15 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
-
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
-
 import org.java_websocket.WebSocket;
-
-import com.google.gson.Gson;
 import com.test.jwj.underMoon.DataBase.FriendDao;
 import com.test.jwj.underMoon.DataBase.SaveMsgDao;
 import com.test.jwj.underMoon.DataBase.UserDao;
 import com.test.jwj.underMoon.bean.TranObject;
 import com.test.jwj.underMoon.bean.User;
 import com.test.jwj.underMoon.global.Result;
-import com.test.jwj.underMoon.server.ServerListen;
 import com.test.jwj.underMoon.server.WsServer;
 
 /**
@@ -31,17 +26,29 @@ public class ClientActivity {
 	/*  发送队列， 因为服务器有多个监听客户端的线程，当很多好友一起向他发送消息，每个服务器线程
 	   都同时调用此实例的socket争夺send ，并发控制异常。*/
 	private LinkedList<TranObject> sendQueue;
-	private ServerListen mServer; // 服务器
 	private User user;
 //	private Socket mClient; // 客户端连接
-	private WsServer mClient;
-	private ClientListenThread mClientListen; // 客户端监听进程
+	private WsServer mServer;
+//	private ClientListenThread mClientListen; // 客户端监听进程
 	private ClientSendThread mClientSend; // 客户端发送进程
 	private JsonConfig jsonConfig;
+	private WebSocket mStream;
+	private long mTime;
 //	private ObjectOutputStream mOutput;
 //	private ObjectInputStream mInput;
 
-//	public ClientActivity(ServerListen mServer, Socket mClient) {
+	public long getmTime() {
+		return mTime;
+	}
+
+	public void setmTime(long mTime) {
+		this.mTime = mTime;
+	}
+
+	public WebSocket getmStream() {
+		return mStream;
+	}
+	//	public ClientActivity(ServerListen mServer, Socket mClient) {
 //		user = new User();
 //		sendQueue = new LinkedList<TranObject>();
 //		this.mServer = mServer;
@@ -59,12 +66,12 @@ public class ClientActivity {
 //		listen.start();
 //		send.start();
 //	}
-	public ClientActivity(ServerListen mServer,WsServer mClient){
-		mClient.setClient(this);
-		user = new User();
+	public ClientActivity(WebSocket conn,WsServer mClient){
 		sendQueue = new LinkedList<TranObject>();
-		this.mServer = mServer;
-		this.mClient = mClient;
+		this.mServer = mClient;
+		this.mStream = conn;
+		mClientSend = new ClientSendThread(this);
+		new Thread(mClientSend).start();
 		jsonConfig = new JsonConfig();
 		jsonConfig.registerJsonValueProcessor(java.sql.Date.class, new DateJsonValueProcessor("yyyy-MM-dd HH:mm:ss"));
 	}
@@ -82,54 +89,47 @@ public class ClientActivity {
 	}
 
 	public void setUser(User user) {
-		this.user.setAccount(user.getAccount());
-		this.user.setAge(user.getAge());
-		this.user.setBirthday(user.getBirthday());
-		this.user.setGender(user.getGender());
-		this.user.setLocation(user.getLocation());
-		this.user.setId(user.getId());
-		this.user.setUserName(user.getUserName());
-		this.user.setPhoto(user.getPhoto());
+		this.user = user;
 	}
 
 	/**
 	 * 检查账号和用户名是否存在
 	 */
-
-
-	public void login(WebSocket conn,TranObject tran) {
-		User user = new Gson().fromJson(tran.getObject().toString(),User.class);
-		// 验证密码和用户名是否存在，若存在则为user对象赋值
-		boolean isExisted = UserDao.login(user);
-		mClient.addClient(user.getAccount(), conn);
-		if (isExisted == true) {
-			UserDao.updateIsOnline(user.getId(), 1);
-			setUser(user);
-			System.out.println(user.getAccount() + "上线了");
-			tran.setResult(Result.LOGIN_SUCCESS);
-			System.out.println("当前在线人数：" + mClient.size());
-			// 获取好友列表
-//			ArrayList<User> friendList = FriendDao.getFriend(user.getId());
-//			user.setFriendList(friendList);
-			tran.setObject(user);
-		} else
-			tran.setResult(Result.LOGIN_FAILED);
-		send(user.getAccount(),tran);
+//	public void login(WebSocket conn,TranObject tran) {
+//		User user = new Gson().fromJson(tran.getObject().toString(),User.class);
+//		// 验证密码和用户名是否存在，若存在则为user对象赋值
+//		boolean isExisted = UserDao.login(user);
+//		if (isExisted == true) {
+//			mStream = conn;
+//			mClient.addClient(user.getId(), this);
+//			UserDao.updateIsOnline(user.getId(), 1);
+//			setUser(user);
+//			System.out.println(user.getAccount() + "上线了");
+//			tran.setResult(Result.LOGIN_SUCCESS);
+//			System.out.println("当前在线人数：" + mClient.size());
+//			// 获取好友列表
+////			ArrayList<User> friendList = FriendDao.getFriend(user.getId());
+////			user.setFriendList(friendList);
+//			tran.setObject(user);
+//			send(user.getId(),tran);
+//		} else{
+//			tran.setResult(Result.LOGIN_FAILED);
+//			JSONObject json = JSONObject.fromObject(tran,jsonConfig);
+//			conn.send(json.toString());
+//		}
 		/*try {
 				TimeUnit.SECONDS.sleep(5);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}*/
 		// 获取离线信息
-//		System.out.println("12 ");
 //		ArrayList<TranObject> offMsg = SaveMsgDao.selectMsg(user.getId());
 //		for (int i = 0; i < offMsg.size(); i++)
 //			insertQueue(offMsg.get(i));
 //		SaveMsgDao.deleteSaveMsg(user.getId());
-//		System.out.println("13 ");
-	}
+//	}
 
-	public synchronized void send(String account,TranObject tran) {
+	public synchronized void send(int userId,TranObject tran) {
 //		try {
 //			mOutput.writeObject(tran);
 //			mOutput.flush();
@@ -137,17 +137,22 @@ public class ClientActivity {
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
+		System.out.println("3 ");
 		JSONObject json = JSONObject.fromObject(tran,jsonConfig);
-		mClient.getClientByAccount(account).send(json.toString());
-		if (tran.getResult() == Result.LOGIN_FAILED)
-			mClient.removeClientByAccount(account);
+		System.out.println("4 " + userId + "," + json.toString());
+		try{
+			mServer.getClientById(userId).mStream.send(json.toString());
+		}catch(Exception e){
+			SaveMsgDao.insertSaveMsg(user.getId(), tran);
+		}
+		System.out.println("5 ");
 	}
 
 	/**
 	 * 客户端下线
 	 */
 	public void getOffLine() {
-		mServer.closeClientByID(user.getId());
+		mServer.removeClientById(user.getId());
 		UserDao.updateIsOnline(user.getId(), 0);
 	}
 
@@ -155,19 +160,12 @@ public class ClientActivity {
 	 * 关闭与客户端的连接
 	 */
 	public void close() {
-		try {
-			mClient.stop();// socket关闭后，他所在的流也都自动关闭
-			mClientListen.close();
-			mClientSend.close();
-			if (user.getId() != 0)
-				getOffLine();
-			System.out.println(user.getAccount() + "下线了...");
-		} catch (IOException e) {
-			System.out.println("关闭失败.....");
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		mStream.close();
+//		mClientListen.close();
+		mClientSend.close();
+		if (user.getId() != 0)
+			getOffLine();
+		System.out.println(user.getAccount() + "下线了...");
 	}
 
 	/**
@@ -274,10 +272,11 @@ public class ClientActivity {
 		System.out.println("包含要发送的那个好友吗？" + tran.getReceiveId()
 				+ mServer.contatinId(tran.getReceiveId()));
 		if (mServer.contatinId(tran.getReceiveId())) {
-			friendClient = mServer.getClientByID(tran.getReceiveId());
+			friendClient = mServer.getClientById(tran.getReceiveId());
 			System.out.println("将好友请求发给好友...");
 			friendClient.insertQueue(tran);
 		} else {
+			System.out.println("offline:" + tran.getObject().toString());
 			SaveMsgDao.insertSaveMsg(user.getId(), tran);
 		}
 

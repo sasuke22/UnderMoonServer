@@ -30,7 +30,7 @@ public class User implements Serializable {
 	private int age;
 	private String userBriefIntro;
 	private int height;
-	private int marry;
+	private String marry;
 	private String job;
 	private String figure;
 	private String xingzuo;
@@ -62,11 +62,11 @@ public class User implements Serializable {
 		this.height = height;
 	}
 
-	public int getMarry() {
+	public String getMarry() {
 		return marry;
 	}
 
-	public void setMarry(int marry) {
+	public void setMarry(String marry) {
 		this.marry = marry;
 	}
 

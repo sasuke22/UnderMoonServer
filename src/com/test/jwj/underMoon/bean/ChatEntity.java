@@ -14,6 +14,14 @@ public class ChatEntity implements Serializable{
 	private String sendDate;
 	private int messageType;
 	private String content;
+	private String friendName;
+	
+	public String getFriendName() {
+		return friendName;
+	}
+	public void setFriendName(String friendName) {
+		this.friendName = friendName;
+	}
 	public int getSenderId() {
 		return senderId;
 	}

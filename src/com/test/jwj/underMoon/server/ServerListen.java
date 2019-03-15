@@ -24,7 +24,7 @@ public class ServerListen {
 			server = new ServerSocket(PORT);
 			wsServer = new WsServer(WsPort);
 			wsServer.start();
-			new ClientActivity(this,wsServer);
+//			new ClientActivity(wsServer);
 			System.out.println("服务器已经启动...");
 		} catch (IOException e) {
 			System.out.println("服务器启动失败");

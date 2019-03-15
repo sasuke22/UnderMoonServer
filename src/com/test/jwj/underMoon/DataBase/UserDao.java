@@ -76,7 +76,7 @@ public class UserDao {
 			ps.setString(7, user.getLocation());
 			ps.setInt(8, user.getAge());
 			ps.setInt(9, user.getHeight());
-			ps.setInt(10, user.getMarry());
+			ps.setString(10, user.getMarry());
 			ps.setString(11, user.getJob());
 			ps.setString(12, user.getFigure());
 			ps.setString(13, user.getXingzuo());
@@ -150,7 +150,7 @@ public class UserDao {
 				user.setLocation(rs.getString("city"));
 				user.setAge(rs.getInt("age"));
 				user.setHeight(rs.getInt("height"));
-				user.setMarry(rs.getInt("marry"));
+				user.setMarry(rs.getString("marry"));
 				user.setJob(rs.getString("job"));
 				user.setFigure(rs.getString("figure"));
 				user.setXingzuo(rs.getString("xingzuo"));
@@ -311,7 +311,7 @@ public class UserDao {
 			ps.setString(3, user.getFigure());
 			ps.setString(4, user.getJob());
 			ps.setString(5, user.getLoveType());
-			ps.setInt(6, user.getMarry());
+			ps.setString(6, user.getMarry());
 			ps.setString(7, user.getXingzuo());
 			ps.setString(8, user.getLocation());
 			ps.setInt(9, user.getId());

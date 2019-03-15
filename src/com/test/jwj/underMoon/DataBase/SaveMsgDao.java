@@ -51,10 +51,10 @@ public class SaveMsgDao {
 	 * 插入消息
 	 * 
 	 */
-	public static void insertSaveMsg(int myid,TranObject tran){		
+	public static void insertSaveMsg(int myid,TranObject tran){
 		String sql0 = "use first_mysql_test";
-		String sql1= "insert into SaveMsg(sendid,getid,msg,trantype,time,resultType,messageType,sendname)" +
-				"values(?,?,?,?,?,?,?,?)";
+		String sql1= "insert into SaveMsg(sendid,getid,msg,trantype,time,messageType,sendname)" +
+				"values(?,?,?,?,?,?,?)";
 		PooledConnection poolcon = poolImpl.getConnection();
 		Connection con = poolcon.getConnection();
 		try {
@@ -73,19 +73,21 @@ public class SaveMsgDao {
 			ps.setInt(2, tran.getReceiveId());
 			//message信息，时间来自ChatEntity对象，否则在tran中
 			if(tran.getTranType() == TranObjectType.MESSAGE){
-				ChatEntity chatEntity = (ChatEntity)tran.getObject();
-				msg = chatEntity.getContent();
-				messageType = chatEntity.getMessageType();
-				ps.setString(5, chatEntity.getSendTime());
+				System.out.println("tran " + tran.getObject());
+				@SuppressWarnings("unchecked")
+				com.google.gson.internal.LinkedTreeMap<String,Object> map = (com.google.gson.internal.LinkedTreeMap<String,Object>)tran.getObject();
+				msg = (String)map.get("content");
+				messageType = ((Double)map.get("messageType")).intValue();
+				ps.setString(5, (String)map.get("sendTime"));
+				ps.setString(7, (String)map.get("friendName"));
 			}
-			else
+			else{
 				ps.setString(5, tran.getSendTime());
+				ps.setString(7, tran.getSendName());
+			}
 			ps.setString(3, msg);
 			ps.setInt(4, trantypeId.get(tran.getTranType()));
-			
-			ps.setInt(6, resultId.get(tran.getResult()));
-			ps.setInt(7, messageType);
-			ps.setString(8, tran.getSendName());
+			ps.setInt(6, messageType);
 			ps.execute();
 			con.commit();
 			poolcon.close();
@@ -152,18 +154,19 @@ public class SaveMsgDao {
 			while(rs.next()){
 				TranObject tran = new TranObject();
 				tran.setSendId(rs.getInt("sendid"));
-				tran.setTranType(idTrantype.get(rs.getInt("trantype")));
+				tran.setTranType(rs.getInt("trantype"));
 				tran.setSendName(rs.getString("sendname"));
-				tran.setResult(idResult.get(rs.getInt("resultType")));
-				if(idTrantype.get(rs.getInt("trantype"))==TranObjectType.MESSAGE){
+				tran.setReceiveId(rs.getInt("getid"));
+				if(rs.getInt("trantype")==TranObjectType.MESSAGE){
 					ChatEntity chatEntity = new ChatEntity();
 					chatEntity.setContent(rs.getString("msg"));
 					chatEntity.setMessageType(rs.getInt("messageType"));
 					chatEntity.setReceiverId(tran.getReceiveId());
 					chatEntity.setSenderId(tran.getSendId());
 					chatEntity.setSendTime(rs.getString("time"));
+					chatEntity.setFriendName(rs.getString("sendname"));
 					tran.setObject(chatEntity);
-				}else if(idResult.get(rs.getInt("resultType"))==Result.FRIEND_REQUEST_RESPONSE_ACCEPT){
+				}else if(rs.getInt("resultType")==Result.FRIEND_REQUEST_RESPONSE_ACCEPT){
 					ArrayList<User> list = UserDao.selectFriendByAccountOrID(tran.getSendId());
 					tran.setObject(list.get(0));
 					tran.setSendTime(rs.getString("time"));
