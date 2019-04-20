@@ -34,8 +34,6 @@ public class FriendDao {
 				User user = new User();
 				user.setId(rs.getInt("friendid"));
 				user.setAccount(rs.getString("account"));
-				user.setBirthday(rs.getDate("birthday"));
-				user.setPhoto(rs.getBytes("photo"));
 				user.setGender(rs.getInt("gender"));
 				if(rs.getInt("isOnline")==1)
 				   user.setIsOnline(true);

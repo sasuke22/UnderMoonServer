@@ -22,11 +22,9 @@ public class User implements Serializable {
 	private String account;
 	private String userName;
 	private String password;
-	private Date birthday;
 	private int gender; // 0代表女生 1代表男生
 	private boolean isOnline;
 	private String location;
-	private byte[] photo;
 	private int age;
 	private String userBriefIntro;
 	private int height;
@@ -34,6 +32,15 @@ public class User implements Serializable {
 	private String job;
 	private String figure;
 	private String xingzuo;
+	private String registId;
+	public String getRegistId() {
+		return registId;
+	}
+
+	public void setRegistId(String registId) {
+		this.registId = registId;
+	}
+
 	private String loveType;
 	private String photoAddress;
 	private int score;
@@ -133,21 +140,11 @@ public class User implements Serializable {
 		this.account = account;
 		this.userName = username;
 		this.password = password;
-		this.birthday = birthday;
 		this.gender = gender;
-		this.photo = photo;
 	}
 
 	public User() {
 
-	}
-
-	public byte[] getPhoto() {
-		return photo;
-	}
-
-	public void setPhoto(byte[] photo) {
-		this.photo = photo;
 	}
 
 	public int getId() {
@@ -182,14 +179,6 @@ public class User implements Serializable {
 		this.password = password;
 	}
 
-	public Date getBirthday() {
-		return birthday;
-	}
-
-	public void setBirthday(Date birthday) {
-		this.birthday = birthday;
-	}
-
 	public int getGender() {
 		return gender;
 	}
@@ -217,8 +206,7 @@ public class User implements Serializable {
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", account=" + account + ", userName="
-				+ userName + ", password=" + password + ", birthday="
-				+ birthday + ", gender=" + gender + ", isOnline=" + isOnline
+				+ userName + ", password=" + password + ", gender=" + gender + ", isOnline=" + isOnline
 				+ ", location=" + location + ", age=" + age
 				+ ", userBriefIntro=" + userBriefIntro + ", height=" + height
 				+ ", marry=" + marry + ", job=" + job + ", figure=" + figure

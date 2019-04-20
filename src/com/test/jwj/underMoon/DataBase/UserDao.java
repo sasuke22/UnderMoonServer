@@ -68,9 +68,9 @@ public class UserDao {
 			ps = con.prepareStatement(sql1);
 			ps.setString(1, user.getAccount());
 			ps.setString(2, user.getUserName());
-			ps.setBytes(3, user.getPhoto());
-			System.out.println(user.getPhoto().length);
-			ps.setDate(4, new java.sql.Date(user.getBirthday().getTime()));
+//			ps.setBytes(3, user.getPhoto());
+//			System.out.println(user.getPhoto().length);
+//			ps.setDate(4, new java.sql.Date(user.getBirthday().getTime()));
 			ps.setString(5, user.getPassword());
 			ps.setInt(6, user.getGender());
 			ps.setString(7, user.getLocation());
@@ -142,16 +142,15 @@ public class UserDao {
 				// 为用户添加自己的id
 				user.setId(rs.getInt("id"));
 				user.setAccount(rs.getString("account"));
-				user.setBirthday(rs.getDate("birthday"));
 				user.setGender(rs.getInt("gender"));
 				user.setPassword(rs.getString("password"));
 				user.setUserName(rs.getString("name"));
-				user.setPhoto(rs.getBytes("photo"));
 				user.setLocation(rs.getString("city"));
 				user.setAge(rs.getInt("age"));
 				user.setHeight(rs.getInt("height"));
 				user.setMarry(rs.getString("marry"));
 				user.setJob(rs.getString("job"));
+				user.setUserBriefIntro(rs.getString("userintro"));
 				user.setFigure(rs.getString("figure"));
 				user.setXingzuo(rs.getString("xingzuo"));
 				user.setLoveType(rs.getString("lovetype"));
@@ -225,14 +224,12 @@ public class UserDao {
 				User friend = new User();
 				friend.setId(rs.getInt("id"));
 				friend.setAccount(rs.getString("account"));
-				friend.setBirthday(rs.getDate("birthday"));
 				friend.setGender(rs.getInt("gender"));
 				friend.setUserName(rs.getString("name"));
 				if (rs.getInt("isOnline") == 1)
 					friend.setIsOnline(true);
 				else
 					friend.setIsOnline(false);
-				friend.setPhoto(rs.getBytes("photo"));
 				friend.setLocation(rs.getString("city"));
 				list.add(friend);
 			}
@@ -271,14 +268,12 @@ public class UserDao {
 				User friend = new User();
 				friend.setId(rs.getInt("id"));
 				friend.setAccount(rs.getString("account"));
-				friend.setBirthday(rs.getDate("birthday"));
 				friend.setGender(rs.getInt("gender"));
 				friend.setUserName(rs.getString("name"));
 				if (rs.getInt("isOnline") == 1)
 					friend.setIsOnline(true);
 				else
 					friend.setIsOnline(false);
-				friend.setPhoto(rs.getBytes("photo"));
 				friend.setLocation(rs.getString("location"));
 				list.add(friend);
 			}
@@ -385,12 +380,13 @@ public class UserDao {
 			while (rs.next()) {
 				enlister.setId(rs.getInt("id"));
 				enlister.setAccount(rs.getString("account"));
-				enlister.setBirthday(rs.getDate("birthday"));
 				enlister.setGender(rs.getInt("gender"));
 				enlister.setUserName(rs.getString("name"));
-				enlister.setPhoto(rs.getBytes("photo"));
 				enlister.setLocation(rs.getString("city"));
 				enlister.setAge(rs.getInt("age"));
+				enlister.setHeight(rs.getInt("height"));
+				enlister.setXingzuo(rs.getString("xingzuo"));
+				enlister.setMarry(rs.getString("marry"));
 				enlister.setJob(rs.getString("job"));
 				enlister.setPhotoAddress(rs.getString("photos"));
 			}
