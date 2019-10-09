@@ -17,9 +17,13 @@ import io.netty.handler.timeout.IdleStateHandler;
 import java.util.Scanner;
 import java.util.UUID;
 
+import org.springframework.web.bind.annotation.RequestBody;
+
 import com.qiqiim.constant.Constants;
+import com.qiqiim.constant.MeetingDetail;
 import com.qiqiim.server.model.proto.MessageProto;
 import com.qiqiim.server.test.data.MessageData;
+import com.qiqiim.webserver.user.dao.ContributesDao;
 
 public class QiQiImClient {
 
@@ -72,7 +76,6 @@ public class QiQiImClient {
 
     public static void main(String[] args) throws Exception {
     	 try {
-    		 //String currentuser = "abc";
     		 String currentuser = UUID.randomUUID().toString().replaceAll("-", "");
     		 //链接socket服务
              new QiQiImClient().connect(new MessageData().generateConnect(currentuser));
@@ -86,7 +89,6 @@ public class QiQiImClient {
                      new QiQiImClient().connect(new MessageData().generateSend(currentuser, reuser,line));
                      if (line.equals("exit")) break; 
              } 
-        	
          } catch (Exception e) {
              e.printStackTrace();
          }

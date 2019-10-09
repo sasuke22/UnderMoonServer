@@ -73,7 +73,7 @@ public class ImServer  {
         // 可选参数
     	bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
         // 绑定接口，同步等待成功
-        log.info("start qiqiim server at port[" + port + "].");
+        System.out.println("start qiqiim server at port[" + port + "].");
         ChannelFuture future = bootstrap.bind(port).sync();
     	channel = future.channel();
         future.addListener(new ChannelFutureListener() {

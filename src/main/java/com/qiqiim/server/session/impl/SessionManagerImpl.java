@@ -116,6 +116,7 @@ public class SessionManagerImpl implements SessionManager {
     } 
 
     public Session getSession(String sessionId) {
+    	System.out.print("sessions " + sessions);
         return sessions.get(sessionId);
     }
 

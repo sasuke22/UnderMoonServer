@@ -1,8 +1,8 @@
 package com.qiqiim.webserver.user.model;
 
-import java.io.Serializable;
-import java.util.Date;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
+import com.qiqiim.constant.User;
 import com.qiqiim.webserver.base.model.BaseModel;
 
 
@@ -26,7 +26,15 @@ public class UserAccountEntity extends BaseModel{
 	private Integer isdel;
 	
 	private UserInfoEntity userInfo;//用户基本信息
+	
+	private User user;
  
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
 	/**
 	 * 设置：帐号
 	 */

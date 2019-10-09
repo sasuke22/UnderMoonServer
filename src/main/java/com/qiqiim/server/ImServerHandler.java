@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qiqiim.constant.Constants;
+import com.qiqiim.constant.User;
 import com.qiqiim.server.connertor.impl.ImConnertorImpl;
 import com.qiqiim.server.model.MessageWrapper;
 import com.qiqiim.server.model.proto.MessageProto;
@@ -25,7 +26,7 @@ import com.qiqiim.util.ImUtils;
 @Sharable
 public class ImServerHandler  extends ChannelInboundHandlerAdapter{
     private final static Logger log = LoggerFactory.getLogger(ImServerHandler.class);
-    
+    private User user;
     
     private ImConnertorImpl connertor = null;
     private MessageProxy proxy = null;
@@ -33,6 +34,7 @@ public class ImServerHandler  extends ChannelInboundHandlerAdapter{
     public ImServerHandler(MessageProxy proxy,  ImConnertorImpl connertor) {
         this.connertor = connertor;
         this.proxy = proxy;
+        user = new User();
     }
     
     @Override
@@ -68,6 +70,7 @@ public class ImServerHandler  extends ChannelInboundHandlerAdapter{
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object o) throws Exception {
         try {
+        	System.out.print("channel read " + (o instanceof MessageProto.Model));
             if (o instanceof MessageProto.Model) {
                 MessageProto.Model message = (MessageProto.Model) o;
                 String sessionId = connertor.getChannelSessionId(ctx);
@@ -145,7 +148,37 @@ public class ImServerHandler  extends ChannelInboundHandlerAdapter{
         }  
     }
 
-   
+	/**
+	 * 客户端下线
+	 */
+	public void getOffLine() {
+//		mServer.closeClientByID(user.getId());
+//		UserDao.updateIsOnline(user.getId(), 0);
+	}
 
-    
+	/**
+	 * 关闭与客户端的连接
+	 */
+//	public void close() {
+//		try {
+//			mClient.close();// socket关闭后，他所在的流也都自动关闭
+//			mClientListen.close();
+//			mClientSend.close();
+//			if (user.getId() != 0)
+//				getOffLine();
+//			System.out.println(user.getAccount() + "下线了...");
+//		} catch (IOException e) {
+//			System.out.println("关闭失败.....");
+//			e.printStackTrace();
+//		}
+//	}
+
+	public void setUser(User user) {
+		this.user.setAccount(user.getAccount());
+		this.user.setAge(user.getAge());
+		this.user.setGender(user.getGender());
+		this.user.setLocation(user.getLocation());
+		this.user.setId(user.getId());
+		this.user.setUserName(user.getUserName());
+	}
 }
