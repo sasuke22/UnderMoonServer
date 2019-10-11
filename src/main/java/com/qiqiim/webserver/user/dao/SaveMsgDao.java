@@ -25,24 +25,24 @@ public class SaveMsgDao {
 	private static HashMap<Integer,TranObjectType> idTrantype = new HashMap<Integer, TranObjectType>();
 	private static HashMap<TranObjectType,Integer> trantypeId = new HashMap<TranObjectType, Integer>(); 
 	
-	static{
-		//为Result枚举添加映射
-		idResult.put(0, null);
-		resultId.put(null, 0);
-		idResult.put(1, Result.FRIEND_REQUEST_RESPONSE_ACCEPT);
-		resultId.put(Result.FRIEND_REQUEST_RESPONSE_ACCEPT, 1);
-		idResult.put(2, Result.FRIEND_REQUEST_RESPONSE_REJECT);
-		resultId.put(Result.FRIEND_REQUEST_RESPONSE_REJECT, 2);
-		idResult.put(3, Result.MAKE_FRIEND_REQUEST);
-		resultId.put(Result.MAKE_FRIEND_REQUEST, 3);
-		//为TranObjectType枚举添加映射
-		idTrantype.put(0, null);
-		trantypeId.put(null, 0);
-		idTrantype.put(1, TranObjectType.FRIEND_REQUEST);
-		trantypeId.put(TranObjectType.FRIEND_REQUEST, 1);
-		idTrantype.put(2, TranObjectType.MESSAGE);
-		trantypeId.put(TranObjectType.MESSAGE, 2);
-	}
+//	static{
+//		//为Result枚举添加映射
+//		idResult.put(0, null);
+//		resultId.put(null, 0);
+//		idResult.put(1, Result.FRIEND_REQUEST_RESPONSE_ACCEPT);
+//		resultId.put(Result.FRIEND_REQUEST_RESPONSE_ACCEPT, 1);
+//		idResult.put(2, Result.FRIEND_REQUEST_RESPONSE_REJECT);
+//		resultId.put(Result.FRIEND_REQUEST_RESPONSE_REJECT, 2);
+//		idResult.put(3, Result.MAKE_FRIEND_REQUEST);
+//		resultId.put(Result.MAKE_FRIEND_REQUEST, 3);
+//		//为TranObjectType枚举添加映射
+//		idTrantype.put(0, null);
+//		trantypeId.put(null, 0);
+//		idTrantype.put(1, TranObjectType.FRIEND_REQUEST);
+//		trantypeId.put(TranObjectType.FRIEND_REQUEST, 1);
+//		idTrantype.put(2, TranObjectType.MESSAGE);
+//		trantypeId.put(TranObjectType.MESSAGE, 2);
+//	}
 	private SaveMsgDao(){
 		
 	}
@@ -72,13 +72,13 @@ public class SaveMsgDao {
 			ps.setInt(1, myid);
 			ps.setInt(2, tran.getReceiveId());
 			//message信息，时间来自ChatEntity对象，否则在tran中
-			if(tran.getTranType() == TranObjectType.MESSAGE){
+//			if(tran.getTranType() == TranObjectType.MESSAGE){
 				ChatEntity chatEntity = (ChatEntity)tran.getObject();
 				msg = chatEntity.getContent();
 				messageType = chatEntity.getMessageType();
 				ps.setString(5, chatEntity.getSendTime());
-			}
-			else
+//			}
+//			else
 				ps.setString(5, tran.getSendTime());
 			ps.setString(3, msg);
 			ps.setInt(4, trantypeId.get(tran.getTranType()));
@@ -156,10 +156,10 @@ public class SaveMsgDao {
 			while(rs.next()){
 				TranObject tran = new TranObject();
 				tran.setSendId(rs.getInt("sendid"));
-				tran.setTranType(idTrantype.get(rs.getInt("trantype")));
+//				tran.setTranType(idTrantype.get(rs.getInt("trantype")));
 				tran.setSendName(rs.getString("sendname"));
-				tran.setResult(idResult.get(rs.getInt("resultType")));
-				if(idTrantype.get(rs.getInt("trantype"))==TranObjectType.MESSAGE){
+//				tran.setResult(idResult.get(rs.getInt("resultType")));
+//				if(idTrantype.get(rs.getInt("trantype"))==TranObjectType.MESSAGE){
 					ChatEntity chatEntity = new ChatEntity();
 					chatEntity.setContent(rs.getString("msg"));
 					chatEntity.setMessageType(rs.getInt("messageType"));
@@ -167,13 +167,13 @@ public class SaveMsgDao {
 					chatEntity.setSenderId(tran.getSendId());
 					chatEntity.setSendTime(rs.getString("time"));
 					tran.setObject(chatEntity);
-				}else if(idResult.get(rs.getInt("resultType"))==Result.FRIEND_REQUEST_RESPONSE_ACCEPT){
+//				}else if(idResult.get(rs.getInt("resultType"))==Result.FRIEND_REQUEST_RESPONSE_ACCEPT){
 					ArrayList<User> list = UserDao.selectFriendByAccountOrID(tran.getSendId());
 					tran.setObject(list.get(0));
 					tran.setSendTime(rs.getString("time"));
-				}else{
+//				}else{
 					tran.setSendTime(rs.getString("time"));
-				}
+//				}
 				msgList.add(tran);
 			}
 			DBPool.close(con);

@@ -6,8 +6,8 @@
 package com.qiqiim.constant;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.sql.Date;
+import java.util.ArrayList;
 
 /**
  * 类名：User 说明：用户对象
@@ -34,9 +34,10 @@ public class User implements Serializable {
 	private String registId;
 	private String photoAddress;
 	private int score;
-	private int lock;
-	private Date vipDate;
 	private Date commentDate;
+	private boolean show;
+	private Date vipDate;
+	private int lock;
 	
 	public Date getVipDate() {
 		return vipDate;
@@ -44,14 +45,6 @@ public class User implements Serializable {
 
 	public void setVipDate(Date vipDate) {
 		this.vipDate = vipDate;
-	}
-
-	public int getLock() {
-		return lock;
-	}
-
-	public void setLock(int lock) {
-		this.lock = lock;
 	}
 
 	public String getRegistId() {
@@ -210,6 +203,22 @@ public class User implements Serializable {
 
 	public void setCommentDate(Date commentDate) {
 		this.commentDate = commentDate;
+	}
+
+	public boolean isShow() {
+		return show;
+	}
+
+	public void setShow(boolean show) {
+		this.show = show;
+	}
+	
+	public int getLock() {
+		return lock;
+	}
+
+	public void setLock(int lock) {
+		this.lock = lock;
 	}
 
 	@Override

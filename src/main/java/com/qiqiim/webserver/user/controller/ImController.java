@@ -47,6 +47,7 @@ import com.qiqiim.constant.Article;
 import com.qiqiim.constant.CommentDetail;
 import com.qiqiim.constant.Constants;
 import com.qiqiim.constant.MeetingDetail;
+import com.qiqiim.constant.Message;
 import com.qiqiim.constant.User;
 import com.qiqiim.server.model.MessageWrapper;
 import com.qiqiim.server.model.proto.MessageBodyProto;
@@ -61,6 +62,7 @@ import com.qiqiim.webserver.user.dao.CommentsDao;
 import com.qiqiim.webserver.user.dao.ContributesDao;
 import com.qiqiim.webserver.user.dao.FriendDao;
 import com.qiqiim.webserver.user.dao.GoodsDao;
+import com.qiqiim.webserver.user.dao.MsgListDao;
 import com.qiqiim.webserver.user.dao.UserDao;
 import com.qiqiim.webserver.user.model.GoodsBean;
 import com.qiqiim.webserver.user.model.ImFriendUserData;
@@ -70,6 +72,7 @@ import com.qiqiim.webserver.user.model.ImUserData;
 import com.qiqiim.webserver.user.model.UserAccountEntity;
 import com.qiqiim.webserver.user.model.UserInfoEntity;
 import com.qiqiim.webserver.user.model.UserMessageEntity;
+import com.qiqiim.webserver.user.service.MsgListService;
 import com.qiqiim.webserver.user.service.UserAccountService;
 import com.qiqiim.webserver.user.service.UserDepartmentService;
 import com.qiqiim.webserver.user.service.UserMessageService;
@@ -90,6 +93,8 @@ public class ImController extends BaseController{
 	private UserMessageService userMessageServiceImpl;
 	@Autowired
 	private DwrConnertor dwrConnertorImpl;
+	@Autowired
+	private MsgListService msgListServiceImpl;
 	@Autowired
 	private MessageProxy proxy;
 	
@@ -168,18 +173,6 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public int login(@RequestParam("account")String account,@RequestParam("password")String password,
 			/*@RequestParam Map<String, Object> params,*/HttpServletRequest request){
-//		Query query = new Query(params);
-//		UserAccountEntity userAccount = userAccountServiceImpl.validateUser(query);
-		User user = new User();
-		user.setAccount(account);
-		user.setPassword(password);
-		user = UserDao.login(user);
-		if(user != null/*userAccount!=null*/){
-			UserAccountEntity userAccount = new UserAccountEntity();
-			userAccount.setUser(user);
-			setLoginUser(userAccount);
-			return 1;//login success
-		}
 		return -1;//login fail
 	}
 	
@@ -1217,6 +1210,17 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public int newLook(@RequestParam("id") int goodsId, HttpServletRequest request,HttpServletResponse response){
 		GoodsDao.addNewLook(goodsId);
+		return 1;
+	}
+	
+	/**
+	 * for flutter,获取聊天记录
+	 */
+	@RequestMapping(value="/getmsglist",produces="application/json")
+	@ResponseBody
+	public int getMsgList(@RequestParam("id") int userId, HttpServletRequest request,HttpServletResponse response){
+		List<Message> msgList= msgListServiceImpl.queryMessageList(userId);
+		System.out.println("msg:"+msgList.size());
 		return 1;
 	}
 	

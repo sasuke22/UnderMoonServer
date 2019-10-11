@@ -3,8 +3,8 @@
 
 <mapper namespace="com.qiqiim.webserver.user.dao.MsgListDao">
 
-	<select id="queryMessageList" resultType="Message" parameterType="int" >
-		select * from msg_list where id = #{user_id}
+	<select id="queryMessageList" resultType="com.qiqiim.constant.Message" parameterType="int" >
+		select * from msg_list where id = #{value}
 	</select>
 
 </mapper>

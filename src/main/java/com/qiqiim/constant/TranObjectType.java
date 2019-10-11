@@ -6,27 +6,9 @@ package com.qiqiim.constant;
  * @author way
  * 
  */
-public enum TranObjectType {
-	REGISTER, // 注册
-	REGISTER_ACCOUNT,//注册的账号验证
-	LOGIN, // 用户登录
-	LOGOUT, // 用户退出登录
-	FRIENDLOGIN, // 好友上线
-	FRIENDLOGOUT, // 好友下线
-	MESSAGE, // 用户发送消息
-	UNCONNECTED, // 无法连接
-	FILE, // 传输文件
-	REFRESH, // 刷新
-	SEARCH_FRIEND,//找朋友
-	FRIEND_REQUEST,//好友申请
-	ALL_CONTRIBUTES,
-	INVITATION_DETAIL,
-	ADD_CONTRIBUTE,
-	TODAY_CONTRIBUTES,
-	MY_CONTRIBUTES,
-	SAVE_USER_INFO,
-	GET_ENLIST,
-	ENLIST,
-	GET_ENLIST_NAME,
-	GET_USER_INFO;//获取item信息
+public class TranObjectType {
+	public static final int LOGIN = 1;// 用户登录
+	public static final int MESSAGE = 2; // 用户发送消息
+	public static final int FRIEND_REQUEST = 3;//好友申请
+	public static final int HEART_BEAT = 4;//心跳包
 }

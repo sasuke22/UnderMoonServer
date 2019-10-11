@@ -131,9 +131,12 @@ public class UserDao {
 	/**
 	 * 进行登录的验证
 	 */
-	public static User login(User user) {
+	public static boolean login(User user) {
+		boolean isExisted = false;
 		String sql0 = "use first_mysql_test";
 		String sql1 = "select * from user where account=? and password=?";
+//		PooledConnection poolcon = poolImpl.getConnection();
+//		Connection con = poolcon.getConnection();
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
@@ -145,6 +148,7 @@ public class UserDao {
 			ps.setString(2, user.getPassword());
 			rs = ps.executeQuery();
 			if (rs.first()) {
+				isExisted = true;
 				// 为用户添加自己的id
 				user.setId(rs.getInt("id"));
 				user.setAccount(rs.getString("account"));
@@ -156,15 +160,20 @@ public class UserDao {
 				user.setHeight(rs.getInt("height"));
 				user.setMarry(rs.getString("marry"));
 				user.setJob(rs.getString("job"));
+				user.setUserBriefIntro(rs.getString("userintro"));
 				user.setXingzuo(rs.getString("xingzuo"));
+				user.setScore(rs.getInt("score"));
+				user.setCommentDate(rs.getDate("commentDate"));
+				user.setShow(rs.getInt("showname") > 0);
+				if(rs.getTimestamp("vip") != null)
+				user.setVipDate(new Date(rs.getTimestamp("vip").getTime()));
 			}
+			con.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			DBPool.close(con);
-			return null;
 		}
-		DBPool.close(con);
-		return user;
+//		poolcon.close();
+		return isExisted;
 	}
 
 	/**
@@ -392,35 +401,35 @@ public class UserDao {
 	
 	public static int updateRegist(int userId,int meetingId){
 		ArrayList<String> registArray = queryRegist(userId);
-		if (registArray == null || registArray.contains(String.valueOf(meetingId))) {
+		if (registArray == null || !registArray.contains(String.valueOf(meetingId))) {
+			String sql0 = "use first_mysql_test";
+			String sql1 = "update user set commentDate = CURDATE(),registId= case when isnull(registId) or registId='' then ? else concat(registId,'|',?) end where id =?";
+			Connection con = DBPool.getConnection();
+			try {
+				con.setAutoCommit(false);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			PreparedStatement ps;
+			try {
+				ps = con.prepareStatement(sql0);
+				ps.execute();
+				ps = con.prepareStatement(sql1);
+				ps.setInt(1, meetingId);
+				ps.setInt(2, meetingId);
+				ps.setInt(3, userId);
+				System.out.println(ps.toString());
+				ps.execute();
+				con.commit();
+				DBPool.close(con);
+				return 1;
+			}catch (Exception e){
+				e.printStackTrace();
+				DBPool.close(con);
+				return -1;
+			}
+		}else 
 			return 0;
-		}
-		String sql0 = "use first_mysql_test";
-		String sql1 = "update user set commentDate = CURDATE(),registId= case when isnull(registId) or registId='' then ? else concat(registId,'|',?) end where id =?";
-		Connection con = DBPool.getConnection();
-		try {
-			con.setAutoCommit(false);
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		PreparedStatement ps;
-		try {
-			ps = con.prepareStatement(sql0);
-			ps.execute();
-			ps = con.prepareStatement(sql1);
-			ps.setInt(1, meetingId);
-			ps.setInt(2, meetingId);
-			ps.setInt(3, userId);
-			System.out.println(ps.toString());
-			ps.execute();
-			con.commit();
-			DBPool.close(con);
-			return 1;
-		}catch (Exception e){
-			e.printStackTrace();
-			DBPool.close(con);
-			return -1;
-		}
 	}
 	
 	public static ArrayList<String> queryRegist(int userId){
@@ -534,7 +543,7 @@ public class UserDao {
 		}
 	}
 	
-	public static Result updatePhotos(int userId,String lastPhoto){
+	public static void updatePhotos(int userId,String lastPhoto){
 		String sql0 = "use first_mysql_test";
 		String sql1 = "update user set photos= case when isnull(photos) or photos='' then ? else concat(photos,'|',?) end where id =?";
 		Connection con = DBPool.getConnection();
@@ -555,10 +564,8 @@ public class UserDao {
 			ps.execute();
 			con.commit();
 			DBPool.close(con);
-			return Result.ENLIST_SUCCESS;
 		}catch (Exception e){
 			DBPool.close(con);
-			return Result.ENLIST_FAILED;
 		}
 	}
 	
