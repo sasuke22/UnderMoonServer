@@ -143,6 +143,7 @@ public class ClientActivity {
 		try{
 			mServer.getClientById(userId).mStream.send(json.toString());
 		}catch(Exception e){
+			e.printStackTrace();
 			SaveMsgDao.insertSaveMsg(user.getId(), tran);
 		}
 		System.out.println("5 ");
@@ -153,7 +154,7 @@ public class ClientActivity {
 	 */
 	public void getOffLine() {
 		mServer.removeClientById(user.getId());
-		UserDao.updateIsOnline(user.getId(), 0);
+//		UserDao.updateIsOnline(user.getId(), 0);
 	}
 
 	/**
@@ -174,19 +175,19 @@ public class ClientActivity {
 	public void searchFriend(TranObject tran) {
 		String values[] = ((String) tran.getObject()).split(" ");
 		ArrayList<User> list;
-		if (values[0].equals("0"))
-			list = UserDao.selectFriendByAccountOrID(values[1]);
-		else
-			list = UserDao.selectFriendByMix(values);
+//		if (values[0].equals("0"))
+//			list = UserDao.selectFriendByAccountOrID(values[1]);
+//		else
+//			list = UserDao.selectFriendByMix(values);
 		System.out.println((String) tran.getObject());
 		System.out.println("发送客户端查找的好友列表...");
-		tran.setObject(list);
+//		tran.setObject(list);
 //		send(tran);
 	}
 
 	/**
 	 * 上传图片
-	 */
+	 
 	public void uploadUserPhotos(TranObject tran){
 		int userId = tran.getSendId();
 		String photolist = UserDao.getUserPhotosAddress(userId);
@@ -221,16 +222,17 @@ public class ClientActivity {
 			}
 		}
 	}
+	*/
 	
 	/**
 	 * 更新用户积分
-	 */
+	 
 	public void updateUserScore(TranObject tran) {
 		int userId = tran.getSendId();
 		int score = (Integer)tran.getObject();
 		int res = UserDao.updateScore(userId, score);
 		System.out.println("update " + userId + "'s score success " + res);
-	}
+	}*/
 	
 	/**
 	 * 处理好友请求
@@ -240,23 +242,23 @@ public class ClientActivity {
 		int result = tran.getResult();
 		if (result == Result.FRIEND_REQUEST_RESPONSE_ACCEPT) {
 			System.out.println("接收方id" + tran.getReceiveId());
-			FriendDao.addFriend(tran.getReceiveId(), tran.getSendId());
-			FriendDao.addFriend(tran.getSendId(), tran.getReceiveId());
+//			FriendDao.addFriend(tran.getReceiveId(), tran.getSendId());
+//			FriendDao.addFriend(tran.getSendId(), tran.getReceiveId());
 			System.out.println("添加好友成功....");
 			// 向好友发起方 发送自己的信息
 			tran.setObject(user);
-			ArrayList<User> friend = UserDao.selectFriendByAccountOrID(tran
-					.getSendId());
-			tran.setObject(friend.get(0));
+//			ArrayList<User> friend = UserDao.selectFriendByAccountOrID(tran
+//					.getSendId());
+//			tran.setObject(friend.get(0));
 			tran.setSendName(user.getUserName());
 			// 向自己添加好友
-			friend = UserDao.selectFriendByAccountOrID(tran.getReceiveId());
+//			friend = UserDao.selectFriendByAccountOrID(tran.getReceiveId());
 			TranObject tran2 = new TranObject();
-			tran2.setObject(friend.get(0));
+//			tran2.setObject(friend.get(0));
 			tran2.setResult(tran.getResult());
 			tran2.setReceiveId(tran.getSendId());
 			tran2.setSendId(tran.getReceiveId());
-			tran2.setSendName(friend.get(0).getUserName());
+//			tran2.setSendName(friend.get(0).getUserName());
 			tran2.setTranType(tran.getTranType());
 			tran2.setSendTime(tran2.getSendTime());
 //			send(tran2);

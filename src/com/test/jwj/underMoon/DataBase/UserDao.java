@@ -1,9 +1,11 @@
 package com.test.jwj.underMoon.DataBase;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import com.test.jwj.underMoon.bean.TranObject;
@@ -27,8 +29,9 @@ public class UserDao {
 	public static boolean selectAccount(String account) {
 		String sql0 = "use first_mysql_test";
 		String sql1 = "select * from user where account=?";
-		PooledConnection poolcon = poolImpl.getConnection();
-		Connection con = poolcon.getConnection();
+//		PooledConnection poolcon = poolImpl.getConnection();
+//		Connection con = poolcon.getConnection();
+		Connection con = poolImpl.getConnection();
 		try {
 //			con.setAutoCommit(false);
 			PreparedStatement ps;
@@ -38,24 +41,25 @@ public class UserDao {
 			ps = con.prepareStatement(sql1);
 			ps.setString(1, account);
 			ResultSet rs = ps.executeQuery();
+			con.close();
 			return rs.first() ? true : false;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		poolcon.close();
 		return false;
 	}
 
 	/**
 	 * 向数据库中添加账户
 	 * 
-	 */
+	
 	public static int insertInfo(User user) {
 		String sql0 = "use first_mysql_test";
 		String sql1 = "insert into user (account,name,photo,birthday,password,gender,city,age,height,marry,job,figure,xingzuo)"
 				+ " values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		PooledConnection poolcon = poolImpl.getConnection();
-		Connection con = poolcon.getConnection();
+//		PooledConnection poolcon = poolImpl.getConnection();
+//		Connection con = poolcon.getConnection();
+		Connection con = poolImpl.getConnection();
 		try {
 			con.setAutoCommit(false);
 		} catch (SQLException e2) {
@@ -78,7 +82,6 @@ public class UserDao {
 			ps.setInt(9, user.getHeight());
 			ps.setString(10, user.getMarry());
 			ps.setString(11, user.getJob());
-			ps.setString(12, user.getFigure());
 			ps.setString(13, user.getXingzuo());
 			ps.executeUpdate();
 			con.commit();
@@ -92,7 +95,7 @@ public class UserDao {
 			e.printStackTrace();
 		}
 		return getLastID(poolcon,con);
-	}
+	} */
 
 	/**
 	 * 得到最后一次插入的值
@@ -126,8 +129,9 @@ public class UserDao {
 		boolean isExisted = false;
 		String sql0 = "use first_mysql_test";
 		String sql1 = "select * from user where account=? and password=?";
-		PooledConnection poolcon = poolImpl.getConnection();
-		Connection con = poolcon.getConnection();
+//		PooledConnection poolcon = poolImpl.getConnection();
+//		Connection con = poolcon.getConnection();
+		Connection con = poolImpl.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
 		try {
@@ -151,21 +155,24 @@ public class UserDao {
 				user.setMarry(rs.getString("marry"));
 				user.setJob(rs.getString("job"));
 				user.setUserBriefIntro(rs.getString("userintro"));
-				user.setFigure(rs.getString("figure"));
 				user.setXingzuo(rs.getString("xingzuo"));
-				user.setLoveType(rs.getString("lovetype"));
 				user.setScore(rs.getInt("score"));
+				user.setCommentDate(rs.getDate("commentDate"));
+				user.setShow(rs.getInt("showname") > 0);
+				if(rs.getTimestamp("vip") != null)
+				user.setVipDate(new Date(rs.getTimestamp("vip").getTime()));
 			}
+			con.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		poolcon.close();
+//		poolcon.close();
 		return isExisted;
 	}
 
 	/**
 	 * 更新在线状态
-	 */
+	 
 	public static void updateIsOnline(int id, int isOnline) {
 		String sql0 = "use first_mysql_test";
 		String sql1 = "update user set isOnline=? where id=?";
@@ -196,7 +203,9 @@ public class UserDao {
 		}
 		poolcon.close();
 	}
+	*/
 
+	/*
 	public static ArrayList<User> selectFriendByAccountOrID(Object condition) {
 		ArrayList<User> list = new ArrayList<User>();
 		String sql0 = "use first_mysql_test";
@@ -239,7 +248,9 @@ public class UserDao {
 		poolcon.close();
 		return list;
 	}
+	*/
 
+	/*
 	public static ArrayList<User> selectFriendByMix(String[] mix) {
 		ArrayList<User> list = new ArrayList<User>();
 		String sql0 = "use first_mysql_test";
@@ -283,7 +294,9 @@ public class UserDao {
 		poolcon.close();
 		return list;
 	}
+	*/
 
+	/*
 	public static int saveUserInfo(TranObject tran){
 		User user = (User)tran.getObject();
 		String sql0 = "use first_mysql_test";
@@ -303,9 +316,7 @@ public class UserDao {
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, user.getAge());
 			ps.setInt(2, user.getHeight());
-			ps.setString(3, user.getFigure());
 			ps.setString(4, user.getJob());
-			ps.setString(5, user.getLoveType());
 			ps.setString(6, user.getMarry());
 			ps.setString(7, user.getXingzuo());
 			ps.setString(8, user.getLocation());
@@ -319,8 +330,9 @@ public class UserDao {
 			poolcon.close();
 			return 0;
 		}
-	}
+	}*/
 	
+	/*
 	public static ArrayList<String> queryRegist(TranObject tran){
 		String sql0 = "use first_mysql_test";
 		String sql1 = "select registId from user where id = ?";
@@ -360,8 +372,9 @@ public class UserDao {
 			poolcon.close();
 			return null;
 		}
-	}
+	}*/
 	
+	/*
 	public static User getUserInfo(TranObject tran){
 		int userId = (Integer) tran.getObject();
 		String sql0 = "use first_mysql_test";
@@ -396,7 +409,9 @@ public class UserDao {
 		poolcon.close();
 		return enlister;
 	}
+	*/
 
+	/*
 	public static String getUserPhotosAddress(int userId) {
 		String sql0 = "use first_mysql_test";
 		String sql1 = "select photos from user where id = ?";
@@ -427,7 +442,9 @@ public class UserDao {
 			return null;
 		}
 	}
+	*/
 	
+	/*
 	public static int updatePhotos(int userId,int lastPhoto){
 		String sql0 = "use first_mysql_test";
 		String sql1 = "update user set photos= case when isnull(photos) or photos='' then ? else concat(photos,'|',?) end where id =?";
@@ -456,7 +473,9 @@ public class UserDao {
 			return Result.FAILED;
 		}
 	}
+	*/
 	
+	/*
 	public static int updateScore(int id,int value){
 		String sql0 = "use first_mysql_test";
 		String sql1 = "update user SET score = " + value + " where id = ?";
@@ -484,4 +503,5 @@ public class UserDao {
 			return 0;
 		}
 	}
+	*/
 }

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import com.test.jwj.underMoon.bean.User;
 
 public class FriendDao {
+	/*
 	private static DBPool poolImpl = PoolManager.getInstance();
 	//防止初始化
 	private FriendDao() {
@@ -81,5 +82,5 @@ public class FriendDao {
 			}	
 		poolcon.close();
 	}
-	
+	*/
 }

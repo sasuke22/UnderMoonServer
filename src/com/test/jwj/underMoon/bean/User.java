@@ -6,8 +6,8 @@
 package com.test.jwj.underMoon.bean;
 
 import java.io.Serializable;
+import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * 类名：User 说明：用户对象
@@ -30,9 +30,22 @@ public class User implements Serializable {
 	private int height;
 	private String marry;
 	private String job;
-	private String figure;
 	private String xingzuo;
 	private String registId;
+	private String photoAddress;
+	private int score;
+	private Date commentDate;
+	private boolean show;
+	private Date vipDate;
+	
+	public Date getVipDate() {
+		return vipDate;
+	}
+
+	public void setVipDate(Date vipDate) {
+		this.vipDate = vipDate;
+	}
+
 	public String getRegistId() {
 		return registId;
 	}
@@ -40,10 +53,6 @@ public class User implements Serializable {
 	public void setRegistId(String registId) {
 		this.registId = registId;
 	}
-
-	private String loveType;
-	private String photoAddress;
-	private int score;
 
 	public int getScore() {
 		return score;
@@ -85,28 +94,12 @@ public class User implements Serializable {
 		this.job = job;
 	}
 
-	public String getFigure() {
-		return figure;
-	}
-
-	public void setFigure(String figure) {
-		this.figure = figure;
-	}
-
 	public String getXingzuo() {
 		return xingzuo;
 	}
 
 	public void setXingzuo(String xingzuo) {
 		this.xingzuo = xingzuo;
-	}
-
-	public String getLoveType() {
-		return loveType;
-	}
-
-	public void setLoveType(String loveType) {
-		this.loveType = loveType;
 	}
 
 	public String getUserBriefIntro() {
@@ -202,6 +195,22 @@ public class User implements Serializable {
 	public void setLocation(String location) {
 		this.location = location;
 	}
+	
+	public Date getCommentDate() {
+		return commentDate;
+	}
+
+	public void setCommentDate(Date commentDate) {
+		this.commentDate = commentDate;
+	}
+
+	public boolean isShow() {
+		return show;
+	}
+
+	public void setShow(boolean show) {
+		this.show = show;
+	}
 
 	@Override
 	public String toString() {
@@ -209,8 +218,8 @@ public class User implements Serializable {
 				+ userName + ", password=" + password + ", gender=" + gender + ", isOnline=" + isOnline
 				+ ", location=" + location + ", age=" + age
 				+ ", userBriefIntro=" + userBriefIntro + ", height=" + height
-				+ ", marry=" + marry + ", job=" + job + ", figure=" + figure
-				+ ", xingzuo=" + xingzuo + ", loveType=" + loveType
+				+ ", marry=" + marry + ", job=" + job
+				+ ", xingzuo=" + xingzuo
 				+ ", friendList=" + friendList + "]";
 	}
 	

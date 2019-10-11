@@ -72,7 +72,7 @@ public class DBPool implements IMyPool{
 
     public DBPool() {
 
-        init();
+//        init();
     }
 
     private void init() {
@@ -117,24 +117,33 @@ public class DBPool implements IMyPool{
     }
 
 
-    public PooledConnection getConnection() {
-        if (pooledConnections.size() == 0) {
-            System.out.println("获取链接管道失败，原因是连接池中没有可用管道");
-            throw new RuntimeException("创建管道对象失败，原因是即将超过最大上限值");
-        }
-        //连接池中的管道是没有超时  没有其他线程占用
-        PooledConnection connection = getRealConnection();
-
-        while (connection == null) {
-            createConnection(stepSize);
-            connection = getRealConnection();
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        return connection;
+    public Connection getConnection() {
+//        if (pooledConnections.size() == 0) {
+//            System.out.println("获取链接管道失败，原因是连接池中没有可用管道");
+//            throw new RuntimeException("创建管道对象失败，原因是即将超过最大上限值");
+//        }
+//        //连接池中的管道是没有超时  没有其他线程占用
+//        PooledConnection connection = getRealConnection();
+//
+//        while (connection == null) {
+//            createConnection(stepSize);
+//            connection = getRealConnection();
+//            try {
+//                Thread.sleep(300);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return connection;
+		Connection con = null;
+		try {
+			con = DriverManager.getConnection("jdbc:mysql://45.204.8.236:3306/first_mysql_test?&zeroDateTimeBehavior=convertToNull"
+					,"root","sasuke12");//ds.getConnection();
+		} catch (SQLException e) {
+			System.out.println("获取数据库连接失败....");
+			e.printStackTrace();
+		}
+		return con;
     }
 
     @Override

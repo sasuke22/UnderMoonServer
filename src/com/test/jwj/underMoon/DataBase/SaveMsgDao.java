@@ -55,8 +55,9 @@ public class SaveMsgDao {
 		String sql0 = "use first_mysql_test";
 		String sql1= "insert into SaveMsg(sendid,getid,msg,trantype,time,messageType,sendname)" +
 				"values(?,?,?,?,?,?,?)";
-		PooledConnection poolcon = poolImpl.getConnection();
-		Connection con = poolcon.getConnection();
+//		PooledConnection poolcon = poolImpl.getConnection();
+//		Connection con = poolcon.getConnection();
+		Connection con = poolImpl.getConnection();
 		try {
 			con.setAutoCommit(false);
 		} catch (SQLException e1) {
@@ -90,7 +91,7 @@ public class SaveMsgDao {
 			ps.setInt(6, messageType);
 			ps.execute();
 			con.commit();
-			poolcon.close();
+			con.close();
 		} catch (SQLException e) {
 			System.out.println("正在回滚");
 			try {
@@ -99,7 +100,11 @@ public class SaveMsgDao {
 				e1.printStackTrace();
 			}
 			e.printStackTrace();
-			poolcon.close();
+			try {
+				con.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
 	/**
@@ -109,8 +114,9 @@ public class SaveMsgDao {
 		String sql0 = "use first_mysql_test";
 		String sql1 = "delete from saveMsg " +
 				      "where getid=?";
-		PooledConnection poolcon = poolImpl.getConnection();
-		Connection con = poolcon.getConnection();
+//		PooledConnection poolcon = poolImpl.getConnection();
+//		Connection con = poolcon.getConnection();
+		Connection con = poolImpl.getConnection();
 		PreparedStatement ps;
 		try {
 			con.setAutoCommit(false);
@@ -120,7 +126,7 @@ public class SaveMsgDao {
 			ps.setInt(1, getid);
 			ps.execute();
 			con.commit();
-			poolcon.close();
+			con.close();
 		} catch (SQLException e) {
 			try {
 				con.rollback();
@@ -128,7 +134,11 @@ public class SaveMsgDao {
 				e1.printStackTrace();
 			}
 			e.printStackTrace();
-			poolcon.close();
+			try {
+				con.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
 	/**
@@ -141,8 +151,9 @@ public class SaveMsgDao {
 		String sql1 = "select * " +
 				      "from saveMsg " +
 				      "where getid=?";
-		PooledConnection poolcon = poolImpl.getConnection();
-		Connection con = poolcon.getConnection();
+//		PooledConnection poolcon = poolImpl.getConnection();
+//		Connection con = poolcon.getConnection();
+		Connection con = poolImpl.getConnection();
 		PreparedStatement ps ;
 		ResultSet rs;
 		try {
@@ -166,21 +177,24 @@ public class SaveMsgDao {
 					chatEntity.setSendTime(rs.getString("time"));
 					chatEntity.setFriendName(rs.getString("sendname"));
 					tran.setObject(chatEntity);
-				}else if(rs.getInt("resultType")==Result.FRIEND_REQUEST_RESPONSE_ACCEPT){
-					ArrayList<User> list = UserDao.selectFriendByAccountOrID(tran.getSendId());
-					tran.setObject(list.get(0));
-					tran.setSendTime(rs.getString("time"));
+//				}else if(rs.getInt("resultType")==Result.FRIEND_REQUEST_RESPONSE_ACCEPT){
+//					ArrayList<User> list = UserDao.selectFriendByAccountOrID(tran.getSendId());
+//					tran.setObject(list.get(0));
+//					tran.setSendTime(rs.getString("time"));
 				}else{
 					tran.setSendTime(rs.getString("time"));
 				}
 				msgList.add(tran);
 			}
-			
+			con.close();
 		} catch (SQLException e) {
-			poolcon.close();
+			try {
+				con.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 			e.printStackTrace();
 		}
-		poolcon.close();
 		return msgList;
 	}
 }

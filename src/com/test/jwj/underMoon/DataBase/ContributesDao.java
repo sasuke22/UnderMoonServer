@@ -12,6 +12,7 @@ import java.util.HashMap;
 import com.test.jwj.underMoon.bean.MeetingDetail;
 import com.test.jwj.underMoon.bean.TranObject;
 public class ContributesDao {
+	/*
 	private static DBPool poolImpl = PoolManager.getInstance();
 	public static ArrayList<MeetingDetail> selectContrbutesById(int userId){
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
@@ -335,5 +336,5 @@ public class ContributesDao {
 			return null;
 		}
 	}
-	
+	*/
 }

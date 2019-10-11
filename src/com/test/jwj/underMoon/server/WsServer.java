@@ -100,15 +100,21 @@ public class WsServer extends WebSocketServer{
 		System.out.println("user:" + tran.getObject());
 		User user = new Gson().fromJson(tran.getObject().toString(),User.class);
 		// 验证密码和用户名是否存在，若存在则为user对象赋值
+		System.out.println("1:"+user.getAccount());
 		boolean isExisted = UserDao.login(user);
 		if (isExisted == true) {
+			System.out.println("2:");
 			ClientActivity newClient = new ClientActivity(conn,this);
+			System.out.println("3:");
 			addClient(user.getId(), newClient);
-			UserDao.updateIsOnline(user.getId(), 1);
+			System.out.println("4:");
+//			UserDao.updateIsOnline(user.getId(), 1);
 			newClient.setUser(user);
+			System.out.println("5:");
 			System.out.println(user.getAccount() + "上线了,当前在线人数：" + clients.size());
 			tran.setResult(Result.LOGIN_SUCCESS);
 			tran.setObject(user);
+			tran.setReceiveId(user.getId());
 			newClient.send(user.getId(),tran);
 			// 获取离线信息
 			ArrayList<TranObject> offMsg = SaveMsgDao.selectMsg(user.getId());

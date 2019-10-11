@@ -1,8 +1,10 @@
 package com.test.jwj.underMoon.DataBase;
 
+import java.sql.Connection;
+
 
 public interface IMyPool {
-	PooledConnection getConnection();
+	Connection getConnection();
 
     void createConnection(int count);
 }
