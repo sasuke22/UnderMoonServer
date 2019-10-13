@@ -44,6 +44,7 @@ import com.qiqiim.constant.Constants;
 import com.qiqiim.server.connertor.impl.ImConnertorImpl;
 import com.qiqiim.server.model.proto.MessageProto;
 import com.qiqiim.server.proxy.MessageProxy;
+import com.qiqiim.websocket.WsServer;
 
 
 public class ImWebsocketServer  {
@@ -63,6 +64,8 @@ public class ImWebsocketServer  {
     public void init() throws Exception {
         log.info("start qiqiim websocketserver ...");
 
+        WsServer wsServer = new WsServer(8400);
+		wsServer.start();
         // Server 服务启动
         ServerBootstrap bootstrap = new ServerBootstrap();
 

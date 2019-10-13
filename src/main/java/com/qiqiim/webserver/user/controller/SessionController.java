@@ -162,7 +162,7 @@ public class SessionController extends BaseController{
 	public int login(HttpServletRequest request,HttpServletResponse response){
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		User user = new Gson().fromJson(req.getParameter("user"), User.class);
-		user = UserDao.login(user);
+//		user = UserDao.login(user);
 		if (user != null) {
 			//TODO 应该是要参照ImController里的login逻辑，在打开对话框的时候才将用户加入server，或使用相同的client中的对话方式
 		}

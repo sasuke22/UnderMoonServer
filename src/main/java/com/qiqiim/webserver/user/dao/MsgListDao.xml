@@ -3,8 +3,19 @@
 
 <mapper namespace="com.qiqiim.webserver.user.dao.MsgListDao">
 
-	<select id="queryMessageList" resultType="com.qiqiim.constant.Message" parameterType="int" >
-		select * from msg_list where id = #{value}
+	<select id="queryMessageList" resultType="com.qiqiim.constant.Message">
+		select * from msg_list where user_id = #{value}
 	</select>
 
+	<insert id="insertMessage" parameterType="com.qiqiim.constant.ChatEntity">
+		insert into msg_list where 
+	</insert>
+	
+	<select id="msgExist">
+		select isnull(select * from msg_list where user_id = #{user_id} and another_id = #{another_id})
+	</select>
+	
+	<update id="updateMessage" parameterType="com.qiqiim.constant.ChatEntity">
+		update msg_list set content = #{content} where user_id = #{senderId} and another_id = #{receiverId}
+	</update>
 </mapper>

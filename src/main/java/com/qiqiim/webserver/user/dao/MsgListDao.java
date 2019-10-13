@@ -1,6 +1,7 @@
 package com.qiqiim.webserver.user.dao;
 import java.util.List;
 
+import com.qiqiim.constant.ChatEntity;
 import com.qiqiim.constant.Message;
 import com.qiqiim.webserver.base.dao.BaseDao;
 
@@ -13,4 +14,10 @@ import com.qiqiim.webserver.base.dao.BaseDao;
  */
 public interface MsgListDao extends BaseDao<List<Message>> {
 	public List<Message> queryMessageList(int user_id);
+	
+	public int msgExist(int user_id,int another_id);
+	
+	public void insertMessage(ChatEntity chat);
+
+	public void updateMessage(ChatEntity chat);
 }

@@ -19,7 +19,7 @@ import com.qiqiim.constant.Result;
 import com.qiqiim.constant.TranObject;
 import com.qiqiim.constant.TranObjectType;
 import com.qiqiim.constant.User;
-import com.qiqiim.webserver.user.dao.SaveMsgDao;
+import com.qiqiim.webserver.user.dao.ChatListDao;
 import com.qiqiim.webserver.user.dao.UserDao;
 
 public class WsServer extends WebSocketServer{
@@ -106,7 +106,6 @@ public class WsServer extends WebSocketServer{
 			System.out.println("3:");
 			addClient(user.getId(), newClient);
 			System.out.println("4:");
-//			UserDao.updateIsOnline(user.getId(), 1);
 			newClient.setUser(user);
 			System.out.println("5:");
 			System.out.println(user.getAccount() + "上线了,当前在线人数：" + clients.size());
@@ -115,10 +114,10 @@ public class WsServer extends WebSocketServer{
 			tran.setReceiveId(user.getId());
 			newClient.send(user.getId(),tran);
 			// 获取离线信息
-			ArrayList<TranObject> offMsg = SaveMsgDao.selectMsg(user.getId());
-			for (int i = 0; i < offMsg.size(); i++)
-				newClient.insertQueue(offMsg.get(i));
-			SaveMsgDao.deleteSaveMsg(user.getId());
+//			ArrayList<TranObject> offMsg = SaveMsgDao.selectMsg(user.getId());
+//			for (int i = 0; i < offMsg.size(); i++)
+//				newClient.insertQueue(offMsg.get(i));
+//			SaveMsgDao.deleteSaveMsg(user.getId());
 		} else{
 			tran.setResult(Result.LOGIN_FAILED);
 			JSONObject json = JSONObject.fromObject(tran,jsonConfig);

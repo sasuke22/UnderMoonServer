@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qiqiim.constant.ChatEntity;
 import com.qiqiim.constant.Message;
 import com.qiqiim.webserver.user.dao.MsgListDao;
 import com.qiqiim.webserver.user.service.MsgListService;
@@ -18,8 +19,23 @@ public class MsgListServiceImpl implements MsgListService{
 	MsgListDao msgListDao;
 
 	@Override
-	public List<Message> queryMessageList(int userId) {
-		return msgListDao.queryMessageList(userId);
+	public List<Message> queryMessageList(int user_id) {
+		return msgListDao.queryMessageList(user_id);
+	}
+
+	@Override
+	public int msgExist(int user_id,int another_id) {
+		return msgListDao.msgExist(user_id,another_id);
+	}
+	
+	@Override
+	public void updateMessage(ChatEntity chat) {
+		msgListDao.updateMessage(chat);
+	}
+	
+	@Override
+	public void insertMessage(ChatEntity chat) {
+		msgListDao.insertMessage(chat);
 	}
 
 }

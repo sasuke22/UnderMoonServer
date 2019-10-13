@@ -44,6 +44,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.qiqiim.constant.Article;
+import com.qiqiim.constant.ChatEntity;
 import com.qiqiim.constant.CommentDetail;
 import com.qiqiim.constant.Constants;
 import com.qiqiim.constant.MeetingDetail;
@@ -171,8 +172,8 @@ public class ImController extends BaseController{
 	 */
 	@RequestMapping(value="/login",method=RequestMethod.POST)
 	@ResponseBody
-	public int login(@RequestParam("account")String account,@RequestParam("password")String password,
-			/*@RequestParam Map<String, Object> params,*/HttpServletRequest request){
+	public int login(@RequestParam("account")String account,@RequestParam("password")String password,HttpServletRequest request){
+		
 		return -1;//login fail
 	}
 	
@@ -1214,14 +1215,29 @@ public class ImController extends BaseController{
 	}
 	
 	/**
-	 * for flutter,获取聊天记录
+	 * for flutter,获取聊天列表
 	 */
 	@RequestMapping(value="/getmsglist",produces="application/json")
 	@ResponseBody
-	public int getMsgList(@RequestParam("id") int userId, HttpServletRequest request,HttpServletResponse response){
+	public Map<String,List<Message>> getMsgList(@RequestParam("id") int userId, HttpServletRequest request,HttpServletResponse response){
 		List<Message> msgList= msgListServiceImpl.queryMessageList(userId);
 		System.out.println("msg:"+msgList.size());
-		return 1;
+		HashMap<String,List<Message>> map = new HashMap<String,List<Message>>();
+		map.put("list", msgList);
+		return map;
+	}
+	
+	/**
+	 * for flutter,获取和某人聊天记录
+	 */
+	@RequestMapping(value="/getchatlist",produces="application/json")
+	@ResponseBody
+	public Map<String,List<ChatEntity>> getChatList(@RequestParam("id") int userId, @RequestParam("receive_id") int receive_id,HttpServletRequest request,HttpServletResponse response){
+		List<ChatEntity> msgList= msgListServiceImpl.queryMessageList(userId);
+		System.out.println("msg:"+msgList.size());
+		HashMap<String,List<ChatEntity>> map = new HashMap<String,List<ChatEntity>>();
+		map.put("list", msgList);
+		return map;
 	}
 	
 	/**
