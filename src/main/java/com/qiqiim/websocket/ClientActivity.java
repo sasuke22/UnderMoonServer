@@ -135,15 +135,7 @@ public class ClientActivity {
 		ClientActivity friendClient = null;
 		System.out.println("包含要发送的那个好友吗？" + tran.getReceiveId() + mServer.contatinId(tran.getReceiveId()));
 		ChatEntity chat = (ChatEntity)tran.getObject();
-		chatListImpl.insertMsg(chat);//存到聊天记录中
-		if(msgListImpl.msgExist(chat.getSenderId(),chat.getReceiverId()) > 0){//自己列表有对方
-			msgListImpl.updateMessage(chat);//TODO 这里应该可以优化
-		}else
-			msgListImpl.insertMessage(chat);
-		if(msgListImpl.msgExist(chat.getReceiverId(),chat.getSenderId()) > 0){//对方列表有自己
-			msgListImpl.updateMessage(chat);
-		}else
-			msgListImpl.insertMessage(chat);
+		msgListImpl.insertMessage(chat);//更新消息列表表
 		if (mServer.contatinId(tran.getReceiveId())) {
 			friendClient = mServer.getClientById(tran.getReceiveId());
 			System.out.println("将好友请求发给好友...");

@@ -9,16 +9,11 @@ public interface ChatListDao {
 	/**
 	 * 插入消息
 	 */
-	public int insertMsg(ChatEntity chat);
-	
-	/**
-	 * 删除保存的离线信息
-	 */
-	public void  deleteMsg(int userId,int receiveId);
+	public int insertChat(ChatEntity chat);
 	
 	/**
 	 * 查询所有的离线消息
 	 * 
 	 */
-	public ArrayList<ChatEntity> selectHistoryMsg(int id);
+	public ArrayList<ChatEntity> selectHistoryChat(int id);
 }

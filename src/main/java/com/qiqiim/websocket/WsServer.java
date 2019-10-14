@@ -1,7 +1,6 @@
 package com.qiqiim.websocket;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -19,7 +18,6 @@ import com.qiqiim.constant.Result;
 import com.qiqiim.constant.TranObject;
 import com.qiqiim.constant.TranObjectType;
 import com.qiqiim.constant.User;
-import com.qiqiim.webserver.user.dao.ChatListDao;
 import com.qiqiim.webserver.user.dao.UserDao;
 
 public class WsServer extends WebSocketServer{

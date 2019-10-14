@@ -3,16 +3,8 @@
 
 <mapper namespace="com.qiqiim.webserver.user.dao.ChatListDao">
 
-	<select id="selectHistoryMsg" resultType="com.qiqiim.constant.ChatEntity">
-		select * from messages where sendid = #{sendid} and receiveid = #{receiveid} or sendid = #{receiveid} and receiveid = #{sendid}
+	<select id="selectHistoryChat" resultType="com.qiqiim.constant.ChatEntity">
+		select * from messages where user_id = #{user_id} and another_id = #{another_id} or user_id = #{another_id} and another_id = #{user_id}
 	</select>
 
-	<insert id="insertMsg" useGeneratedKeys="true" keyProperty="id" parameterType="com.qiqiim.constant.ChatEntity">
-		insert into messages (sendid,receiveid,content,time) values(#{senderId},#{receiverId},#{content},CURRENT_TIMESTAMP)
-		insert into messages (sendid,receiveid,content,time) values(#{receiverId},#{senderId},#{content},CURRENT_TIMESTAMP)
-	</insert>
-	
-	<delete id="deleteMsg">
-		delete from messages where sendid = {#sendid} and receiveid = #{receiveid}
-	</delete>
 </mapper>

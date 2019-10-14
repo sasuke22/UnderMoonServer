@@ -9,7 +9,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.qiqiim.constant.Result;
 import com.qiqiim.constant.User;
 
 

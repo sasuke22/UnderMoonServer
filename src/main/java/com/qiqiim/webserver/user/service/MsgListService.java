@@ -8,9 +8,9 @@ import com.qiqiim.constant.Message;
 public interface MsgListService {
 	List<Message> queryMessageList(int user_id);
 	
-	int msgExist(int user_id,int another_id);
-	
-	void updateMessage(ChatEntity chat);
-
 	void insertMessage(ChatEntity chat);
+	
+	void deleteMessage(int user_id,int another_id);
+	
+	void readMessage(int user_id,int another_id);
 }

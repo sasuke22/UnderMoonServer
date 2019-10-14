@@ -4,37 +4,28 @@ import java.io.Serializable;
 
 public class ChatEntity implements Serializable{
 	private static final long serialVersionUID = 1L;
-	public static final int  RECEIVE = 0;
-	public static final int SEND = 1;
-	private int senderId;
-	private int receiverId;
-	private String sendDate;
-	private int messageType;
+	private int user_id;
+	private int another_id;
+	private String time;
 	private String content;
-	public int getSenderId() {
-		return senderId;
-	}
-	public void setSenderId(int senderId) {
-		this.senderId = senderId;
-	}
-	public int getReceiverId() {
-		return receiverId;
-	}
-	public void setReceiverId(int receiverId) {
-		this.receiverId = receiverId;
-	}
 	
-	public int getMessageType() {
-		return messageType;
+	public int getUser_id() {
+		return user_id;
 	}
-	public void setMessageType(int messageType) {
-		this.messageType = messageType;
+	public void setUser_id(int user_id) {
+		this.user_id = user_id;
 	}
-	public String getSendTime() {
-		return sendDate;
+	public int getAnother_id() {
+		return another_id;
 	}
-	public void setSendTime(String sendDate) {
-		this.sendDate = sendDate;
+	public void setAnother_id(int another_id) {
+		this.another_id = another_id;
+	}
+	public String getTime() {
+		return time;
+	}
+	public void setTime(String time) {
+		this.time = time;
 	}
 	public String getContent() {
 		return content;
@@ -42,4 +33,6 @@ public class ChatEntity implements Serializable{
 	public void setContent(String content) {
 		this.content = content;
 	}
+	
+	
 }

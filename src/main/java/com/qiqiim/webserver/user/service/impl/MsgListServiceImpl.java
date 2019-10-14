@@ -24,18 +24,18 @@ public class MsgListServiceImpl implements MsgListService{
 	}
 
 	@Override
-	public int msgExist(int user_id,int another_id) {
-		return msgListDao.msgExist(user_id,another_id);
-	}
-	
-	@Override
-	public void updateMessage(ChatEntity chat) {
-		msgListDao.updateMessage(chat);
-	}
-	
-	@Override
 	public void insertMessage(ChatEntity chat) {
 		msgListDao.insertMessage(chat);
+	}
+
+	@Override
+	public void deleteMessage(int user_id, int another_id) {
+		msgListDao.deleteMessage(user_id,another_id);
+	}
+
+	@Override
+	public void readMessage(int user_id, int another_id) {
+		msgListDao.readMessage(user_id,another_id);
 	}
 
 }

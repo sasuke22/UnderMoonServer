@@ -73,6 +73,7 @@ import com.qiqiim.webserver.user.model.ImUserData;
 import com.qiqiim.webserver.user.model.UserAccountEntity;
 import com.qiqiim.webserver.user.model.UserInfoEntity;
 import com.qiqiim.webserver.user.model.UserMessageEntity;
+import com.qiqiim.webserver.user.service.ChatListService;
 import com.qiqiim.webserver.user.service.MsgListService;
 import com.qiqiim.webserver.user.service.UserAccountService;
 import com.qiqiim.webserver.user.service.UserDepartmentService;
@@ -96,6 +97,8 @@ public class ImController extends BaseController{
 	private DwrConnertor dwrConnertorImpl;
 	@Autowired
 	private MsgListService msgListServiceImpl;
+	@Autowired
+	private ChatListService chatListServiceImpl;
 	@Autowired
 	private MessageProxy proxy;
 	
@@ -1228,16 +1231,34 @@ public class ImController extends BaseController{
 	}
 	
 	/**
+	 * for flutter,删除和某人的聊天
+	 */
+	@RequestMapping(value="/deletemsglist",produces="application/json")
+	@ResponseBody
+	public void deleteMsgList(@RequestParam("user_id") int userId, @RequestParam("another_id") int anotherId, HttpServletRequest request,HttpServletResponse response){
+		msgListServiceImpl.deleteMessage(userId, anotherId);
+	}
+	
+	/**
 	 * for flutter,获取和某人聊天记录
 	 */
 	@RequestMapping(value="/getchatlist",produces="application/json")
 	@ResponseBody
 	public Map<String,List<ChatEntity>> getChatList(@RequestParam("id") int userId, @RequestParam("receive_id") int receive_id,HttpServletRequest request,HttpServletResponse response){
-		List<ChatEntity> msgList= msgListServiceImpl.queryMessageList(userId);
+		List<ChatEntity> msgList= chatListServiceImpl.selectHistoryChat(userId);
 		System.out.println("msg:"+msgList.size());
 		HashMap<String,List<ChatEntity>> map = new HashMap<String,List<ChatEntity>>();
 		map.put("list", msgList);
 		return map;
+	}
+	
+	/**
+	 * for flutter,设置和某人聊天记录为已读
+	 */
+	@RequestMapping(value="/readchatlist",produces="application/json")
+	@ResponseBody
+	public void readChatList(@RequestParam("id") int userId, @RequestParam("another_id") int another_id,HttpServletRequest request,HttpServletResponse response){
+		msgListServiceImpl.readMessage(userId, another_id);
 	}
 	
 	/**

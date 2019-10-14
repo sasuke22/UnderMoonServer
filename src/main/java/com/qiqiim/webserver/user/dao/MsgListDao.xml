@@ -8,14 +8,17 @@
 	</select>
 
 	<insert id="insertMessage" parameterType="com.qiqiim.constant.ChatEntity">
-		insert into msg_list where 
+		insert into msg_list (user_id,another_id,content,unread,time) values (#{senderId},#{receiverId},#{content},1,CURRENT_TIMESTAMP) on duplicate key update content=#{content},unread=unread+1,time=CURRENT_TIMESTAMP
+		insert into msg_list (user_id,another_id,content,unread,time) values (#{receiverId},#{senderId},#{content},1,CURRENT_TIMESTAMP) on duplicate key update content=#{content},unread=unread+1,time=CURRENT_TIMESTAMP
+		insert into messages (user_id,another_id,content,time) values(#{user_id},#{another_id},#{content},CURRENT_TIMESTAMP)
+		insert into messages (user_id,another_id,content,time) values(#{another_id},#{user_id},#{content},CURRENT_TIMESTAMP)
 	</insert>
 	
-	<select id="msgExist">
-		select isnull(select * from msg_list where user_id = #{user_id} and another_id = #{another_id})
-	</select>
+	<delete id="deleteMessage">
+		delete from messages where user_id = {#user_id} and another_id = #{another_id}
+	</delete>
 	
-	<update id="updateMessage" parameterType="com.qiqiim.constant.ChatEntity">
-		update msg_list set content = #{content} where user_id = #{senderId} and another_id = #{receiverId}
+	<update id="readMessage">
+		update msg_list set unread = 0 where user_id = #{user_id} and another_id = #{another_id}
 	</update>
 </mapper>
