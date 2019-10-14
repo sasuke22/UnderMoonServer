@@ -36,7 +36,7 @@
     </bean>  
    <!-- imwebsocketserver  port 2048    -->
    <bean id="imWebsocketServer" class="com.qiqiim.server.ImWebsocketServer" init-method="init"   destroy-method="destroy">
-        <property name="port" value="2048"/>
+        <property name="port" value="8400"/>
    </bean> 
    <bean id="connertor" class="com.qiqiim.server.connertor.impl.ImConnertorImpl"/> 
    <bean id="proxy" class="com.qiqiim.server.proxy.impl.MessageProxyImpl"/>

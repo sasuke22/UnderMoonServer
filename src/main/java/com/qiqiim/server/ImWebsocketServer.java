@@ -63,8 +63,8 @@ public class ImWebsocketServer  {
     public void init() throws Exception {
         log.info("start qiqiim websocketserver ...");
 
-        WsServer wsServer = new WsServer(8400);
-		wsServer.start();
+//        WsServer wsServer = new WsServer(8400);
+//		wsServer.start();
         // Server 服务启动
         ServerBootstrap bootstrap = new ServerBootstrap();
 
@@ -83,45 +83,45 @@ public class ImWebsocketServer  {
 	            // 主要用于处理大数据流，比如一个1G大小的文件如果你直接传输肯定会撑暴jvm内存的; 增加之后就不用考虑这个问题了
 	            pipeline.addLast(new ChunkedWriteHandler());
 	            // WebSocket数据压缩
-	            pipeline.addLast(new WebSocketServerCompressionHandler());
+//	            pipeline.addLast(new WebSocketServerCompressionHandler());
 	            // 协议包长度限制
 	            pipeline.addLast(new WebSocketServerProtocolHandler("/ws", null, true, Constants.ImserverConfig.MAX_FRAME_LENGTH));
 	            // 协议包解码
-	            pipeline.addLast(new MessageToMessageDecoder<WebSocketFrame>() {
-	                @Override
-	                protected void decode(ChannelHandlerContext ctx, WebSocketFrame frame, List<Object> objs) throws Exception {
-	                    ByteBuf buf = ((BinaryWebSocketFrame) frame).content();
-	                    objs.add(buf);
-	                    buf.retain();
-	                }
-	            });
+//	            pipeline.addLast(new MessageToMessageDecoder<WebSocketFrame>() {
+//	                @Override
+//	                protected void decode(ChannelHandlerContext ctx, WebSocketFrame frame, List<Object> objs) throws Exception {
+//	                    ByteBuf buf = ((BinaryWebSocketFrame) frame).content();
+//	                    objs.add(buf);
+//	                    buf.retain();
+//	                }
+//	            });
 	            // 协议包编码
-	            pipeline.addLast(new MessageToMessageEncoder<MessageLiteOrBuilder>() {
-	                @Override
-	                protected void encode(ChannelHandlerContext ctx, MessageLiteOrBuilder msg, List<Object> out) throws Exception {
-	                    ByteBuf result = null;
-	                    if (msg instanceof MessageLite) {
-	                        result = wrappedBuffer(((MessageLite) msg).toByteArray());
-	                    }
-	                    if (msg instanceof MessageLite.Builder) {
-	                        result = wrappedBuffer(((MessageLite.Builder) msg).build().toByteArray());
-	                    }
-	                    // 然后下面再转成websocket二进制流，因为客户端不能直接解析protobuf编码生成的
-	                    WebSocketFrame frame = new BinaryWebSocketFrame(result);
-	                    out.add(frame);
-	                }
-	            });
+//	            pipeline.addLast(new MessageToMessageEncoder<MessageLiteOrBuilder>() {
+//	                @Override
+//	                protected void encode(ChannelHandlerContext ctx, MessageLiteOrBuilder msg, List<Object> out) throws Exception {
+//	                    ByteBuf result = null;
+//	                    if (msg instanceof MessageLite) {
+//	                        result = wrappedBuffer(((MessageLite) msg).toByteArray());
+//	                    }
+//	                    if (msg instanceof MessageLite.Builder) {
+//	                        result = wrappedBuffer(((MessageLite.Builder) msg).build().toByteArray());
+//	                    }
+//	                    // 然后下面再转成websocket二进制流，因为客户端不能直接解析protobuf编码生成的
+//	                    WebSocketFrame frame = new BinaryWebSocketFrame(result);
+//	                    out.add(frame);
+//	                }
+//	            });
 	            // 协议包解码时指定Protobuf字节数实例化为CommonProtocol类型
-	            pipeline.addLast(decoder);
+//	            pipeline.addLast(decoder);
 	            pipeline.addLast(new IdleStateHandler(Constants.ImserverConfig.READ_IDLE_TIME,Constants.ImserverConfig.WRITE_IDLE_TIME,0));
 	            // 业务处理器
-	            pipeline.addLast(new ImWebSocketServerHandler(proxy,connertor));
+	            pipeline.addLast(new ImWebSocketServerHandler());
 	    		 
             }
         });
         
         // 可选参数
-    	bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
+//    	bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
         // 绑定接口，同步等待成功
         log.info("start qiqiim websocketserver at port[" + port + "].");
         ChannelFuture future = bootstrap.bind(port).sync();
@@ -135,7 +135,7 @@ public class ImWebsocketServer  {
                 }
             }
         });
-       // future.channel().closeFuture().syncUninterruptibly();
+//        future.channel().closeFuture().sync();
     }
 
     public void destroy() {

@@ -34,7 +34,7 @@ public class MessageProxyImpl implements MessageProxy {
 
     public MessageWrapper convertToMessageWrapper(String sessionId ,MessageProto.Model message) {
     	
-        log.error("get message");
+        System.out.println("get message");
         switch (message.getCmd()) {
 			case Constants.CmdType.BIND:
 				 try {

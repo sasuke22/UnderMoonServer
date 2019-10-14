@@ -17,25 +17,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qiqiim.constant.Constants;
+import com.qiqiim.constant.TranObject;
 import com.qiqiim.server.connertor.impl.ImConnertorImpl;
 import com.qiqiim.server.model.MessageWrapper;
 import com.qiqiim.server.model.proto.MessageProto;
 import com.qiqiim.server.proxy.MessageProxy;
 import com.qiqiim.util.ImUtils;
 @Sharable
-public class ImWebSocketServerHandler   extends SimpleChannelInboundHandler<MessageProto.Model>{
+public class ImWebSocketServerHandler extends SimpleChannelInboundHandler{
 
 	private final static Logger log = LoggerFactory.getLogger(ImWebSocketServerHandler.class);
-    private ImConnertorImpl connertor = null;
-    private MessageProxy proxy = null;
+//    private ImConnertorImpl connertor = null;
+//    private MessageProxy proxy = null;
 
-    public ImWebSocketServerHandler(MessageProxy proxy, ImConnertorImpl connertor) {
-        this.connertor = connertor;
-        this.proxy = proxy;
+    public ImWebSocketServerHandler() {
+//        this.connertor = connertor;
+//        this.proxy = proxy;
     }
 	
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object o) throws Exception {
+    	System.out.println("user event");
     	 String sessionId = ctx.channel().attr(Constants.SessionConfig.SERVER_SESSION_ID).get();
     	//发送心跳包
     	if (o instanceof IdleStateEvent && ((IdleStateEvent) o).state().equals(IdleState.WRITER_IDLE)) {
@@ -54,30 +56,31 @@ public class ImWebSocketServerHandler   extends SimpleChannelInboundHandler<Mess
 			Long lastTime = (Long) ctx.channel().attr(Constants.SessionConfig.SERVER_SESSION_HEARBEAT).get();
 	     	if(lastTime == null || ((System.currentTimeMillis() - lastTime)/1000>= Constants.ImserverConfig.PING_TIME_OUT))
 	     	{
-	     		connertor.close(ctx);
+//	     		connertor.close(ctx);
 	     	}
 	     	//ctx.channel().attr(Constants.SessionConfig.SERVER_SESSION_HEARBEAT).set(null);
 	    }
 	}
 
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, MessageProto.Model message)
+	protected void channelRead0(ChannelHandlerContext ctx, Object tran)
 			throws Exception {
+		System.out.println("channel read:"+tran.toString());
 		  try {
-			   String sessionId = connertor.getChannelSessionId(ctx);
+//			   String sessionId = connertor.getChannelSessionId(ctx);
                 // inbound
-                if (message.getMsgtype() == Constants.ProtobufType.SEND) {
-                	ctx.channel().attr(Constants.SessionConfig.SERVER_SESSION_HEARBEAT).set(System.currentTimeMillis());
-                    MessageWrapper wrapper = proxy.convertToMessageWrapper(sessionId, message);
-                    if (wrapper != null)
-                        receiveMessages(ctx, wrapper);
-                }
-                // outbound
-                if (message.getMsgtype() == Constants.ProtobufType.REPLY) {
-                	MessageWrapper wrapper = proxy.convertToMessageWrapper(sessionId, message);
-                	if (wrapper != null)
-                      receiveMessages(ctx, wrapper);
-                }
+//                if (message.getMsgtype() == Constants.ProtobufType.SEND) {
+//                	ctx.channel().attr(Constants.SessionConfig.SERVER_SESSION_HEARBEAT).set(System.currentTimeMillis());
+//                    MessageWrapper wrapper = proxy.convertToMessageWrapper(sessionId, message);
+//                    if (wrapper != null)
+//                        receiveMessages(ctx, wrapper);
+//                }
+//                // outbound
+//                if (message.getMsgtype() == Constants.ProtobufType.REPLY) {
+//                	MessageWrapper wrapper = proxy.convertToMessageWrapper(sessionId, message);
+//                	if (wrapper != null)
+//                      receiveMessages(ctx, wrapper);
+//                }
 	        } catch (Exception e) {
 	            log.error("ImWebSocketServerHandler channerRead error.", e);
 	            throw e;
@@ -102,8 +105,8 @@ public class ImWebSocketServerHandler   extends SimpleChannelInboundHandler<Mess
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
         log.debug("ImWebSocketServerHandler channelInactive from (" + ImUtils.getRemoteAddress(ctx) + ")");
-        String sessionId = connertor.getChannelSessionId(ctx);
-        receiveMessages(ctx,new MessageWrapper(MessageWrapper.MessageProtocol.CLOSE, sessionId,null, null));  
+//        String sessionId = connertor.getChannelSessionId(ctx);
+//        receiveMessages(ctx,new MessageWrapper(MessageWrapper.MessageProtocol.CLOSE, sessionId,null, null));  
     }
 
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
@@ -121,20 +124,21 @@ public class ImWebSocketServerHandler   extends SimpleChannelInboundHandler<Mess
      * @param wrapper
      */
     private void receiveMessages(ChannelHandlerContext hander, MessageWrapper wrapper) {
+    	System.out.println("channel read");
     	//设置消息来源为Websocket
     	wrapper.setSource(Constants.ImserverConfig.WEBSOCKET);
-        if (wrapper.isConnect()) {
-       	    connertor.connect(hander, wrapper); 
-        } else if (wrapper.isClose()) {
-        	connertor.close(hander,wrapper);
-        } else if (wrapper.isHeartbeat()) {
-        	connertor.heartbeatToClient(hander,wrapper);
-        }else if (wrapper.isGroup()) {
-        	connertor.pushGroupMessage(wrapper);
-        }else if (wrapper.isSend()) {
-        	connertor.pushMessage(wrapper);
-        } else if (wrapper.isReply()) {
-        	connertor.pushMessage(wrapper.getSessionId(),wrapper);
-        }  
+//        if (wrapper.isConnect()) {
+//       	    connertor.connect(hander, wrapper); 
+//        } else if (wrapper.isClose()) {
+//        	connertor.close(hander,wrapper);
+//        } else if (wrapper.isHeartbeat()) {
+//        	connertor.heartbeatToClient(hander,wrapper);
+//        }else if (wrapper.isGroup()) {
+//        	connertor.pushGroupMessage(wrapper);
+//        }else if (wrapper.isSend()) {
+//        	connertor.pushMessage(wrapper);
+//        } else if (wrapper.isReply()) {
+//        	connertor.pushMessage(wrapper.getSessionId(),wrapper);
+//        }  
     }
 }
