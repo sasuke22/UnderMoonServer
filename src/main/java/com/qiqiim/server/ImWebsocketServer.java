@@ -85,7 +85,7 @@ public class ImWebsocketServer  {
 	            // WebSocket数据压缩
 //	            pipeline.addLast(new WebSocketServerCompressionHandler());
 	            // 协议包长度限制
-	            pipeline.addLast(new WebSocketServerProtocolHandler("/ws", null, true, Constants.ImserverConfig.MAX_FRAME_LENGTH));
+//	            pipeline.addLast(new WebSocketServerProtocolHandler("/ws", null, true, Constants.ImserverConfig.MAX_FRAME_LENGTH));
 	            // 协议包解码
 //	            pipeline.addLast(new MessageToMessageDecoder<WebSocketFrame>() {
 //	                @Override
@@ -121,7 +121,7 @@ public class ImWebsocketServer  {
         });
         
         // 可选参数
-//    	bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
+    	bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
         // 绑定接口，同步等待成功
         log.info("start qiqiim websocketserver at port[" + port + "].");
         ChannelFuture future = bootstrap.bind(port).sync();

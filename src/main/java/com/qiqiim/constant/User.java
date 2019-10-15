@@ -9,6 +9,8 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.util.ArrayList;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 /**
  * 类名：User 说明：用户对象
  */
@@ -34,8 +36,10 @@ public class User implements Serializable {
 	private String registId;
 	private String photoAddress;
 	private int score;
+	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date commentDate;
 	private boolean show;
+	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date vipDate;
 	private int lock;
 	

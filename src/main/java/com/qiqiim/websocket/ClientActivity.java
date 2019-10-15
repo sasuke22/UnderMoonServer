@@ -1,13 +1,10 @@
 package com.qiqiim.websocket;
 
 import java.util.LinkedList;
-
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
-
 import org.java_websocket.WebSocket;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import com.qiqiim.constant.ChatEntity;
 import com.qiqiim.constant.Result;
 import com.qiqiim.constant.TranObject;
@@ -47,9 +44,9 @@ public class ClientActivity {
 		return mStream;
 	}
 	
-	public ClientActivity(WebSocket conn,WsServer mClient){
+	public ClientActivity(WebSocket conn,WsServer wsServer){
 		sendQueue = new LinkedList<TranObject>();
-		this.mServer = mClient;
+		this.mServer = wsServer;
 		this.mStream = conn;
 		mClientSend = new ClientSendThread(this);
 		new Thread(mClientSend).start();

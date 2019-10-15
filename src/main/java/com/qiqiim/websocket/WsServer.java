@@ -48,7 +48,7 @@ public class WsServer extends WebSocketServer{
 	@Override
 	public void onMessage(WebSocket conn, String message) {
 		System.out.println("message " + message);
-		TranObject tran = new Gson().fromJson(message, TranObject.class);
+		TranObject tran = com.alibaba.fastjson.JSONObject.parseObject(message,  TranObject.class);
 		switch(tran.getTranType()){
 		case TranObjectType.HEART_BEAT:
 			clients.get(tran.getSendId()).setmTime(System.currentTimeMillis());
