@@ -7,6 +7,7 @@ public class Message {
 	private int user_id;//用户id
 	private int another_id;//对方用户id
 	private String content;//发送内容
+	private String name;//对方名字
 	private Date time;//发送时间
 	private int unread;//未读消息数
 	
@@ -45,5 +46,11 @@ public class Message {
 	}
 	public void setUnread(int unread) {
 		this.unread = unread;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 }

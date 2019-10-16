@@ -4,7 +4,7 @@
 <mapper namespace="com.qiqiim.webserver.user.dao.MsgListDao">
 
 	<select id="queryMessageList" resultType="com.qiqiim.constant.Message">
-		select * from msg_list where user_id = #{value}
+		select a.*,b.name from msg_list a,user b where user_id = #{value} and a.user_id = b.id
 	</select>
 
 	<insert id="insertMessage" parameterType="com.qiqiim.constant.ChatEntity">
