@@ -4,22 +4,22 @@ import java.io.Serializable;
 
 public class ChatEntity implements Serializable{
 	private static final long serialVersionUID = 1L;
-	private int user_id;
-	private int another_id;
+	private int userId;
+	private int anotherId;
 	private String time;
 	private String content;
 	
-	public int getUser_id() {
-		return user_id;
+	public int getUserId() {
+		return userId;
 	}
-	public void setUser_id(int user_id) {
-		this.user_id = user_id;
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
-	public int getAnother_id() {
-		return another_id;
+	public int getAnotherId() {
+		return anotherId;
 	}
-	public void setAnother_id(int another_id) {
-		this.another_id = another_id;
+	public void setAnotherId(int anotherId) {
+		this.anotherId = anotherId;
 	}
 	public String getTime() {
 		return time;

@@ -1,6 +1,8 @@
 package com.qiqiim.webserver.user.dao;
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.qiqiim.constant.ChatEntity;
 import com.qiqiim.constant.Message;
 import com.qiqiim.webserver.base.dao.BaseDao;
@@ -17,7 +19,7 @@ public interface MsgListDao extends BaseDao<List<Message>> {
 	
 	public void insertMessage(ChatEntity chat);
 
-	public void deleteMessage(int user_id, int another_id);
+	public void deleteMessage(@Param("userId")int user_id, @Param("anotherId")int another_id);
 	
-	public void readMessage(int user_id, int another_id);
+	public void readMessage(@Param("userId")int user_id, @Param("anotherId")int another_id);
 }

@@ -18,7 +18,7 @@ public class ChatListServiceImpl implements ChatListService{
 	ChatListDao chatListDao;
 
 	@Override
-	public List<ChatEntity> selectHistoryChat(int userId) {
-		return chatListDao.selectHistoryChat(userId);
+	public List<ChatEntity> selectHistoryChat(int userId,int anotherId) {
+		return chatListDao.selectHistoryChat(userId,anotherId);
 	}
 }

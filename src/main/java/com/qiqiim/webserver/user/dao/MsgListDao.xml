@@ -4,21 +4,21 @@
 <mapper namespace="com.qiqiim.webserver.user.dao.MsgListDao">
 
 	<select id="queryMessageList" resultType="com.qiqiim.constant.Message">
-		select a.*,b.name from msg_list a,user b where user_id = #{value} and a.user_id = b.id
+		select a.*,b.name from msg_list a,user b where userId = ${value} and a.anotherId = b.id
 	</select>
 
 	<insert id="insertMessage" parameterType="com.qiqiim.constant.ChatEntity">
-		insert into msg_list (user_id,another_id,content,unread,time) values (#{senderId},#{receiverId},#{content},1,CURRENT_TIMESTAMP) on duplicate key update content=#{content},unread=unread+1,time=CURRENT_TIMESTAMP
-		insert into msg_list (user_id,another_id,content,unread,time) values (#{receiverId},#{senderId},#{content},1,CURRENT_TIMESTAMP) on duplicate key update content=#{content},unread=unread+1,time=CURRENT_TIMESTAMP
-		insert into messages (user_id,another_id,content,time) values(#{user_id},#{another_id},#{content},CURRENT_TIMESTAMP)
-		insert into messages (user_id,another_id,content,time) values(#{another_id},#{user_id},#{content},CURRENT_TIMESTAMP)
+		insert into msg_list (userId,anotherId,content,unread,time) values (#{userId},#{anotherId},#{content},1,CURRENT_TIMESTAMP) on duplicate key update content=#{content},unread=unread+1,time=CURRENT_TIMESTAMP
+		insert into msg_list (userId,anotherId,content,unread,time) values (#{anotherId},#{userId},#{content},1,CURRENT_TIMESTAMP) on duplicate key update content=#{content},unread=unread+1,time=CURRENT_TIMESTAMP
+		insert into messages (userId,anotherId,content,time) values(#{userId},#{anotherId},#{content},CURRENT_TIMESTAMP)
+		insert into messages (userId,anotherId,content,time) values(#{anotherId},#{userId},#{content},CURRENT_TIMESTAMP)
 	</insert>
 	
 	<delete id="deleteMessage">
-		delete from messages where user_id = {#user_id} and another_id = #{another_id}
+		delete from messages where userId = {#userId} and another_id = #{anotherId}
 	</delete>
 	
-	<update id="readMessage">
-		update msg_list set unread = 0 where user_id = #{user_id} and another_id = #{another_id}
+	<update id="readMessage" parameterType="int">
+		update msg_list set unread = 0 where userId = #{userId} and anotherId = #{anotherId}
 	</update>
 </mapper>

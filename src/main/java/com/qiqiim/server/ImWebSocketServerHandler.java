@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.ChannelHandler.Sharable;
@@ -28,11 +29,13 @@ import org.apache.commons.lang.StringUtils;
 import org.java_websocket.WebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.google.gson.Gson;
+import com.qiqiim.constant.ChatEntity;
 import com.qiqiim.constant.Constants;
 import com.qiqiim.constant.Result;
 import com.qiqiim.constant.TranObject;
@@ -44,13 +47,18 @@ import com.qiqiim.server.model.proto.MessageProto;
 import com.qiqiim.server.proxy.MessageProxy;
 import com.qiqiim.util.ImUtils;
 import com.qiqiim.webserver.user.dao.UserDao;
+import com.qiqiim.webserver.user.service.ChatListService;
+import com.qiqiim.webserver.user.service.MsgListService;
 import com.qiqiim.websocket.ClientActivity;
 @Sharable
 public class ImWebSocketServerHandler extends SimpleChannelInboundHandler{
 
 	private final static Logger log = LoggerFactory.getLogger(ImWebSocketServerHandler.class);
 	private WebSocketServerHandshaker handshaker;
-
+	@Autowired
+	ChatListService chatListImpl;
+	@Autowired
+	MsgListService msgListImpl;
 //    private ImConnertorImpl connertor = null;
 //    private MessageProxy proxy = null;
 
@@ -153,9 +161,18 @@ public class ImWebSocketServerHandler extends SimpleChannelInboundHandler{
 //			clients.get(tran.getSendId()).friendRequset(tran);
 //			break;
 		case TranObjectType.MESSAGE:
+			System.out.println("1");
 			TextWebSocketFrame tws = new TextWebSocketFrame(JSON.toJSONString(tran));
 	        // 群发
-			ChannelGroup.findChannel(tran.getReceiveId()).writeAndFlush(tws);
+			System.out.println("2:"+tran.getReceiveId());
+			Channel another_channel = ChannelGroup.findChannel(tran.getReceiveId());
+			System.out.println("3:"+another_channel);
+			if(another_channel != null)//对方在线，直接发送过去
+				another_channel.writeAndFlush(tws);
+			ChatEntity chat = JSONObject.toJavaObject((JSONObject)tran.getObject(), ChatEntity.class);
+			System.out.println("4:");
+			msgListImpl.insertMessage(chat);
+			System.out.println("7");
 			break;
 		default:
 			break;

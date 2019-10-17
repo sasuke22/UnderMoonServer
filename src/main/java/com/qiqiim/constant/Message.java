@@ -3,31 +3,24 @@ package com.qiqiim.constant;
 import java.sql.Date;
 
 public class Message {
-	private int id;//自增id
-	private int user_id;//用户id
-	private int another_id;//对方用户id
+	private int userId;//用户id
+	private int anotherId;//对方用户id
 	private String content;//发送内容
 	private String name;//对方名字
 	private Date time;//发送时间
 	private int unread;//未读消息数
 	
-	public int getId() {
-		return id;
+	public int getUserId() {
+		return userId;
 	}
-	public void setId(int id) {
-		this.id = id;
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
-	public int getUser_id() {
-		return user_id;
+	public int getAnotherId() {
+		return anotherId;
 	}
-	public void setUser_id(int user_id) {
-		this.user_id = user_id;
-	}
-	public int getAnother_id() {
-		return another_id;
-	}
-	public void setAnother_id(int another_id) {
-		this.another_id = another_id;
+	public void setAnotherId(int anotherId) {
+		this.anotherId = anotherId;
 	}
 	public String getContent() {
 		return content;

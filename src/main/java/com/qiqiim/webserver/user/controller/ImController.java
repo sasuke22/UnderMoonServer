@@ -1224,7 +1224,6 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public Map<String,List<Message>> getMsgList(@RequestParam("id") int userId, HttpServletRequest request,HttpServletResponse response){
 		List<Message> msgList= msgListServiceImpl.queryMessageList(userId);
-		System.out.println("msg:"+msgList.size());
 		HashMap<String,List<Message>> map = new HashMap<String,List<Message>>();
 		map.put("list", msgList);
 		return map;
@@ -1240,25 +1239,24 @@ public class ImController extends BaseController{
 	}
 	
 	/**
+	 * for flutter,设置和某人的聊天已读
+	 */
+	@RequestMapping(value="/clearunread",produces="application/json")
+	@ResponseBody
+	public void clearUnread(@RequestParam("user_id") int userId, @RequestParam("another_id") int anotherId, HttpServletRequest request,HttpServletResponse response){
+		msgListServiceImpl.readMessage(userId, anotherId);
+	}
+	
+	/**
 	 * for flutter,获取和某人聊天记录
 	 */
 	@RequestMapping(value="/getchatlist",produces="application/json")
 	@ResponseBody
 	public Map<String,List<ChatEntity>> getChatList(@RequestParam("id") int userId, @RequestParam("receive_id") int receive_id,HttpServletRequest request,HttpServletResponse response){
-		List<ChatEntity> msgList= chatListServiceImpl.selectHistoryChat(userId);
-		System.out.println("msg:"+msgList.size());
+		List<ChatEntity> msgList= chatListServiceImpl.selectHistoryChat(userId,receive_id);
 		HashMap<String,List<ChatEntity>> map = new HashMap<String,List<ChatEntity>>();
 		map.put("list", msgList);
 		return map;
-	}
-	
-	/**
-	 * for flutter,设置和某人聊天记录为已读
-	 */
-	@RequestMapping(value="/readchatlist",produces="application/json")
-	@ResponseBody
-	public void readChatList(@RequestParam("id") int userId, @RequestParam("another_id") int another_id,HttpServletRequest request,HttpServletResponse response){
-		msgListServiceImpl.readMessage(userId, another_id);
 	}
 	
 	/**

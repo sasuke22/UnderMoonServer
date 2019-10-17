@@ -14,7 +14,7 @@ public class ChannelGroup {
     private static ConcurrentMap<Integer, ChannelId> ChannelMap=new ConcurrentHashMap<Integer, ChannelId>();
     public static void addChannel(int user_id,Channel channel){
         GlobalGroup.add(channel);
-        ChannelMap.put(user_id,channel.id());
+        ChannelMap.put(Integer.valueOf(user_id),channel.id());
     }
     
     public static void removeChannel(Channel channel){
@@ -23,7 +23,10 @@ public class ChannelGroup {
     }
     
     public static  Channel findChannel(int id){
-        return GlobalGroup.find(ChannelMap.get(id));
+    	if(ChannelMap.get(Integer.valueOf(id)) == null)
+    		return null;
+    	else
+    		return GlobalGroup.find(ChannelMap.get(Integer.valueOf(id)));
     }
     
     public static void send2All(TextWebSocketFrame tws){

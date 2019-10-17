@@ -37,5 +37,4 @@ public class MsgListServiceImpl implements MsgListService{
 	public void readMessage(int user_id, int another_id) {
 		msgListDao.readMessage(user_id,another_id);
 	}
-
 }

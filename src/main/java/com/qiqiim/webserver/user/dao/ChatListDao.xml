@@ -4,7 +4,7 @@
 <mapper namespace="com.qiqiim.webserver.user.dao.ChatListDao">
 
 	<select id="selectHistoryChat" resultType="com.qiqiim.constant.ChatEntity">
-		select * from messages where user_id = #{user_id} and another_id = #{another_id} or user_id = #{another_id} and another_id = #{user_id}
+		select * from messages where userId = #{userId} and anotherId = #{anotherId} or userId = #{anotherId} and anotherId = #{userId}
 	</select>
 
 </mapper>
