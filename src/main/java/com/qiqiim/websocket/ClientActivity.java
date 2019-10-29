@@ -132,7 +132,7 @@ public class ClientActivity {
 		ClientActivity friendClient = null;
 		System.out.println("包含要发送的那个好友吗？" + tran.getReceiveId() + mServer.contatinId(tran.getReceiveId()));
 		ChatEntity chat = (ChatEntity)tran.getObject();
-		msgListImpl.insertMessage(chat);//更新消息列表表
+//		msgListImpl.insertMessage(chat);//更新消息列表表
 		if (mServer.contatinId(tran.getReceiveId())) {
 			friendClient = mServer.getClientById(tran.getReceiveId());
 			System.out.println("将好友请求发给好友...");

@@ -13,6 +13,8 @@ public class CommentDetail {
   	public int isComplained;//是否被举报
   	public boolean show;//是否匿名
     public boolean isVip;//评论者是否是会员
+    public boolean bigVip;//评论者是否是至尊会员
+    
 	public int getId() {
 		return id;
 	}
@@ -73,6 +75,13 @@ public class CommentDetail {
 	public void setIsVip(boolean isVip) {
 		this.isVip = isVip;
 	}
-  	
-  	
+	public boolean isBigVip() {
+		return bigVip;
+	}
+	public void setBigVip(boolean bigVip) {
+		this.bigVip = bigVip;
+	}
+	public void setVip(boolean isVip) {
+		this.isVip = isVip;
+	}
 }

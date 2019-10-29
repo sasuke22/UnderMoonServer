@@ -4,7 +4,7 @@
 <mapper namespace="com.qiqiim.webserver.user.dao.ChatListDao">
 
 	<select id="selectHistoryChat" resultType="com.qiqiim.constant.ChatEntity">
-		select * from messages where userId = #{userId} and anotherId = #{anotherId} or userId = #{anotherId} and anotherId = #{userId}
+		select * from messages where userId = #{userId} and anotherId = #{anotherId} or userId = #{anotherId} and anotherId = #{userId} order by time desc
 	</select>
 
 </mapper>

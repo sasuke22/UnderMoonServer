@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.PostConstruct;
+
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -30,6 +32,7 @@ import org.java_websocket.WebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -46,25 +49,36 @@ import com.qiqiim.server.model.MessageWrapper;
 import com.qiqiim.server.model.proto.MessageProto;
 import com.qiqiim.server.proxy.MessageProxy;
 import com.qiqiim.util.ImUtils;
+import com.qiqiim.webserver.user.dao.NewMsgListDao;
 import com.qiqiim.webserver.user.dao.UserDao;
 import com.qiqiim.webserver.user.service.ChatListService;
 import com.qiqiim.webserver.user.service.MsgListService;
+import com.qiqiim.webserver.user.service.impl.ChatListServiceImpl;
+import com.qiqiim.webserver.user.service.impl.MsgListServiceImpl;
 import com.qiqiim.websocket.ClientActivity;
-@Sharable
+//@Sharable
+@Component
 public class ImWebSocketServerHandler extends SimpleChannelInboundHandler{
 
 	private final static Logger log = LoggerFactory.getLogger(ImWebSocketServerHandler.class);
 	private WebSocketServerHandshaker handshaker;
-	@Autowired
-	ChatListService chatListImpl;
-	@Autowired
-	MsgListService msgListImpl;
+//	@Autowired
+//	private ChatListService chatListServiceImpl;
+//	@Autowired
+//	private MsgListService msgListServiceImpl;
+	public static ImWebSocketServerHandler handler;
 //    private ImConnertorImpl connertor = null;
 //    private MessageProxy proxy = null;
 
-    public ImWebSocketServerHandler() {
+//    public ImWebSocketServerHandler() {
 //        this.connertor = connertor;
 //        this.proxy = proxy;
+//    }
+    
+    @PostConstruct
+    public void init(){
+//    	handler = this;
+//    	handler.msgListServiceImpl = this.msgListServiceImpl;
     }
 	
     @Override
@@ -88,9 +102,9 @@ public class ImWebSocketServerHandler extends SimpleChannelInboundHandler{
 			Long lastTime = (Long) ctx.channel().attr(Constants.SessionConfig.SERVER_SESSION_HEARBEAT).get();
 	     	if(lastTime == null || ((System.currentTimeMillis() - lastTime)/1000>= Constants.ImserverConfig.PING_TIME_OUT))
 	     	{
-//	     		connertor.close(ctx);
+	     		ctx.channel().close();
 	     	}
-	     	//ctx.channel().attr(Constants.SessionConfig.SERVER_SESSION_HEARBEAT).set(null);
+	     	ctx.channel().attr(Constants.SessionConfig.SERVER_SESSION_HEARBEAT).set(null);
 	    }
 	}
 
@@ -169,9 +183,9 @@ public class ImWebSocketServerHandler extends SimpleChannelInboundHandler{
 			System.out.println("3:"+another_channel);
 			if(another_channel != null)//对方在线，直接发送过去
 				another_channel.writeAndFlush(tws);
-			ChatEntity chat = JSONObject.toJavaObject((JSONObject)tran.getObject(), ChatEntity.class);
-			System.out.println("4:");
-			msgListImpl.insertMessage(chat);
+//			ChatEntity chat = JSONObject.toJavaObject((JSONObject)tran.getObject(), ChatEntity.class);
+//			handler.msgListServiceImpl.insertMessage(chat.getUserId(),chat.getAnotherId(),chat.getContent());
+//			NewMsgListDao.insertMessage(chat);
 			System.out.println("7");
 			break;
 		default:
@@ -218,6 +232,7 @@ public class ImWebSocketServerHandler extends SimpleChannelInboundHandler{
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
         log.debug("ImWebSocketServerHandler channelInactive from (" + ImUtils.getRemoteAddress(ctx) + ")");
+        ChannelGroup.removeChannel(ctx.channel());
 //        String sessionId = connertor.getChannelSessionId(ctx);
 //        receiveMessages(ctx,new MessageWrapper(MessageWrapper.MessageProtocol.CLOSE, sessionId,null, null));  
     }

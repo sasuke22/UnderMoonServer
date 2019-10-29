@@ -29,6 +29,7 @@ public class UserDao {
 		String sql0 = "use first_mysql_test";
 		String sql1 = "select * from user where account=?";
 		Connection con = DBPool.getConnection();
+		boolean res = false;
 		try {
 			con.setAutoCommit(false);
 			PreparedStatement ps;
@@ -37,18 +38,25 @@ public class UserDao {
 			ps = con.prepareStatement(sql1);
 			ps.setString(1, account);
 			ResultSet rs = ps.executeQuery();
+			System.out.println("1");
 			if(rs.first()){
-				if(!isLogin)//注册，查重
-					return true;
-				else//登陆，查锁
-					return rs.getInt("isLock") == 1;
+				System.out.println("2");
+				if(!isLogin){//注册，查重
+					System.out.println("3");
+					res = true;
+				}else{//登陆，查锁
+					System.out.println("4");
+					res = rs.getInt("isLock") == 1;
+				}
 			}
-			return false;
 		} catch (SQLException e) {
+			System.out.println("5");
 			e.printStackTrace();
+			res = false;
+		}finally{
+			DBPool.close(con);
 		}
-		DBPool.close(con);
-		return false;
+		return res;
 	}
 
 	/**
@@ -94,37 +102,11 @@ public class UserDao {
 				e1.printStackTrace();
 			}
 			e.printStackTrace();
-			DBPool.close(con);
 			return -1;
-		}
-		DBPool.close(con);
-		return 0;
-	}
-
-	/**
-	 * 得到最后一次插入的值
-	 */
-	public static int getLastID(Connection con) {
-		String sql0 = "use first_mysql_test";
-		String sql1 = "select MAX(id) as ID from user";// 注意:使用MAX(ID) 必须加上 as
-														// id 翻译
-		PreparedStatement ps;
-		ResultSet rs;
-		int id = -1;
-		try {
-			ps = con.prepareStatement(sql0);
-			ps.execute();
-			ps = con.prepareStatement(sql1);
-			rs = ps.executeQuery();
-			if (rs.first())
-				id = rs.getInt("id");
-		} catch (SQLException e) {
-			e.printStackTrace();
+		}finally{
 			DBPool.close(con);
 		}
-		DBPool.close(con);
-		return id;
-
+		return 0;
 	}
 
 	/**
@@ -166,12 +148,13 @@ public class UserDao {
 				user.setShow(rs.getInt("showname") > 0);
 				if(rs.getTimestamp("vip") != null)
 				user.setVipDate(new Date(rs.getTimestamp("vip").getTime()));
+				user.setBigVip(rs.getDate("bigVip"));
 			}
-			con.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}finally{
+			DBPool.close(con);
 		}
-//		poolcon.close();
 		return isExisted;
 	}
 
@@ -387,11 +370,9 @@ public class UserDao {
 			ps.setInt(9, user.getId());
 			ps.executeUpdate();
 			con.commit();
-			DBPool.close(con);
 			return 1;
 		}catch (SQLException e) {
 			e.printStackTrace();
-			DBPool.close(con);
 			return 0;
 		}finally{
 			DBPool.close(con);
@@ -420,12 +401,12 @@ public class UserDao {
 				System.out.println(ps.toString());
 				ps.execute();
 				con.commit();
-				DBPool.close(con);
 				return 1;
 			}catch (Exception e){
 				e.printStackTrace();
-				DBPool.close(con);
 				return -1;
+			}finally{
+				DBPool.close(con);
 			}
 		}else 
 			return 0;
@@ -503,12 +484,13 @@ public class UserDao {
 				enlister.setUserBriefIntro(rs.getString("userintro"));
 				enlister.setCommentDate(rs.getDate("commentDate"));
 				enlister.setVipDate(new Date(rs.getTimestamp("vip").getTime()));
+				enlister.setBigVip(rs.getDate("bigVip"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}finally{
 			DBPool.close(con);
 		}
-		DBPool.close(con);
 		return enlister;
 	}
 	
@@ -533,13 +515,13 @@ public class UserDao {
 			rs = ps.executeQuery();
 			if (rs.first())
 				id = rs.getString("photos");
-			DBPool.close(con);
-			return id;
 		}catch (Exception e){
+			e.printStackTrace();
 			System.out.println("select regist " + e.getMessage().toString());
+		}finally{
 			DBPool.close(con);
-			return null;
 		}
+		return id;
 	}
 	
 	public static void updatePhotos(int userId,String lastPhoto){
@@ -562,8 +544,9 @@ public class UserDao {
 			System.out.println(ps.toString());
 			ps.execute();
 			con.commit();
-			DBPool.close(con);
 		}catch (Exception e){
+			e.printStackTrace();
+		}finally{
 			DBPool.close(con);
 		}
 	}
@@ -572,6 +555,7 @@ public class UserDao {
 		String sql0 = "use first_mysql_test";
 		String sql1 = "update user SET score = score + " + value + " where id = ?";
 		Connection con = DBPool.getConnection();
+		int res = 0;
 		try {
 			con.setAutoCommit(false);
 		} catch (SQLException e1) {
@@ -586,19 +570,20 @@ public class UserDao {
 			System.out.println(ps);
 			ps.executeUpdate();
 			con.commit();
-			DBPool.close(con);
-			return 1;
+			res = 1;
 		}catch (SQLException e) {
 			e.printStackTrace();
+		}finally{
 			DBPool.close(con);
-			return 0;
 		}
+		return res;
 	}
 	
 	public static int updatePassword(int id,String password){
 		String sql0 = "use first_mysql_test";
 		String sql1 = "update user SET password = " + password + " where id = ?";
 		Connection con = DBPool.getConnection();
+		int res = 0;
 		try {
 			con.setAutoCommit(false);
 		} catch (SQLException e1) {
@@ -613,13 +598,13 @@ public class UserDao {
 			System.out.println(ps);
 			ps.executeUpdate();
 			con.commit();
-			DBPool.close(con);
-			return 1;
+			res = 1;
 		}catch (SQLException e) {
 			e.printStackTrace();
+		}finally{
 			DBPool.close(con);
-			return 0;
 		}
+		return res;
 	}
 	
 	public static int deletePic(int userId,String indexString){
@@ -653,7 +638,7 @@ public class UserDao {
 		ArrayList<User> userList = new ArrayList<User>();
 		String sq0 = "use first_mysql_test";
 		String sql1 = "select * " +
-			      "from user where gender = ? order by id desc limit ?,?" ;
+			      "from user where gender = ? order by bigVip desc,vip desc,id desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
@@ -663,7 +648,7 @@ public class UserDao {
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, gender);
 			ps.setInt(2, oldCount);
-			ps.setInt(3, oldCount + 20);
+			ps.setInt(3, 20);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				User enlister = new User();
@@ -682,13 +667,15 @@ public class UserDao {
 				enlister.setScore(rs.getInt("score"));
 				enlister.setLock(rs.getInt("isLock"));
 				enlister.setPassword(rs.getString("password"));
+				enlister.setVipDate(new Date(rs.getTimestamp("vip").getTime()));
+				enlister.setBigVip(rs.getDate("bigVip"));
 				userList.add(enlister);
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage().toString());
+		}finally{
 			DBPool.close(con);
 		}
-		DBPool.close(con);
 		return userList;
 	}
 
@@ -760,7 +747,7 @@ public class UserDao {
 		}
 		try{
 			PreparedStatement ps;
-			sql1 = "update user SET vip = timestampadd(year,1,CURRENT_TIMESTAMP), score = score + 225 where id = ?";
+			sql1 = "update user SET vip = timestampadd(year,1,CURRENT_TIMESTAMP), score = score + 300 where id = ?";
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, id);
 			ps.executeUpdate();
@@ -849,5 +836,32 @@ public class UserDao {
 			DBPool.close(con);
 		}
 		return res;
+	}
+
+	public static String queryPassword(String phone) {
+		String sql1;
+		ResultSet rs;
+		String password = "";
+		Connection con = DBPool.getConnection();
+		try {
+			con.setAutoCommit(false);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		try{
+			PreparedStatement ps;
+			sql1 = "select password from user where account = ?";
+			ps = con.prepareStatement(sql1);
+			ps.setString(1, phone);
+			rs = ps.executeQuery();
+			if (rs.first())
+				password = rs.getString("password");
+		}catch (SQLException e) {
+			e.printStackTrace();
+			password = "";
+		}finally{
+			DBPool.close(con);
+		}
+		return password;
 	}
 }

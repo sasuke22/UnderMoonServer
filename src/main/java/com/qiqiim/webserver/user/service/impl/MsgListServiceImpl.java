@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qiqiim.constant.ChatEntity;
 import com.qiqiim.constant.Message;
 import com.qiqiim.webserver.user.dao.MsgListDao;
 import com.qiqiim.webserver.user.service.MsgListService;
@@ -24,8 +23,8 @@ public class MsgListServiceImpl implements MsgListService{
 	}
 
 	@Override
-	public void insertMessage(ChatEntity chat) {
-		msgListDao.insertMessage(chat);
+	public void insertMessage(int user_id,int another_id,String content) {
+		msgListDao.insertMessage(user_id,another_id,content);
 	}
 
 	@Override
@@ -36,5 +35,10 @@ public class MsgListServiceImpl implements MsgListService{
 	@Override
 	public void readMessage(int user_id, int another_id) {
 		msgListDao.readMessage(user_id,another_id);
+	}
+
+	@Override
+	public List<Integer> queryIfUnread(int userId) {
+		return msgListDao.queryIfUnread(userId);
 	}
 }

@@ -14,7 +14,7 @@ public class ContributesDao {
 	public static ArrayList<MeetingDetail> selectContrbutesOrderByComments(int userId,int count){
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select a.*,(b.vip > now()) as vip from meetings a,user b " +
+		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from meetings a,user b " +
 			      "where a.approve = 1 and a.id = b.id order by top desc,commentcount desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
@@ -24,7 +24,7 @@ public class ContributesDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, count);
-			ps.setInt(2, count + 20);
+			ps.setInt(2, 20);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				MeetingDetail meetingDetail = new MeetingDetail();
@@ -39,6 +39,7 @@ public class ContributesDao {
 				meetingDetail.setApprove(rs.getInt("approve"));
 				meetingDetail.setTop(rs.getInt("top"));
 				meetingDetail.setVip(rs.getInt("vip") > 0);
+				meetingDetail.setBigVip(rs.getInt("bigVip") > 0);
 				contributesList.add(meetingDetail);
 			}
 		} catch (Exception e) {
@@ -52,7 +53,7 @@ public class ContributesDao {
 	public static ArrayList<MeetingDetail> selectContrbutesOrderByDate(int userId,int count){
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select a.*,(b.vip > now()) as vip from meetings a,user b " +
+		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from meetings a,user b " +
 			      "where approve = 1 and a.id = b.id order by top desc,date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
@@ -62,7 +63,7 @@ public class ContributesDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, count);
-			ps.setInt(2, count + 20);
+			ps.setInt(2, 20);
 			System.out.println(ps.toString());
 			rs = ps.executeQuery();
 			while (rs.next()) {
@@ -78,6 +79,7 @@ public class ContributesDao {
 				meetingDetail.setApprove(rs.getInt("approve"));
 				meetingDetail.setTop(rs.getInt("top"));
 				meetingDetail.setVip(rs.getInt("vip") > 0);
+				meetingDetail.setBigVip(rs.getInt("bigVip") > 0);
 				contributesList.add(meetingDetail);
 			}
 		} catch (Exception e) {
@@ -92,7 +94,7 @@ public class ContributesDao {
 			int count) {
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select a.*,(b.vip > now()) as vip from meetings a,user b " +
+		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from meetings a,user b " +
 			      "where a.gender = 0 and a.approve = 1 and a.id = b.id order by top desc,date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
@@ -102,7 +104,7 @@ public class ContributesDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, count);
-			ps.setInt(2, count + 20);
+			ps.setInt(2, 20);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				MeetingDetail meetingDetail = new MeetingDetail();
@@ -117,6 +119,7 @@ public class ContributesDao {
 				meetingDetail.setApprove(rs.getInt("approve"));
 				meetingDetail.setTop(rs.getInt("top"));
 				meetingDetail.setVip(rs.getInt("vip") > 0);
+				meetingDetail.setBigVip(rs.getInt("bigVip") > 0);
 				contributesList.add(meetingDetail);
 			}
 		} catch (Exception e) {
@@ -131,7 +134,7 @@ public class ContributesDao {
 			int count) {
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select a.*,(b.vip > now()) as vip from meetings a,user b " +
+		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from meetings a,user b " +
 			      "where a.gender = 1 and a.approve = 1 and a.id = b.id order by top desc,date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
@@ -141,7 +144,7 @@ public class ContributesDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, count);
-			ps.setInt(2, count + 20);
+			ps.setInt(2, 20);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				MeetingDetail meetingDetail = new MeetingDetail();
@@ -156,6 +159,7 @@ public class ContributesDao {
 				meetingDetail.setApprove(rs.getInt("approve"));
 				meetingDetail.setTop(rs.getInt("top"));
 				meetingDetail.setVip(rs.getInt("vip") > 0);
+				meetingDetail.setBigVip(rs.getInt("bigVip") > 0);
 				contributesList.add(meetingDetail);
 			}
 		} catch (Exception e) {
@@ -168,7 +172,7 @@ public class ContributesDao {
 	
 	public static MeetingDetail getInvitationDetailById(int meetingId){
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select a.*,(b.vip > now()) as vip from meetings a,user b where meetingId = ? and a.id = b.id" ;
+		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from meetings a,user b where meetingId = ? and a.id = b.id" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
@@ -198,13 +202,14 @@ public class ContributesDao {
 				meetingDetail.setReason(rs.getString("reason"));
 				meetingDetail.setTop(rs.getInt("top"));
 				meetingDetail.setVip(rs.getInt("vip") > 0);
+				meetingDetail.setBigVip(rs.getInt("bigVip") > 0);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			DBPool.close(con);
 			return null;
+		}finally{
+			DBPool.close(con);
 		}
-		DBPool.close(con);
 		return meetingDetail;
 	}
 	
@@ -272,7 +277,7 @@ public class ContributesDao {
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, userId);
 			ps.setInt(2, count);
-			ps.setInt(3, count + 20);
+			ps.setInt(3, 20);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				MeetingDetail meetingDetail = new MeetingDetail();
@@ -320,7 +325,7 @@ public class ContributesDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, count);
-			ps.setInt(2, count + 20);
+			ps.setInt(2, 20);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				MeetingDetail meetingDetail = new MeetingDetail();
@@ -347,7 +352,7 @@ public class ContributesDao {
 	public static ArrayList<MeetingDetail> selectAllContrbutesByOldCount(int oldCount){
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select * from meetings " +
+		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from meetings a,user b where a.id = b.id " +
 			      "order by top desc,date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
@@ -357,7 +362,7 @@ public class ContributesDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, oldCount);
-			ps.setInt(2, oldCount + 20);
+			ps.setInt(2, 20);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				MeetingDetail meetingDetail = new MeetingDetail();
@@ -371,6 +376,8 @@ public class ContributesDao {
 				meetingDetail.setApprove(rs.getInt("approve"));
 				meetingDetail.setCommentCount(rs.getInt("commentcount"));
 				meetingDetail.setTop(rs.getInt("top"));
+				meetingDetail.setVip(rs.getInt("vip") > 0);
+				meetingDetail.setBigVip(rs.getInt("bigVip") > 0);
 				contributesList.add(meetingDetail);
 			}
 		} catch (Exception e) {
@@ -385,7 +392,7 @@ public class ContributesDao {
 	public static ArrayList<MeetingDetail> selectUnapprovedContrbutesByOldCount(int oldCount){
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select * from meetings where approve = 0 " +
+		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from meetings a,user b where approve = 0 and a.id = b.id " +
 			      "order by top desc,date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
@@ -395,7 +402,7 @@ public class ContributesDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, oldCount);
-			ps.setInt(2, oldCount + 20);
+			ps.setInt(2, 20);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				MeetingDetail meetingDetail = new MeetingDetail();
@@ -409,6 +416,48 @@ public class ContributesDao {
 				meetingDetail.setApprove(rs.getInt("approve"));
 				meetingDetail.setCommentCount(rs.getInt("commentcount"));
 				meetingDetail.setTop(rs.getInt("top"));
+				meetingDetail.setVip(rs.getInt("vip") > 0);
+				meetingDetail.setBigVip(rs.getInt("bigVip") > 0);
+				contributesList.add(meetingDetail);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			DBPool.close(con);
+		}
+		return contributesList;
+	}
+	
+	public static ArrayList<MeetingDetail> selectRefusedContrbutesByOldCount(
+			int oldCount) {
+		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
+		String sq0 = "use first_mysql_test";
+		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from meetings a,user b where approve = -1 and a.id = b.id " +
+			      "order by top desc,date desc limit ?,?" ;
+		Connection con = DBPool.getConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		try {
+			ps = con.prepareStatement(sq0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, oldCount);
+			ps.setInt(2, 20);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				MeetingDetail meetingDetail = new MeetingDetail();
+				meetingDetail.setMeetingId(rs.getInt("meetingid"));
+				meetingDetail.setId(rs.getInt("id"));//?
+				meetingDetail.setCity(rs.getString("city"));
+				meetingDetail.setSummary(rs.getString("summary"));
+				meetingDetail.setContent(rs.getString("content"));
+				meetingDetail.setDate(new Date(rs.getTimestamp("date").getTime()));
+				meetingDetail.setGender(rs.getInt("gender"));
+				meetingDetail.setApprove(rs.getInt("approve"));
+				meetingDetail.setCommentCount(rs.getInt("commentcount"));
+				meetingDetail.setTop(rs.getInt("top"));
+				meetingDetail.setVip(rs.getInt("vip") > 0);
+				meetingDetail.setBigVip(rs.getInt("bigVip") > 0);
 				contributesList.add(meetingDetail);
 			}
 		} catch (Exception e) {

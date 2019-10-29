@@ -41,6 +41,8 @@ public class User implements Serializable {
 	private boolean show;
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date vipDate;
+	@JSONField(format = "yyyy-MM-dd")
+	private Date bigVip;
 	private int lock;
 	
 	public Date getVipDate() {
@@ -223,6 +225,14 @@ public class User implements Serializable {
 
 	public void setLock(int lock) {
 		this.lock = lock;
+	}
+	
+	public Date getBigVip() {
+		return bigVip;
+	}
+
+	public void setBigVip(Date bigVip) {
+		this.bigVip = bigVip;
 	}
 
 	@Override

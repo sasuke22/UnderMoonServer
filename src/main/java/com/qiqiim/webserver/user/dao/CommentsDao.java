@@ -15,7 +15,7 @@ public class CommentsDao {
 		String sql0 = "use first_mysql_test";
 		String sql1;
 		if(isMeeting)
-			sql1 = "insert into meetingComments (commentid,userid,commentname,commentgender,content) values(?,?,?,?,?)";
+			sql1 = "insert into meetingComments (commentid,userid,commentname,commentgender,content,showname) values(?,?,?,?,?,?)";
 		else
 			sql1 = "insert into articleComments (commentid,userid,commentname,commentgender,content) values(?,?,?,?,?)";
 		Connection con = DBPool.getConnection();
@@ -34,6 +34,8 @@ public class CommentsDao {
 			ps.setString(3, comment.getCommentName());
 			ps.setInt(4, comment.getCommentGender());
 			ps.setString(5, comment.getCommentContent());
+			if(isMeeting)
+				ps.setInt(6, comment.isShow() ? 1 : 0);
 			ps.execute();
 			con.commit();
 			
@@ -61,9 +63,9 @@ public class CommentsDao {
 		String sq0 = "use first_mysql_test";
 		String sql1;
 		if(isMeeting)
-			sql1 = "select a.*,b.showname,(b.vip > now()) as vip from meetingComments a,user b where commentid = ? and a.userid = b.id order by date desc limit ?,?" ;
+			sql1 = "select a.*,b.showname,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from meetingComments a,user b where commentid = ? and a.userid = b.id order by bigVip desc,vip desc,date desc limit ?,?" ;
 		else
-			sql1 = "select a.*,b.showname,(b.vip > now()) as vip from articleComments a,user b where commentid = ? and a.userid = b.id order by date desc limit ?,?" ;
+			sql1 = "select a.*,b.showname,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from articleComments a,user b where commentid = ? and a.userid = b.id order by bigVip desc,vip desc,date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
@@ -73,7 +75,7 @@ public class CommentsDao {
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, id);
 			ps.setInt(2, count);
-			ps.setInt(3, count + 20);
+			ps.setInt(3, 20);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				CommentDetail comment = new CommentDetail();
@@ -86,6 +88,7 @@ public class CommentsDao {
 				comment.setCommentDate(new Date(rs.getTimestamp("date").getTime()));
 				comment.setShow(rs.getInt("showname") > 0);
 				comment.setIsVip(rs.getInt("vip") > 0);
+				comment.setBigVip(rs.getInt("bigVip") > 0);
 				commentsList.add(comment);
 			}
 		} catch (Exception e) {
@@ -184,7 +187,7 @@ public class CommentsDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, count);
-			ps.setInt(2, count + 20);
+			ps.setInt(2, 20);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				CommentDetail comment = new CommentDetail();

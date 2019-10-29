@@ -29,6 +29,7 @@ public class MeetingDetail implements Serializable{
     public String reason;
     public int top;
     public boolean isVip;
+    public boolean bigVip;
     
     public int getTop() {
 		return top;
@@ -196,6 +197,14 @@ public class MeetingDetail implements Serializable{
 
 	public void setVip(boolean isVip) {
 		this.isVip = isVip;
+	}
+
+	public boolean isBigVip() {
+		return bigVip;
+	}
+
+	public void setBigVip(boolean bigVip) {
+		this.bigVip = bigVip;
 	}
     
 	

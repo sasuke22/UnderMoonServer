@@ -33,6 +33,7 @@ import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,7 +114,7 @@ public class ImWebsocketServer  {
 //	            });
 	            // 协议包解码时指定Protobuf字节数实例化为CommonProtocol类型
 //	            pipeline.addLast(decoder);
-	            pipeline.addLast(new IdleStateHandler(Constants.ImserverConfig.READ_IDLE_TIME,Constants.ImserverConfig.WRITE_IDLE_TIME,0));
+	            pipeline.addLast(new IdleStateHandler(Constants.ImserverConfig.READ_IDLE_TIME,Constants.ImserverConfig.WRITE_IDLE_TIME,0,TimeUnit.SECONDS));
 	            // 业务处理器
 	            pipeline.addLast(new ImWebSocketServerHandler());
 	    		 

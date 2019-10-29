@@ -64,6 +64,8 @@ import com.qiqiim.webserver.user.dao.ContributesDao;
 import com.qiqiim.webserver.user.dao.FriendDao;
 import com.qiqiim.webserver.user.dao.GoodsDao;
 import com.qiqiim.webserver.user.dao.MsgListDao;
+import com.qiqiim.webserver.user.dao.NewChatListDao;
+import com.qiqiim.webserver.user.dao.NewMsgListDao;
 import com.qiqiim.webserver.user.dao.UserDao;
 import com.qiqiim.webserver.user.model.GoodsBean;
 import com.qiqiim.webserver.user.model.ImFriendUserData;
@@ -95,10 +97,10 @@ public class ImController extends BaseController{
 	private UserMessageService userMessageServiceImpl;
 	@Autowired
 	private DwrConnertor dwrConnertorImpl;
-	@Autowired
-	private MsgListService msgListServiceImpl;
-	@Autowired
-	private ChatListService chatListServiceImpl;
+//	@Autowired
+//	private MsgListService msgListServiceImpl;
+//	@Autowired
+//	private ChatListService chatListServiceImpl;
 	@Autowired
 	private MessageProxy proxy;
 	
@@ -429,9 +431,9 @@ public class ImController extends BaseController{
 	} 
 	
 	
-	@RequestMapping(value = "/sendmsg", method = RequestMethod.GET)
+	@RequestMapping(value = "/send1msg", method = RequestMethod.GET)
 	@ResponseBody
-	public Object sendMsg(HttpServletResponse response,HttpServletRequest request,
+	public Object send1Msg(HttpServletResponse response,HttpServletRequest request,
 			RedirectAttributes redirectAttributes) throws Exception{
 		String sessionid = request.getSession().getId();
 		if(getLoginUser()!=null){
@@ -722,6 +724,19 @@ public class ImController extends BaseController{
 	}
 	
 	/**
+	 * for flutter server app,根据客户端传递的已加载的数量来获取20个meeting
+	 */
+	@RequestMapping(value = "/refusedcontributes",produces="application/json")
+	@ResponseBody
+	public HashMap<String,ArrayList<MeetingDetail>> getRefusedContributes(@RequestParam("count")int oldCount,
+			HttpServletRequest request,HttpServletResponse response){
+		ArrayList<MeetingDetail> meetings = ContributesDao.selectRefusedContrbutesByOldCount(oldCount);
+		HashMap<String, ArrayList<MeetingDetail>> map = new HashMap<String,ArrayList<MeetingDetail>>();
+		map.put("meetings", meetings);
+		return map;
+	}
+	
+	/**
 	 * for flutter server app，改meeting的approve
 	 */
 	@RequestMapping(value = "/changemeetingapprove",produces="application/json",method = RequestMethod.POST)
@@ -801,6 +816,15 @@ public class ImController extends BaseController{
 	}
 	
 	/**
+	 * for flutter server app，是否置顶邀约
+	 */
+	@RequestMapping(value = "/querypassword",produces="application/json")
+	@ResponseBody
+	public String queryPassword(@RequestParam("phone")String phone,HttpServletRequest request,HttpServletResponse response){
+		return UserDao.queryPassword(phone);
+	}
+	
+	/**
 	 * for flutter server app，获取男女人数
 	 */
 	@RequestMapping(value = "/getusercount",produces="application/json")
@@ -831,7 +855,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value = "/checkupdate",produces="application/json")
 	@ResponseBody
 	public String checkUpdate(HttpServletRequest request,HttpServletResponse response){
-		File webRootDir = new File("C:\\inetpub"+File.separator + "wwwroot");
+		File webRootDir = new File("D:\\images");
 		File[] files = webRootDir.listFiles();
 		if(files == null)
 			return "1.0.0";
@@ -852,6 +876,17 @@ public class ImController extends BaseController{
 			@RequestParam("phone")String phone,HttpServletRequest request,HttpServletResponse response){
 		HashMap<String,String> map = SmsUtil.getInstance().sendSmsReturnErrorCode(phone);
 		return map;
+	}
+	
+	/**
+	 * for flutter，发送消息
+	 */
+	@RequestMapping(value = "/sendmsg",produces="application/json",method = RequestMethod.POST)
+	@ResponseBody
+	public void sendMsg(HttpServletRequest request,HttpServletResponse response){
+		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
+		ChatEntity chat = JSONObject.parseObject(req.getParameter("msg"), ChatEntity.class);
+		NewMsgListDao.insertMessage(chat);
 	}
 	
 	/**
@@ -1223,10 +1258,21 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/getmsglist",produces="application/json")
 	@ResponseBody
 	public Map<String,List<Message>> getMsgList(@RequestParam("id") int userId, HttpServletRequest request,HttpServletResponse response){
-		List<Message> msgList= msgListServiceImpl.queryMessageList(userId);
+		List<Message> msgList= NewMsgListDao.queryMessageList(userId);
+//		List<Message> msgList = NewMsgListDao.queryMessageList(userId);
 		HashMap<String,List<Message>> map = new HashMap<String,List<Message>>();
 		map.put("list", msgList);
 		return map;
+	}
+	
+	/**
+	 * for flutter,获取聊天列表
+	 */
+	@RequestMapping(value="/queryifunread",produces="application/json")
+	@ResponseBody
+	public int queryIfUnread(@RequestParam("user_id") int userId, HttpServletRequest request,HttpServletResponse response){
+		int unread = NewMsgListDao.queryIfUnread(userId);
+		return unread;
 	}
 	
 	/**
@@ -1235,7 +1281,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/deletemsglist",produces="application/json")
 	@ResponseBody
 	public void deleteMsgList(@RequestParam("user_id") int userId, @RequestParam("another_id") int anotherId, HttpServletRequest request,HttpServletResponse response){
-		msgListServiceImpl.deleteMessage(userId, anotherId);
+		NewMsgListDao.deleteMessage(userId, anotherId);
 	}
 	
 	/**
@@ -1244,7 +1290,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/clearunread",produces="application/json")
 	@ResponseBody
 	public void clearUnread(@RequestParam("user_id") int userId, @RequestParam("another_id") int anotherId, HttpServletRequest request,HttpServletResponse response){
-		msgListServiceImpl.readMessage(userId, anotherId);
+		NewMsgListDao.readMessage(userId, anotherId);
 	}
 	
 	/**
@@ -1253,7 +1299,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/getchatlist",produces="application/json")
 	@ResponseBody
 	public Map<String,List<ChatEntity>> getChatList(@RequestParam("id") int userId, @RequestParam("receive_id") int receive_id,HttpServletRequest request,HttpServletResponse response){
-		List<ChatEntity> msgList= chatListServiceImpl.selectHistoryChat(userId,receive_id);
+		List<ChatEntity> msgList= NewChatListDao.selectHistoryChat(userId,receive_id);
 		HashMap<String,List<ChatEntity>> map = new HashMap<String,List<ChatEntity>>();
 		map.put("list", msgList);
 		return map;
@@ -1274,7 +1320,7 @@ public class ImController extends BaseController{
 //		String pay_id=request.getParameter("pay_id"); //支付人的唯一标识
 //		String param=request.getParameter("param"); //自定义一些参数 支付后返回
 		
-		String notify_url="http://45.204.8.236:8080/qiqiim-server/payresult";//通知地址
+		String notify_url="http://180.215.209.55:8080/qiqiim-server/payresult";//通知地址
 //		String return_url="";//支付后同步跳转地址
 
 		//参数有中文则需要URL编码
