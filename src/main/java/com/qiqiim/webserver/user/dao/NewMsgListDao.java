@@ -41,7 +41,7 @@ public class NewMsgListDao {
 	
 	public static void insertMessage(ChatEntity chat){
 		String sql1 = "insert into msg_list (userId,anotherId,content,unread,time) values "
-				+ "(?,?,?,1,CURRENT_TIMESTAMP) on duplicate key update content=?,unread=unread+1,time=CURRENT_TIMESTAMP;";
+				+ "(?,?,?,1,CURRENT_TIMESTAMP) on duplicate key update content=?,time=CURRENT_TIMESTAMP;";
 		String sql2 = "insert into msg_list (userId,anotherId,content,unread,time) values "
 				+ "(?,?,?,1,CURRENT_TIMESTAMP) on duplicate key update content=?,unread=unread+1,time=CURRENT_TIMESTAMP;";
 		String sql3 = "insert into messages (userId,anotherId,content,time) values "

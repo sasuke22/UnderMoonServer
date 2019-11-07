@@ -1320,7 +1320,7 @@ public class ImController extends BaseController{
 //		String pay_id=request.getParameter("pay_id"); //支付人的唯一标识
 //		String param=request.getParameter("param"); //自定义一些参数 支付后返回
 		
-		String notify_url="http://180.215.209.55:8080/qiqiim-server/payresult";//通知地址
+		String notify_url="http://103.244.2.254:8080/qiqiim-server/payresult";//通知地址
 //		String return_url="";//支付后同步跳转地址
 
 		//参数有中文则需要URL编码
@@ -1356,12 +1356,13 @@ public class ImController extends BaseController{
 		}else{
 			String[] id = requestParams.get("pay_id");
 			String[] money = requestParams.get("money");
-			if(money[0].equals("199")){//充值的是会员
+			int int_money = Double.valueOf(money[0]).intValue();
+			if(int_money >= 199){//充值的是会员
 				UserDao.makeUserVIP(Integer.parseInt(id[0]));
 			}else{
 				System.out.println("id:"+id[0]);
 				System.out.println("price:"+id[0]);
-				UserDao.updateScore(Integer.parseInt(id[0]), Double.valueOf(money[0]).intValue());
+				UserDao.updateScore(Integer.parseInt(id[0]), int_money);
 			}
 			result = "ok";
 		}
