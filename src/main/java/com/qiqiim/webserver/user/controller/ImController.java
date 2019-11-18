@@ -499,8 +499,8 @@ public class ImController extends BaseController{
 	 */
 	@RequestMapping(value = "/allcontributes",produces="application/json")
 	@ResponseBody
-	public HashMap<String, ArrayList<MeetingDetail>> getAllContributes(@RequestParam("userId")int userId,
-			@RequestParam("count")int count,@RequestParam("type")int type,HttpServletRequest request,HttpServletResponse response){
+	public HashMap<String, ArrayList<MeetingDetail>> getAllContributes(@RequestParam("userId")int userId, @RequestParam("count")int count,@RequestParam("type")int type,
+			HttpServletRequest request,HttpServletResponse response){
 		ArrayList<MeetingDetail> meetings = null;
 		if (type == 0)//根据最新排序
 			meetings = ContributesDao.selectContrbutesOrderByDate(userId, count);
@@ -512,6 +512,19 @@ public class ImController extends BaseController{
 			meetings = ContributesDao.selectContrbutesOrderByComments(userId,count);
 		HashMap<String, ArrayList<MeetingDetail>> map = new HashMap<String,ArrayList<MeetingDetail>>();
 		map.put("meetings", meetings);
+		return map;
+	}
+	
+	/**
+	 * for flutter,根据关键字搜索邀约
+	 */
+	@RequestMapping(value="/querykeyword",produces="application/json")
+	@ResponseBody
+	public Map<String,List<MeetingDetail>> queryKeyword(@RequestParam("key") String keyword, @RequestParam("type") int type, @RequestParam("count")int count,
+			HttpServletRequest request,HttpServletResponse response){
+		List<MeetingDetail> msgList = ContributesDao.selectContributesByKeyword(keyword,type,count);
+		HashMap<String,List<MeetingDetail>> map = new HashMap<String,List<MeetingDetail>>();
+		map.put("meetings", msgList);
 		return map;
 	}
 	
@@ -1258,15 +1271,14 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/getmsglist",produces="application/json")
 	@ResponseBody
 	public Map<String,List<Message>> getMsgList(@RequestParam("id") int userId, HttpServletRequest request,HttpServletResponse response){
-		List<Message> msgList= NewMsgListDao.queryMessageList(userId);
-//		List<Message> msgList = NewMsgListDao.queryMessageList(userId);
+		List<Message> msgList = NewMsgListDao.queryMessageList(userId);
 		HashMap<String,List<Message>> map = new HashMap<String,List<Message>>();
 		map.put("list", msgList);
 		return map;
 	}
 	
 	/**
-	 * for flutter,获取聊天列表
+	 * for flutter,获取未读消息数量
 	 */
 	@RequestMapping(value="/queryifunread",produces="application/json")
 	@ResponseBody

@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.qiqiim.constant.MeetingDetail;
 
@@ -619,5 +620,63 @@ public class ContributesDao {
 			DBPool.close(con);
 		}
 		return res;
+	}
+
+	public static List<MeetingDetail> selectContributesByKeyword(String keyword, int type, int count) {
+		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
+		String sq0 = "use first_mysql_test";
+		String sql1;
+		switch(type){
+			case 1://女
+				sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from meetings a,user b " +
+					      "where approve = 1 and a.id = b.id and a.city = ? and a.gender = 0 order by top desc,date desc limit ?,?" ;
+				break;
+			case 2://男
+				sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from meetings a,user b " +
+					      "where approve = 1 and a.id = b.id and a.city = ? and a.gender = 1 order by top desc,date desc limit ?,?" ;
+				break;
+			case 3://热门
+				sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from meetings a,user b " +
+					      "where approve = 1 and a.id = b.id and a.city = ? order by top desc,commentcount desc,date desc limit ?,?" ;
+				break;
+			default://最新 type = 0
+				sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from meetings a,user b " +
+					      "where approve = 1 and a.id = b.id and a.city = ? order by top desc,date desc limit ?,?" ;
+				break;
+		}
+		Connection con = DBPool.getConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		try {
+			ps = con.prepareStatement(sq0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setString(1, keyword);
+			ps.setInt(2, count);
+			ps.setInt(3, 20);
+			System.out.println(ps.toString());
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				MeetingDetail meetingDetail = new MeetingDetail();
+				meetingDetail.setMeetingId(rs.getInt("meetingId"));
+				meetingDetail.setId(rs.getInt("id"));
+				meetingDetail.setCity(rs.getString("city"));
+				meetingDetail.setSummary(rs.getString("summary"));
+				meetingDetail.setContent(rs.getString("content"));
+				meetingDetail.setDate(new Date(rs.getTimestamp("date").getTime()));
+				meetingDetail.setCommentCount(rs.getInt("commentcount"));
+				meetingDetail.setGender(rs.getInt("gender"));
+				meetingDetail.setApprove(rs.getInt("approve"));
+				meetingDetail.setTop(rs.getInt("top"));
+				meetingDetail.setVip(rs.getInt("vip") > 0);
+				meetingDetail.setBigVip(rs.getInt("bigVip") > 0);
+				contributesList.add(meetingDetail);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			DBPool.close(con);
+		}
+		return contributesList;
 	}
 }
