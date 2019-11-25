@@ -46,6 +46,7 @@ import com.google.gson.GsonBuilder;
 import com.qiqiim.constant.Article;
 import com.qiqiim.constant.ChatEntity;
 import com.qiqiim.constant.CommentDetail;
+import com.qiqiim.constant.Complain;
 import com.qiqiim.constant.Constants;
 import com.qiqiim.constant.MeetingDetail;
 import com.qiqiim.constant.Message;
@@ -60,6 +61,7 @@ import com.qiqiim.webserver.dwrmanage.connertor.DwrConnertor;
 import com.qiqiim.webserver.sys.service.FilesInfoService;
 import com.qiqiim.webserver.user.dao.ArticleDao;
 import com.qiqiim.webserver.user.dao.CommentsDao;
+import com.qiqiim.webserver.user.dao.ComplainDao;
 import com.qiqiim.webserver.user.dao.ContributesDao;
 import com.qiqiim.webserver.user.dao.FriendDao;
 import com.qiqiim.webserver.user.dao.GoodsDao;
@@ -1193,6 +1195,46 @@ public class ImController extends BaseController{
 				}
 			}
 			return articleId;
+		}
+		return -1;
+	}
+	
+	/**
+	 * for flutter,创建一个举报
+	 */
+	@RequestMapping(value = "/createcomplain",method = RequestMethod.POST)
+	@ResponseBody
+	public int createComplain(@RequestParam("file") MultipartFile[] files,HttpServletRequest request,HttpServletResponse response
+			,ModelMap model){
+		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
+		Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+		Complain complain = gson.fromJson(req.getParameter("complain"), Complain.class);
+		int complainId = ComplainDao.addComplain(complain, files.length);
+		if (complainId != -1) {
+			if (files != null && files.length > 0) {
+				MultipartFile file;
+				for (int i = 0;i < files.length;i++) {
+					file = files[i];
+					if (!file.isEmpty()) {
+						String path = "D:\\images" + File.separator + "complain" + File.separator + complainId;
+						File parent = new File(path);
+						if (!parent.exists()) {
+							parent.mkdirs();
+						}
+						String completePath = path + File.separator + i + ".jpg";
+						File pic = new File(completePath);
+						try {
+							if (!pic.exists()) {
+								pic.createNewFile();
+							}
+							file.transferTo(pic);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			return complainId;
 		}
 		return -1;
 	}

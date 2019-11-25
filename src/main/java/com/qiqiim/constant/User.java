@@ -44,6 +44,11 @@ public class User implements Serializable {
 	@JSONField(format = "yyyy-MM-dd")
 	private Date bigVip;
 	private int lock;
+	private int zhencheng;
+	private int jingji;
+	private int chuangpin;
+	private int neihan;
+	private int shencai;
 	
 	public Date getVipDate() {
 		return vipDate;
@@ -233,6 +238,46 @@ public class User implements Serializable {
 
 	public void setBigVip(Date bigVip) {
 		this.bigVip = bigVip;
+	}
+	
+	public int getZhencheng() {
+		return zhencheng;
+	}
+
+	public void setZhencheng(int zhencheng) {
+		this.zhencheng = zhencheng;
+	}
+
+	public int getJingji() {
+		return jingji;
+	}
+
+	public void setJingji(int jingji) {
+		this.jingji = jingji;
+	}
+
+	public int getChuangpin() {
+		return chuangpin;
+	}
+
+	public void setChuangpin(int chuangpin) {
+		this.chuangpin = chuangpin;
+	}
+
+	public int getNeihan() {
+		return neihan;
+	}
+
+	public void setNeihan(int neihan) {
+		this.neihan = neihan;
+	}
+
+	public int getShencai() {
+		return shencai;
+	}
+
+	public void setShencai(int shencai) {
+		this.shencai = shencai;
 	}
 
 	@Override

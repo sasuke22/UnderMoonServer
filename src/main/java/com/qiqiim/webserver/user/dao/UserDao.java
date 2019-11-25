@@ -485,6 +485,11 @@ public class UserDao {
 				enlister.setCommentDate(rs.getDate("commentDate"));
 				enlister.setVipDate(new Date(rs.getTimestamp("vip").getTime()));
 				enlister.setBigVip(rs.getDate("bigVip"));
+				enlister.setZhencheng(rs.getInt("zhencheng"));
+				enlister.setJingji(rs.getInt("jingji"));
+				enlister.setChuangpin(rs.getInt("chuangpin"));
+				enlister.setNeihan(rs.getInt("neihan"));
+				enlister.setShencai(rs.getInt("shencai"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
