@@ -6,6 +6,7 @@ public class Complain {
 	private int userid;//举报人id
 	private int complainid;//被举报人id
 	private String remark;//举报内容
+	private String type;//举报类型
 	
 	public int getId() {
 		return id;
@@ -36,5 +37,11 @@ public class Complain {
 	}
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
 	}
 }

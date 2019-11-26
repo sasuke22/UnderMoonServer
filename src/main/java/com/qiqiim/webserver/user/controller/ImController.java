@@ -1240,6 +1240,19 @@ public class ImController extends BaseController{
 	}
 	
 	/**
+	 * for flutter,获取举报
+	 */
+	@RequestMapping(value = "/getcomplain",produces="application/json")
+	@ResponseBody
+	public HashMap<String, List<Complain>> getComplain(@RequestParam("count")int count,HttpServletRequest request,HttpServletResponse response){
+		List<Complain> complains = null;
+		complains = ComplainDao.selectComplain(count);
+		HashMap<String, List<Complain>> map = new HashMap<String,List<Complain>>();
+		map.put("complain", complains);
+		return map;
+	}
+	
+	/**
 	 * for flutter,获取所有反馈
 	 */
 	@RequestMapping(value = "/getarticles",produces="application/json")
