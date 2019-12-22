@@ -14,6 +14,8 @@ public class CommentDetail {
   	public boolean show;//是否匿名
     public boolean isVip;//评论者是否是会员
     public boolean bigVip;//评论者是否是至尊会员
+    public int floorId;//回复的层主id
+    public int replyId;//回复评论，评论者的id
     
 	public int getId() {
 		return id;
@@ -83,5 +85,17 @@ public class CommentDetail {
 	}
 	public void setVip(boolean isVip) {
 		this.isVip = isVip;
+	}
+	public int getFloorId() {
+		return floorId;
+	}
+	public void setFloorId(int floorId) {
+		this.floorId = floorId;
+	}
+	public int getReplyId() {
+		return replyId;
+	}
+	public void setReplyId(int replyId) {
+		this.replyId = replyId;
 	}
 }

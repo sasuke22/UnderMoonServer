@@ -40,8 +40,8 @@ public class ComplainDao {
 	public static int addComplain(Complain complain,int pics){
 		int res = 0;
 		String sql0 = "use first_mysql_test";
-		String sql1= "insert into complain (userId,complainId,pics,remark) " +
-				"values(?,?,?,?)";
+		String sql1= "insert into complain (userId,complainId,pics,remark,type) " +
+				"values(?,?,?,?,?)";
 		Connection con = DBPool.getConnection();
 		try {
 			con.setAutoCommit(false);
@@ -57,6 +57,7 @@ public class ComplainDao {
 			ps.setInt(2, complain.getComplainid());
 			ps.setInt(3, complain.getPics());
 			ps.setString(4, complain.getRemark());
+			ps.setString(5, complain.getType());
 			ps.execute();
 			con.commit();
 			ResultSet rs = ps.getGeneratedKeys();

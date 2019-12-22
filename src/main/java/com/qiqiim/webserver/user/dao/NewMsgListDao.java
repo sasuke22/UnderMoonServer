@@ -13,7 +13,7 @@ import com.qiqiim.constant.Message;
 public class NewMsgListDao {
 	public static List<Message> queryMessageList(int userId){
 		ArrayList<Message> articlesList = new ArrayList<Message>();
-		String sql1 = "select a.*,b.name from msg_list a,user b where userId = ? and a.anotherId = b.id order by time desc" ;
+		String sql1 = "select a.*,b.name,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from msg_list a,user b where userId = ? and a.anotherId = b.id order by time desc" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;

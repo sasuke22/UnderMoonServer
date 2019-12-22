@@ -466,7 +466,7 @@ public class ImController extends BaseController{
 		MeetingDetail meetingDetail = gson.fromJson(req.getParameter("meetingDetail"), MeetingDetail.class);
 		int meetingId = ContributesDao.addContribute(meetingDetail,files.length);
 		if (meetingId != -1) {
-			int restScore = UserDao.updateScore(meetingDetail.id, - 15);
+			int restScore = UserDao.updateScore(meetingDetail.id, - 25);
 			System.out.println("have files " + files.length);
 			if (files != null && files.length > 0) {
 				MultipartFile file;
@@ -520,10 +520,12 @@ public class ImController extends BaseController{
 	/**
 	 * for flutter,根据关键字搜索邀约
 	 */
-	@RequestMapping(value="/querykeyword",produces="application/json")
+	@RequestMapping(value="/querykeyword",produces="application/json",method=RequestMethod.POST)
 	@ResponseBody
-	public Map<String,List<MeetingDetail>> queryKeyword(@RequestParam("key") String keyword, @RequestParam("type") int type, @RequestParam("count")int count,
-			HttpServletRequest request,HttpServletResponse response){
+	public Map<String,List<MeetingDetail>> queryKeyword(HttpServletRequest request,HttpServletResponse response){
+		String keyword = request.getParameter("key");
+		int type = Integer.valueOf(request.getParameter("type"));
+		int count = Integer.valueOf(request.getParameter("count"));
 		List<MeetingDetail> msgList = ContributesDao.selectContributesByKeyword(keyword,type,count);
 		HashMap<String,List<MeetingDetail>> map = new HashMap<String,List<MeetingDetail>>();
 		map.put("meetings", msgList);
@@ -808,7 +810,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public int changeArticlePerfect(@RequestParam("id")int id,HttpServletRequest request,HttpServletResponse response){
 		int result = ArticleDao.changeArticlePerfect(id);
-		result = UserDao.updateScore(id, 10);
+		result = UserDao.updateScore(id, 25);
 		return result;
 	}
 	
