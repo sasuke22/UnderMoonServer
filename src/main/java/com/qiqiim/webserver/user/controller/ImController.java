@@ -1393,7 +1393,7 @@ public class ImController extends BaseController{
 //		String return_url="";//支付后同步跳转地址
 
 		//参数有中文则需要URL编码
-		String url="http://codepay.fateqq.com:52888/creat_order?id="
+		String url="http://api2.xiuxiu888.com/creat_order?id="
 				+codepay_id+"&pay_id="+userId+"&price="+price+"&type="+1+"&token="+token
 				+"&param="+remark+"&notify_url="+notify_url;//+"&return_url="+return_url;
 
