@@ -23,8 +23,8 @@ public class ComplainDao {
 			while (rs.next()) {
 				Complain complain = new Complain();
 				complain.setId(rs.getInt("id"));
-				complain.setUserid(rs.getInt("userId"));
-				complain.setComplainid(rs.getInt("complainId"));
+				complain.setUserId(rs.getInt("userId"));
+				complain.setComplainId(rs.getInt("complainId"));
 				complain.setPics(rs.getInt("pics"));
 				complain.setRemark(rs.getString("remark"));
 				complainList.add(complain);
@@ -53,8 +53,8 @@ public class ComplainDao {
 			ps = con.prepareStatement(sql0);
 			ps.execute();
 			ps = con.prepareStatement(sql1,Statement.RETURN_GENERATED_KEYS);
-			ps.setInt(1, complain.getUserid());
-			ps.setInt(2, complain.getComplainid());
+			ps.setInt(1, complain.getUserId());
+			ps.setInt(2, complain.getComplainId());
 			ps.setInt(3, complain.getPics());
 			ps.setString(4, complain.getRemark());
 			ps.setString(5, complain.getType());
