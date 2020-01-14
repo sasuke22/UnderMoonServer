@@ -21,6 +21,9 @@ import com.qiqiim.webserver.user.service.UserMessageService;
 import com.qiqiim.webserver.util.Pager;
 import com.qiqiim.webserver.util.Query;
 import com.qiqiim.webserver.util.SmsUtil;
+
+import net.coobird.thumbnailator.Thumbnails;
+
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -35,6 +38,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -949,6 +953,48 @@ public class ImController extends BaseController{
 			}
 		}
 		return result;
+	}
+	
+	/**
+	 * for flutter web,修改头像
+	 */
+	@RequestMapping(value="/userhead-web",produces="application/json",method = RequestMethod.POST)
+	@ResponseBody
+	public int changeAvatar4Web(@RequestParam("file")MultipartFile file,@RequestParam("userId")int userId,
+			HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		int result = 0;
+		if(file != null){
+			String path = "D:\\images" + File.separator + userId;
+			File parent = new File(path);
+			if (!parent.exists()) {
+				parent.mkdirs();
+			}
+			String completePath = path + File.separator + "0-large.jpg";
+			String smallPath = path + File.separator + "0.jpg";
+			File pic = new File(completePath);
+			try {
+				if (!pic.exists()) {
+					pic.createNewFile();
+				}
+				file.transferTo(pic);
+				compressImage(pic,new File(smallPath));
+				result = 1;
+			} catch (IOException e) {
+				e.printStackTrace();
+				result = -1;
+			}
+		}
+		return result;
+	}
+	
+	private void compressImage(File src,File des) throws IOException{
+		double scale = 1.0;
+		long size = src.length();
+		if (size >= 150*1024){
+			scale = (double) Math.round((150*1024)*100 / size)/100;
+		}
+		Thumbnails.of(src).scale(scale).toFile(des);
 	}
 	
 	/**
