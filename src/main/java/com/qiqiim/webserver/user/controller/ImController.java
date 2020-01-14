@@ -1,22 +1,28 @@
 package com.qiqiim.webserver.user.controller;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.qiqiim.constant.*;
+import com.qiqiim.server.model.MessageWrapper;
+import com.qiqiim.server.model.proto.MessageBodyProto;
+import com.qiqiim.server.model.proto.MessageProto;
+import com.qiqiim.server.proxy.MessageProxy;
+import com.qiqiim.server.session.SessionManager;
+import com.qiqiim.webserver.base.controller.BaseController;
+import com.qiqiim.webserver.dwrmanage.connertor.DwrConnertor;
+import com.qiqiim.webserver.sys.service.FilesInfoService;
+import com.qiqiim.webserver.user.dao.*;
+import com.qiqiim.webserver.user.model.*;
+import com.qiqiim.webserver.user.service.UserAccountService;
+import com.qiqiim.webserver.user.service.UserDepartmentService;
+import com.qiqiim.webserver.user.service.UserMessageService;
+import com.qiqiim.webserver.util.Pager;
+import com.qiqiim.webserver.util.Query;
+import com.qiqiim.webserver.util.SmsUtil;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import net.coobird.thumbnailator.Thumbnails;
 
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +34,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.*;
+
 //import com.alipay.api.AlipayApiException;
 //import com.alipay.api.AlipayClient;
 //import com.alipay.api.DefaultAlipayClient;
@@ -41,50 +51,6 @@ import com.alibaba.fastjson.JSONObject;
 //import com.alipay.api.internal.util.AlipaySignature;
 //import com.alipay.api.request.AlipayTradeAppPayRequest;
 //import com.alipay.api.response.AlipayTradeAppPayResponse;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.qiqiim.constant.Article;
-import com.qiqiim.constant.ChatEntity;
-import com.qiqiim.constant.CommentDetail;
-import com.qiqiim.constant.Complain;
-import com.qiqiim.constant.Constants;
-import com.qiqiim.constant.MeetingDetail;
-import com.qiqiim.constant.Message;
-import com.qiqiim.constant.User;
-import com.qiqiim.server.model.MessageWrapper;
-import com.qiqiim.server.model.proto.MessageBodyProto;
-import com.qiqiim.server.model.proto.MessageProto;
-import com.qiqiim.server.proxy.MessageProxy;
-import com.qiqiim.server.session.SessionManager;
-import com.qiqiim.webserver.base.controller.BaseController;
-import com.qiqiim.webserver.dwrmanage.connertor.DwrConnertor;
-import com.qiqiim.webserver.sys.service.FilesInfoService;
-import com.qiqiim.webserver.user.dao.ArticleDao;
-import com.qiqiim.webserver.user.dao.CommentsDao;
-import com.qiqiim.webserver.user.dao.ComplainDao;
-import com.qiqiim.webserver.user.dao.ContributesDao;
-import com.qiqiim.webserver.user.dao.FriendDao;
-import com.qiqiim.webserver.user.dao.GoodsDao;
-import com.qiqiim.webserver.user.dao.MsgListDao;
-import com.qiqiim.webserver.user.dao.NewChatListDao;
-import com.qiqiim.webserver.user.dao.NewMsgListDao;
-import com.qiqiim.webserver.user.dao.UserDao;
-import com.qiqiim.webserver.user.model.GoodsBean;
-import com.qiqiim.webserver.user.model.ImFriendUserData;
-import com.qiqiim.webserver.user.model.ImFriendUserInfoData;
-import com.qiqiim.webserver.user.model.ImGroupUserData;
-import com.qiqiim.webserver.user.model.ImUserData;
-import com.qiqiim.webserver.user.model.UserAccountEntity;
-import com.qiqiim.webserver.user.model.UserInfoEntity;
-import com.qiqiim.webserver.user.model.UserMessageEntity;
-import com.qiqiim.webserver.user.service.ChatListService;
-import com.qiqiim.webserver.user.service.MsgListService;
-import com.qiqiim.webserver.user.service.UserAccountService;
-import com.qiqiim.webserver.user.service.UserDepartmentService;
-import com.qiqiim.webserver.user.service.UserMessageService;
-import com.qiqiim.webserver.util.Pager;
-import com.qiqiim.webserver.util.Query;
-import com.qiqiim.webserver.util.SmsUtil;
 @Controller
 public class ImController extends BaseController{
 	@Autowired
@@ -142,6 +108,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/regist",method=RequestMethod.POST)
 	@ResponseBody
 	public int regist(@RequestParam("file")MultipartFile file,HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		User user = new Gson().fromJson(req.getParameter("user"), User.class);
 		int id = UserDao.insertInfo(user);
@@ -213,7 +180,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public Object getAllUser(HttpServletResponse response,HttpServletRequest request,
 			RedirectAttributes redirectAttributes) throws Exception{
-		    // 数据格式请参考文档  http://www.layui.com/doc/modules/layim.html  
+		    // 数据格式请参考文档  http://www.layui.com/doc/modules/layim.html
 			if(getLoginUser()!=null){
 				
 				UserInfoEntity  user = getLoginUser().getUserInfo();	
@@ -279,6 +246,7 @@ public class ImController extends BaseController{
 //			  }
 //			  map.put("data",submap);
 //			  return  JSONArray.toJSON(map);
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		int userId = Integer.parseInt(req.getParameter("userId"));
 		if (!file.isEmpty()) {
@@ -461,6 +429,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public int createMeeting(@RequestParam("file") MultipartFile[] files,HttpServletRequest request,HttpServletResponse response
 			,ModelMap model){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		Gson gson = new Gson();
 		MeetingDetail meetingDetail = gson.fromJson(req.getParameter("meetingDetail"), MeetingDetail.class);
@@ -503,6 +472,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public HashMap<String, ArrayList<MeetingDetail>> getAllContributes(@RequestParam("userId")int userId, @RequestParam("count")int count,@RequestParam("type")int type,
 			HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		ArrayList<MeetingDetail> meetings = null;
 		if (type == 0)//根据最新排序
 			meetings = ContributesDao.selectContrbutesOrderByDate(userId, count);
@@ -523,6 +493,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/querykeyword",produces="application/json",method=RequestMethod.POST)
 	@ResponseBody
 	public Map<String,List<MeetingDetail>> queryKeyword(HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		String keyword = request.getParameter("key");
 		int type = Integer.valueOf(request.getParameter("type"));
 		int count = Integer.valueOf(request.getParameter("count"));
@@ -540,6 +511,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public int addEnlist(@RequestParam("userId")int userId,@RequestParam("meetingId")int meetingId,
 			@RequestParam("userName")String userName,HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		int registRes = UserDao.updateRegist(userId,meetingId);
 		return registRes;
 	}
@@ -551,6 +523,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public HashMap<String,ArrayList<MeetingDetail>> getMyContributes(@RequestParam("userId")int userId,
 			@RequestParam("count")int count,HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		ArrayList<MeetingDetail> meetings = ContributesDao.getMyContributes(userId,count);
 		HashMap<String, ArrayList<MeetingDetail>> map = new HashMap<String,ArrayList<MeetingDetail>>();
 		map.put("meetings", meetings);
@@ -563,6 +536,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value = "/saveuserinfo",method=RequestMethod.POST)
 	@ResponseBody
 	public int saveUserInfo(HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		User user = new Gson().fromJson(req.getParameter("userinfo"), User.class);
 		return UserDao.saveUserInfo(user);
@@ -575,6 +549,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public HashMap<String, ArrayList<MeetingDetail>> getEnlist(@RequestParam("userId")int userId,
 			@RequestParam("count")int count,HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		ArrayList<String> enlist = UserDao.queryRegist(userId);
 		ArrayList<MeetingDetail> enlistedContributes = ContributesDao.getMyEnlistMeetings(enlist,count);
 		HashMap<String, ArrayList<MeetingDetail>> map = new HashMap<String,ArrayList<MeetingDetail>>();
@@ -589,6 +564,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public User getUserInfo(@RequestParam("userId")int userId,
 			HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		return UserDao.getUserInfo(userId);
 	}
 	
@@ -619,6 +595,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public String getUserPhotos(@RequestParam("userId")int userId,
 			HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		return UserDao.getUserPhotosAddress(userId);
 	}
 	
@@ -628,6 +605,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value = "/updateuserscore",method=RequestMethod.POST)
 	@ResponseBody
 	public int updateUserScore(HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		int userId = Integer.valueOf(req.getParameter("userId"));
 		int score = Integer.valueOf(req.getParameter("score"));
@@ -701,6 +679,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public String chatImage(@RequestParam("file") MultipartFile  file,
 			HttpServletResponse response, HttpServletRequest request) throws Exception {
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		if (!file.isEmpty()) {
 			String path = "D:\\images" + File.separator + "chat";
 			File parent = new File(path);
@@ -725,6 +704,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public MeetingDetail getInvitationDetail(@RequestParam("meetingid")String meetingId,
 			HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		MeetingDetail meetingDetail = ContributesDao.getInvitationDetailById(Integer.parseInt(meetingId));
 		String path = "D:\\images"+File.separator+"meeting" + File.separator + meetingId;
 		File dir = new File(path);
@@ -741,6 +721,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public HashMap<String,ArrayList<MeetingDetail>> getAllMoreContributes(@RequestParam("count")int oldCount,
 			HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		ArrayList<MeetingDetail> meetings = ContributesDao.selectAllContrbutesByOldCount(oldCount);
 		HashMap<String, ArrayList<MeetingDetail>> map = new HashMap<String,ArrayList<MeetingDetail>>();
 		map.put("meetings", meetings);
@@ -858,6 +839,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value = "/querypassword",produces="application/json")
 	@ResponseBody
 	public String queryPassword(@RequestParam("phone")String phone,HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		return UserDao.queryPassword(phone);
 	}
 	
@@ -880,6 +862,7 @@ public class ImController extends BaseController{
 			@RequestParam("way")int way,@RequestParam("keyword")String keyword,
 			@RequestParam("min")int min,@RequestParam("max")int max,
 			HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		ArrayList<User> list = UserDao.selectFriendByFilter(userId,gender,way,keyword,min,max);
 		HashMap<String,ArrayList<User>> map = new HashMap<>();
 		map.put("userList", list);
@@ -911,6 +894,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public HashMap<String, String> getCode(
 			@RequestParam("phone")String phone,HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		HashMap<String,String> map = SmsUtil.getInstance().sendSmsReturnErrorCode(phone);
 		return map;
 	}
@@ -921,6 +905,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value = "/sendmsg",produces="application/json",method = RequestMethod.POST)
 	@ResponseBody
 	public int sendMsg(HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		ChatEntity chat = JSONObject.parseObject(req.getParameter("msg"), ChatEntity.class);
 		boolean isBlack = UserDao.isBlack(chat.getUserId(), chat.getAnotherId());
@@ -937,6 +922,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/checkaccount",produces="application/json")
 	@ResponseBody
 	public boolean checkAccount(@RequestParam("account")String account,@RequestParam(value = "islogin",required = false)boolean isLogin,HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		return UserDao.selectAccount(account,isLogin);
 	}
 	
@@ -958,6 +944,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/saveinfo",produces="application/json",method = RequestMethod.POST)
 	@ResponseBody
 	public int saveInfo(HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		User user = new Gson().fromJson(request.getParameter("user"), User.class);
 		return UserDao.saveUserInfo(user);
 	}
@@ -969,6 +956,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public int changeAvatar(@RequestParam("file")MultipartFile file,@RequestParam("userId")int userId,
 			HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		int result = 0;
 		if(file != null){
 			String path = "D:\\images" + File.separator + userId;
@@ -993,12 +981,55 @@ public class ImController extends BaseController{
 	}
 	
 	/**
+	 * for flutter web,修改头像
+	 */
+	@RequestMapping(value="/userhead-web",produces="application/json",method = RequestMethod.POST)
+	@ResponseBody
+	public int changeAvatar4Web(@RequestParam("file")MultipartFile file,@RequestParam("userId")int userId,
+			HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		int result = 0;
+		if(file != null){
+			String path = "D:\\images" + File.separator + userId;
+			File parent = new File(path);
+			if (!parent.exists()) {
+				parent.mkdirs();
+			}
+			String completePath = path + File.separator + "0-large.jpg";
+			String smallPath = path + File.separator + "0.jpg";
+			File pic = new File(completePath);
+			try {
+				if (!pic.exists()) {
+					pic.createNewFile();
+				}
+				file.transferTo(pic);
+				compressImage(pic,new File(smallPath));
+				result = 1;
+			} catch (IOException e) {
+				e.printStackTrace();
+				result = -1;
+			}
+		}
+		return result;
+	}
+	
+	private void compressImage(File src,File des) throws IOException{
+		double scale = 1.0;
+		long size = src.length();
+		if (size >= 150*1024){
+			scale = (double) Math.round((150*1024)*100 / size)/100;
+		}
+		Thumbnails.of(src).scale(scale).toFile(des);
+	}
+	
+	/**
 	 * for flutter,更改用户密码
 	 */
 	@RequestMapping(value="/changepassword",produces="application/json",method = RequestMethod.POST)
 	@ResponseBody
 	public int changePassword(@RequestParam("userId") int userId,@RequestParam("password") String password,
 			HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		return UserDao.updatePassword(userId,password);
 	}
 	
@@ -1009,6 +1040,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public int changePassword(@RequestParam("userId") int userId,@RequestParam("show") boolean show,
 			HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		return UserDao.changeShow(userId,show);
 	}
 	
@@ -1025,6 +1057,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public int gallery(@RequestParam("file") MultipartFile[] files,
 			HttpServletResponse response, HttpServletRequest request) throws Exception {
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		int userId = Integer.parseInt(req.getParameter("userId"));
 		System.out.println("files come:"+files.length);
@@ -1071,6 +1104,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public int deletePic(@RequestParam("userId") int userId,@RequestParam("index") String index,
 			@RequestParam("removedPicId") int removedPicId,HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		int result = UserDao.deletePic(userId,index);
 		String pic = "D:\\images" + File.separator + userId + File.separator + removedPicId + ".jpg";
 		File picFile = new File(pic);
@@ -1084,6 +1118,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/addmeetingcomment",produces="application/json",method = RequestMethod.POST)
 	@ResponseBody
 	public int addMeetingComments(HttpServletRequest request,HttpServletResponse response,ModelMap model){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		CommentDetail comment = JSONObject.parseObject(req.getParameter("commentDetail"),CommentDetail.class);
 		System.out.println("add comment:"+comment.commentContent);
@@ -1110,6 +1145,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public HashMap<String,ArrayList<CommentDetail>> getMeetingComments(@RequestParam("meetingId") int meetingId,
 			@RequestParam("count") int count,HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		ArrayList<CommentDetail> comments = CommentsDao.selectCommentsByCount(true, meetingId, count);
 		HashMap<String,ArrayList<CommentDetail>> map = new HashMap<>();
 		map.put("comments", comments);
@@ -1122,6 +1158,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/addarticlecomment",produces="application/json",method = RequestMethod.POST)
 	@ResponseBody
 	public int addArticleComment(HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		CommentDetail comment = new Gson().fromJson(req.getParameter("commentDetail"), CommentDetail.class);
 		int id = CommentsDao.addComment(false, comment);
@@ -1136,6 +1173,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public HashMap<String,ArrayList<CommentDetail>> getArticleComments(@RequestParam("articleId") int articleId,
 			@RequestParam("count") int count,HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		ArrayList<CommentDetail> comments = CommentsDao.selectCommentsByCount(false, articleId, count);
 		HashMap<String,ArrayList<CommentDetail>> map = new HashMap<>();
 		map.put("comments", comments);
@@ -1149,6 +1187,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public int deleteComment(@RequestParam("id") int id,@RequestParam("isMeeting") boolean isMeeting,
 			@RequestParam("commentId") int commentId,HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		int res = CommentsDao.deleteComment(isMeeting, id);
 		if(isMeeting)
 			res = ContributesDao.reduceCommentCount(commentId);
@@ -1163,6 +1202,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/complaincomment",produces="application/json",method = RequestMethod.POST)
 	@ResponseBody
 	public int complainComment(HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		int res;
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		CommentDetail comment = new Gson().fromJson(req.getParameter("commentDetail"), CommentDetail.class);
@@ -1177,6 +1217,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/getcomplainedcomment",produces="application/json",method = RequestMethod.GET)
 	@ResponseBody
 	public HashMap<String, ArrayList<CommentDetail>> getComplainedComment(@RequestParam("count") int count, @RequestParam("ismeeting") boolean isMeeting, HttpServletRequest request, HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		ArrayList<CommentDetail> list = null;
 		list = CommentsDao.getComplainedComments(count,isMeeting);
 		HashMap<String, ArrayList<CommentDetail>> map = new HashMap<String,ArrayList<CommentDetail>>();
@@ -1191,6 +1232,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public int createArticle(@RequestParam("file") MultipartFile[] files,HttpServletRequest request,HttpServletResponse response
 			,ModelMap model){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 		System.out.println(req.getParameter("article").toString());
@@ -1233,6 +1275,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public int createComplain(@RequestParam("file") MultipartFile[] files,HttpServletRequest request,HttpServletResponse response
 			,ModelMap model){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 		Complain complain = gson.fromJson(req.getParameter("complain"), Complain.class);
@@ -1272,6 +1315,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value = "/getcomplain",produces="application/json")
 	@ResponseBody
 	public HashMap<String, List<Complain>> getComplain(@RequestParam("count")int count,HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		List<Complain> complains = null;
 		complains = ComplainDao.selectComplain(count);
 		HashMap<String, List<Complain>> map = new HashMap<String,List<Complain>>();
@@ -1286,6 +1330,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public HashMap<String, ArrayList<Article>> getArticles(@RequestParam("userId")int userId,
 			@RequestParam("count")int count,@RequestParam("type")int type,HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		ArrayList<Article> articles = null;
 		if (userId != -1)//获取自己的反馈
 			articles = ArticleDao.getMyArticles(userId, count);
@@ -1307,6 +1352,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public int deleteMeeting(@RequestParam("meetingid") int meetingId,@RequestParam("ismeeting") boolean isMeeting,
 			HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		int res;
 		if(isMeeting)
 			res = ContributesDao.deleteMeeting(meetingId);
@@ -1321,6 +1367,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/getscore",produces="application/json")
 	@ResponseBody
 	public int getScore(@RequestParam("id") int id, HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		int score = UserDao.getScore(id);
 		return score;
 	}
@@ -1331,6 +1378,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/getgoods",produces="application/json")
 	@ResponseBody
 	public Map<String, List<GoodsBean>> getGoods(HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		List<GoodsBean> goodsList = GoodsDao.getGoodsList();
 		HashMap<String, List<GoodsBean>> map = new HashMap<String, List<GoodsBean>>();
 		map.put("goodsList", goodsList);
@@ -1343,6 +1391,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/newlook",produces="application/json")
 	@ResponseBody
 	public int newLook(@RequestParam("id") int goodsId, HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		GoodsDao.addNewLook(goodsId);
 		return 1;
 	}
@@ -1353,6 +1402,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/getmsglist",produces="application/json")
 	@ResponseBody
 	public Map<String,List<Message>> getMsgList(@RequestParam("id") int userId, HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		List<Message> msgList = NewMsgListDao.queryMessageList(userId);
 		HashMap<String,List<Message>> map = new HashMap<String,List<Message>>();
 		map.put("list", msgList);
@@ -1365,6 +1415,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/queryifunread",produces="application/json")
 	@ResponseBody
 	public int queryIfUnread(@RequestParam("user_id") int userId, HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		int unread = NewMsgListDao.queryIfUnread(userId);
 		return unread;
 	}
@@ -1375,6 +1426,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/deletemsglist",produces="application/json")
 	@ResponseBody
 	public void deleteMsgList(@RequestParam("user_id") int userId, @RequestParam("another_id") int anotherId, HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		NewMsgListDao.deleteMessage(userId, anotherId);
 	}
 	
@@ -1384,6 +1436,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/clearunread",produces="application/json")
 	@ResponseBody
 	public void clearUnread(@RequestParam("user_id") int userId, @RequestParam("another_id") int anotherId, HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		NewMsgListDao.readMessage(userId, anotherId);
 	}
 	
@@ -1393,6 +1446,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/getchatlist",produces="application/json")
 	@ResponseBody
 	public Map<String,List<ChatEntity>> getChatList(@RequestParam("id") int userId, @RequestParam("receive_id") int receive_id,HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		List<ChatEntity> msgList= NewChatListDao.selectHistoryChat(userId,receive_id);
 		HashMap<String,List<ChatEntity>> map = new HashMap<String,List<ChatEntity>>();
 		map.put("list", msgList);
