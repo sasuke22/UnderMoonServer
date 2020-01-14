@@ -869,4 +869,69 @@ public class UserDao {
 		}
 		return password;
 	}
+
+	public static boolean isBlack(int userId, int otherId) {
+		String sql1;
+		ResultSet rs;
+		Connection con = DBPool.getConnection();
+		boolean isBlack = false;
+		try {
+			con.setAutoCommit(false);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		try{
+			PreparedStatement ps;
+			sql1 = "select EXISTS (select * from black where userid = ? and blackid = ?) exist;";
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, userId);
+			ps.setInt(2, otherId);
+			rs = ps.executeQuery();
+			if (rs.first())
+				isBlack = rs.getInt("exist") > 0;
+		}catch (SQLException e) {
+			e.printStackTrace();
+			isBlack = false;
+		}finally{
+			DBPool.close(con);
+		}
+		return isBlack;
+	}
+
+	public static int beBlack(int userId, int otherId, boolean black) {
+		String sql0 = "use first_mysql_test";
+		String sql1;
+		if (black)
+			sql1 = "insert into black (userid,blackid) values(?,?)";
+		else
+			sql1 = "delete from black where userid = ? and blackid = ?";
+		Connection con = DBPool.getConnection();
+		try {
+			con.setAutoCommit(false);
+		} catch (SQLException e2) {
+			e2.printStackTrace();
+		}
+		PreparedStatement ps;
+		try {
+			ps = con.prepareStatement(sql0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, otherId);
+			ps.setInt(2, userId);
+			ps.execute();
+			con.commit();
+			return 1;
+		} catch (SQLException e) {
+			try {
+				System.out.println("插入数据库异常，正在进行回滚..");
+				con.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+			return -1;
+		}finally{
+			DBPool.close(con);
+		}
+	}
 }

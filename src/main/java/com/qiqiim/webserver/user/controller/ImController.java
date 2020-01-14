@@ -593,6 +593,26 @@ public class ImController extends BaseController{
 	}
 	
 	/**
+	 * 获取报名者的信息
+	 */
+	@RequestMapping(value = "/isblack",produces="application/json")
+	@ResponseBody
+	public boolean isBlack(@RequestParam("user_id")int userId,@RequestParam("other_id")int otherId,
+			HttpServletRequest request,HttpServletResponse response){
+		return UserDao.isBlack(userId,otherId);
+	}
+	
+	/**
+	 * 获取报名者的信息
+	 */
+	@RequestMapping(value = "/beblack",produces="application/json")
+	@ResponseBody
+	public int beBlack(@RequestParam("user_id")int userId,@RequestParam("other_id")int otherId,@RequestParam("black")boolean black,
+			HttpServletRequest request,HttpServletResponse response){
+		return UserDao.beBlack(userId,otherId,black);
+	}
+	
+	/**
 	 * 获取用户图片地址
 	 */
 	@RequestMapping(value = "/getuserpic",produces="application/json")
@@ -900,10 +920,15 @@ public class ImController extends BaseController{
 	 */
 	@RequestMapping(value = "/sendmsg",produces="application/json",method = RequestMethod.POST)
 	@ResponseBody
-	public void sendMsg(HttpServletRequest request,HttpServletResponse response){
+	public int sendMsg(HttpServletRequest request,HttpServletResponse response){
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		ChatEntity chat = JSONObject.parseObject(req.getParameter("msg"), ChatEntity.class);
-		NewMsgListDao.insertMessage(chat);
+		boolean isBlack = UserDao.isBlack(chat.getUserId(), chat.getAnotherId());
+		if(isBlack){
+			return -1;
+		} else
+			NewMsgListDao.insertMessage(chat);
+		return 1;
 	}
 	
 	/**

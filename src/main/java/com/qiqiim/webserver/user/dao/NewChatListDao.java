@@ -29,6 +29,7 @@ public class NewChatListDao {
 				chat.setAnotherId(rs.getInt("anotherId"));
 				chat.setTime(new Date(rs.getTimestamp("time").getTime()));
 				chat.setContent(rs.getString("content"));
+				chat.setType(rs.getInt("type"));
 				chatList.add(chat);
 			}
 		} catch (Exception e) {

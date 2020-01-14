@@ -12,6 +12,7 @@ public class ChatEntity implements Serializable{
 	private Date time;
 	private String content;
 	private String name;
+	private int type;//0-聊天，1-邀约
 	
 	public int getUserId() {
 		return userId;
@@ -42,5 +43,11 @@ public class ChatEntity implements Serializable{
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public int getType() {
+		return type;
+	}
+	public void setType(int type) {
+		this.type = type;
 	}
 }

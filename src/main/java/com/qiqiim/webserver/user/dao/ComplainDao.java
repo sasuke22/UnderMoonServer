@@ -12,7 +12,7 @@ import com.qiqiim.constant.Complain;
 public class ComplainDao {
 	public static List<Complain> selectComplain(int count){
 		ArrayList<Complain> complainList = new ArrayList<Complain>();
-		String sql1 = "select * from complain order by time desc limit ?,20" ;
+		String sql1 = "select * from complain order by id desc limit ?,20" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
