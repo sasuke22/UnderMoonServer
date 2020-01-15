@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import com.qiqiim.constant.CommentDetail;
+import com.qiqiim.constant.SubComment;
 
 public class CommentsDao {
 	public static int addComment(boolean isMeeting,CommentDetail comment){
@@ -36,68 +37,6 @@ public class CommentsDao {
 			ps.setString(5, comment.getCommentContent());
 			if(isMeeting)
 				ps.setInt(6, comment.isShow() ? 1 : 0);
-			ps.execute();
-			con.commit();
-			
-			ResultSet rs = ps.getGeneratedKeys();
-			int result = 0;
-			if (rs.next()) {
-				result = rs.getInt(1);
-			}
-			DBPool.close(con);
-			return result;
-		} catch (SQLException e) {
-			System.out.println("正在回滚");
-			try {
-				con.rollback();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-			e.printStackTrace();
-			return -1;
-		}
-	}
-	
-	/**
-	 * 对评论进行评论
-	 * @param type 对哪个进行评论，0-邀约;1-反馈;2-社区
-	 * @param comment
-	 * @return
-	 */
-	public static int addCommentToComment(int type,CommentDetail comment){
-		String sql0 = "use first_mysql_test";
-		String sql1 = null;
-		switch(type){
-			case 0:
-				sql1 = "insert into meetingComments (commentid,userid,commentname,commentgender,content,floorid,replyid,showname) values(?,?,?,?,?,?)";
-				break;
-			case 1:
-				sql1 = "insert into articleComments (commentid,userid,commentname,commentgender,content,floorid,replyid) values(?,?,?,?,?)";
-				break;
-			case 2:
-				sql1 = "insert into circlecomments (commentid,userid,commentname,commentgender,content,floorid,replyid) values(?,?,?,?,?)";
-				break;
-		}
-		Connection con = DBPool.getConnection();
-		try {
-			con.setAutoCommit(false);
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		PreparedStatement ps;
-		try {
-			ps = con.prepareStatement(sql0);
-			ps.execute();
-			ps = con.prepareStatement(sql1,Statement.RETURN_GENERATED_KEYS);
-			ps.setInt(1, comment.getCommentId());
-			ps.setInt(2, comment.getUserId());
-			ps.setString(3, comment.getCommentName());
-			ps.setInt(4, comment.getCommentGender());
-			ps.setString(5, comment.getCommentContent());
-			ps.setInt(6, comment.getFloorId());
-			ps.setInt(7,comment.getReplyId());
-			if(type == 0)
-				ps.setInt(8, comment.isShow() ? 1 : 0);
 			ps.execute();
 			con.commit();
 			
