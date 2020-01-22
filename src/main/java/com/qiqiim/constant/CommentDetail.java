@@ -15,7 +15,7 @@ public class CommentDetail {
   	public boolean show;//是否匿名
     public boolean isVip;//评论者是否是会员
     public boolean bigVip;//评论者是否是至尊会员
-    public List<SubComment> subcomments;
+    public List<SubComment> subComments;
     
 	public int getId() {
 		return id;
@@ -86,10 +86,10 @@ public class CommentDetail {
 	public void setVip(boolean isVip) {
 		this.isVip = isVip;
 	}
-	public List<SubComment> getSubcomments() {
-		return subcomments;
+	public List<SubComment> getSubComments() {
+		return subComments;
 	}
-	public void setSubcomments(List<SubComment> subcomments) {
-		this.subcomments = subcomments;
+	public void setSubComments(List<SubComment> subComments) {
+		this.subComments = subComments;
 	}
 }

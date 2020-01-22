@@ -1120,8 +1120,8 @@ public class ImController extends BaseController{
 	public int addMeetingComments(HttpServletRequest request,HttpServletResponse response,ModelMap model){
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
+		System.out.println("add comment:"+req.getParameter("commentDetail"));
 		CommentDetail comment = JSONObject.parseObject(req.getParameter("commentDetail"),CommentDetail.class);
-		System.out.println("add comment:"+comment.commentContent);
 		int id;
 		if(commentContent.equals(comment.commentContent))
 			id = 1;
@@ -1139,6 +1139,31 @@ public class ImController extends BaseController{
 	}
 	
 	/**
+	 * for flutter,给邀约增加评论并报名,付费版
+	 */
+	@RequestMapping(value="/addsubcomment",produces="application/json",method = RequestMethod.POST)
+	@ResponseBody
+	public int addSubComments(HttpServletRequest request,HttpServletResponse response,@RequestParam("type") int type){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
+		SubComment comment = JSONObject.parseObject(req.getParameter("subComment"),SubComment.class);
+		System.out.println("add comment:"+comment.getContent());
+		int id;
+		if(commentContent.equals(comment.getContent()))
+			id = 1;
+		else{
+			commentContent = comment.getContent();
+			id = SubCommentsDao.addCommentToComment(type, comment);
+			if(id > 0){
+//				ContributesDao.addCommentCount(comment.commentId);
+				if(req.getParameter("isVip").equals("false"))
+				UserDao.updateScore(comment.getUserId(), -1);
+			}
+		}
+		return id;
+	}
+	
+	/**
 	 * for flutter,获取邀约的评论
 	 */
 	@RequestMapping(value="/getmeetingcomments",produces="application/json",method = RequestMethod.GET)
@@ -1148,6 +1173,20 @@ public class ImController extends BaseController{
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		ArrayList<CommentDetail> comments = CommentsDao.selectCommentsByCount(true, meetingId, count);
 		HashMap<String,ArrayList<CommentDetail>> map = new HashMap<>();
+		map.put("comments", comments);
+		return map;
+	}
+	
+	/**
+	 * for flutter,获取邀约的评论
+	 */
+	@RequestMapping(value="/getsubcomments",produces="application/json",method = RequestMethod.POST)
+	@ResponseBody
+	public HashMap<String,ArrayList<SubComment>> getSubComments(@RequestParam("id") int floorId,@RequestParam("type") int type,@RequestParam("count") int count,
+			HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		ArrayList<SubComment> comments = SubCommentsDao.getSubCommentByFloorId(type,floorId,count);
+		HashMap<String,ArrayList<SubComment>> map = new HashMap<>();
 		map.put("comments", comments);
 		return map;
 	}

@@ -26,7 +26,6 @@ public class SubCommentsDao {
 		}
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
-		ResultSet rs;
 		int result = 0;
 		try {
 			con.setAutoCommit(false);
@@ -35,10 +34,11 @@ public class SubCommentsDao {
 			boolean need = needInsert2ThreeTable(comment,type,con);
 			if (need){
 				result = insert2ThreeTable(comment,type,con);
+				System.out.println("three result:"+result);
 				if (result <= 0)
 					return result;
 			}
-			ps = con.prepareStatement(sql1,Statement.RETURN_GENERATED_KEYS);
+			ps = con.prepareStatement(sql1);
 			ps.setInt(1, comment.getFloorId());
 			ps.setInt(2, comment.getUserId());
 			ps.setString(3, comment.getContent());
@@ -48,10 +48,7 @@ public class SubCommentsDao {
 			ps.execute();
 			con.commit();
 			
-			rs = ps.getGeneratedKeys();
-			if (rs.next()) {
-				result = rs.getInt(1);
-			}
+			result = 1;
 		} catch (SQLException e) {
 			System.out.println("正在回滚");
 			try {
@@ -73,13 +70,13 @@ public class SubCommentsDao {
 		String sql1 = null;
 		switch (type){
 			case 0://邀约
-				sql1 = "select a.*,b.name,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from meeting_sub_comments a,user b where floorid = ? and a.userid = b.id order by bigVip desc,vip desc,date desc limit ?,20" ;
+				sql1 = "select a.*,b.name,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip,c.name as replyName from meeting_sub_comments a,user b,user c where floorid = ? and a.userid = b.id and a.replyid = c.id order by bigVip desc,vip desc,date desc";
 				break;
 			case 1:
-				sql1 = "select a.*,b.name,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from article_sub_comments a,user b where floorid = ? and a.userid = b.id order by bigVip desc,vip desc,date desc limit ?,20" ;
+				sql1 = "select a.*,b.name,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip,c.name as replyName from article_sub_comments a,user b,user c where floorid = ? and a.userid = b.id and a.replyid = c.id order by bigVip desc,vip desc,date desc";
 				break;
 			case 2:
-				sql1 = "select a.*,b.name,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from circle_sub_comments a,user b where floorid = ? and a.userid = b.id order by bigVip desc,vip desc,date desc limit ?,20" ;
+				sql1 = "select a.*,b.name,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip,c.name as replyName from circle_sub_comments a,user b,user c where floorid = ? and a.userid = b.id and a.replyid = c.id order by bigVip desc,vip desc,date desc";
 				break;
 		}
 		Connection con = DBPool.getConnection();
@@ -90,7 +87,7 @@ public class SubCommentsDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, id);
-			ps.setInt(2, count);
+//			ps.setInt(2, count);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				SubComment comment = new SubComment();
@@ -99,6 +96,8 @@ public class SubCommentsDao {
 				comment.setUserName(rs.getString("name"));
 				comment.setContent(rs.getString("content"));
 				comment.setDate(new Date(rs.getTimestamp("date").getTime()));
+				comment.setReplyId(rs.getInt("replyid"));
+				comment.setReplyName(rs.getString("replyName"));
 				comment.setShowName(rs.getInt("showname") > 0);
 				comment.setSheShowName(rs.getInt("she_show_name") > 0);
 				comment.setIsVip(rs.getInt("vip") > 0);
@@ -146,34 +145,37 @@ public class SubCommentsDao {
 	/**
 	 * 插入到层主前三个评论中
 	 */
-	private static int insert2ThreeTable(SubComment comment, int type, Connection con) throws SQLException{
+	private static int insert2ThreeTable(SubComment comment, int type, Connection con){
 		String sql1 = null;
 		switch(type){
 			case 0:
-				sql1 = "insert into meeting_three_sub_comments (floorid,userid,content,date,replyid,showname) values(?,?,?,now(),?,?)";
+				sql1 = "insert into meeting_three_sub_comments (floorid,userid,user_name,content,date,replyid,showname) values(?,?,?,?,now(),?,?)";
 				break;
 			case 1:
-				sql1 = "insert into article_three_sub_comments (floorid,userid,content,date,replyid,showname) values(?,?,?,now(),?,?)";
+				sql1 = "insert into article_three_sub_comments (floorid,userid,user_name,content,date,replyid,showname) values(?,?,?,?,now(),?,?)";
 				break;
 			case 2:
-				sql1 = "insert into circle_three_sub_comments (floorid,userid,content,date,replyid,showname) values(?,?,?,now(),?,?)";
+				sql1 = "insert into circle_three_sub_comments (floorid,userid,user_name,content,date,replyid,showname) values(?,?,?,?,now(),?,?)";
 				break;
 		}
 		PreparedStatement ps;
-		ResultSet rs;
 		int result = 0;
-		con.setAutoCommit(false);
-		ps = con.prepareStatement(sql1);
-		ps.setInt(1, comment.getFloorId());
-		ps.setInt(2, comment.getUserId());
-		ps.setString(3, comment.getContent());
-		ps.setInt(4, comment.getReplyId());
-		ps.setInt(5, comment.isShowName() ? 1 : 0);
-		ps.execute();
-		con.commit();
-		rs = ps.getGeneratedKeys();
-		if (rs.next()) {
+		
+		try {
+			con.setAutoCommit(false);
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, comment.getFloorId());
+			ps.setInt(2, comment.getUserId());
+			ps.setString(3,comment.getUserName());
+			ps.setString(4, comment.getContent());
+			ps.setInt(5, comment.getReplyId());
+			ps.setInt(6, comment.isShowName() ? 1 : 0);
+			ps.execute();
+			con.commit();
 			result = 1;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			result = -1;
 		}
 		return result;
 	}

@@ -1,15 +1,11 @@
 package com.qiqiim.webserver.user.dao;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-
 import com.qiqiim.constant.CommentDetail;
 import com.qiqiim.constant.SubComment;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommentsDao {
 	public static int addComment(boolean isMeeting,CommentDetail comment){
@@ -64,9 +60,9 @@ public class CommentsDao {
 		String sq0 = "use first_mysql_test";
 		String sql1;
 		if(isMeeting)
-			sql1 = "select a.*,b.showname,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from meetingComments a,user b where commentid = ? and a.userid = b.id order by bigVip desc,vip desc,date desc limit ?,?" ;
+			sql1 = "select * from meeting_three_sub_comments as c right join (select a.*,b.vip > now() as vip,b.bigVip > now() as bigVip from meetingcomments as a,user as b where a.commentid = ? and a.userid = b.id limit ?,20) as d on c.floorid = d.id";
 		else
-			sql1 = "select a.*,b.showname,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from articleComments a,user b where commentid = ? and a.userid = b.id order by bigVip desc,vip desc,date desc limit ?,?" ;
+			sql1 = "select * from article_three_sub_comments as c right join (select a.*,b.vip > now() as vip,b.bigVip > now() as bigVip from articlecomments as a,user as b where a.commentid = ? and a.userid = b.id limit ?,20) as d on c.floorid = d.id";
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
@@ -76,27 +72,53 @@ public class CommentsDao {
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, id);
 			ps.setInt(2, count);
-			ps.setInt(3, 20);
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				CommentDetail comment = new CommentDetail();
-				comment.setId(rs.getInt("id"));
-				comment.setCommentId(rs.getInt("commentid"));
-				comment.setUserId(rs.getInt("userid"));
-				comment.setCommentName(rs.getString("commentname"));
-				comment.setCommentGender(rs.getInt("commentgender"));
-				comment.setCommentContent(rs.getString("content"));
-				comment.setCommentDate(new Date(rs.getTimestamp("date").getTime()));
-				comment.setShow(rs.getInt("showname") > 0);
-				comment.setIsVip(rs.getInt("vip") > 0);
-				comment.setBigVip(rs.getInt("bigVip") > 0);
-				commentsList.add(comment);
+				boolean exist = false;
+				SubComment subComment = new SubComment();
+				if(rs.getTimestamp("c.date") != null){//证明没有子评论，直接添加
+					subComment.setFloorId(rs.getInt("floorid"));
+					subComment.setUserId(rs.getInt("c.userid"));
+					subComment.setUserName(rs.getString("user_name"));
+					subComment.setContent(rs.getString("c.content"));
+					subComment.setDate(new Date(rs.getTimestamp("c.date").getTime()));
+					subComment.setReplyId(rs.getInt("replyid"));
+					subComment.setReplyName(rs.getString("reply_name"));
+					subComment.setShowName(rs.getInt("c.showname") > 0);
+					subComment.setSheShowName(rs.getInt("she_show_name") > 0);
+					for (CommentDetail commentDetail : commentsList) {
+						if (commentDetail.id == rs.getInt("id")){//列表中已经有了这个评论，则只需要加载子评论
+							exist = true;
+							commentDetail.subComments.add(subComment);
+							break;
+						}
+					}
+				}
+				
+				if (!exist){//列表中没有该评论，需要将子评论和该评论一起添加
+					CommentDetail comment = new CommentDetail();
+					comment.setId(rs.getInt("id"));
+					comment.setCommentId(rs.getInt("commentid"));
+					comment.setUserId(rs.getInt("d.userid"));
+					comment.setCommentName(rs.getString("commentname"));
+					comment.setCommentGender(rs.getInt("commentgender"));
+					comment.setCommentContent(rs.getString("d.content"));
+					comment.setCommentDate(new Date(rs.getTimestamp("d.date").getTime()));
+					comment.setShow(rs.getInt("d.showname") > 0);
+					comment.setIsVip(rs.getInt("vip") > 0);
+					comment.setBigVip(rs.getInt("bigVip") > 0);
+					List<SubComment> subList = new ArrayList<>();
+					if(rs.getTimestamp("c.date") != null)
+						subList.add(subComment);
+					comment.setSubComments(subList);
+					commentsList.add(comment);
+				}
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage().toString());
+			System.out.println(e.getMessage());
+		} finally {
 			DBPool.close(con);
 		}
-		DBPool.close(con);
 		return commentsList;
 	}
 	
@@ -121,7 +143,6 @@ public class CommentsDao {
 			ps.setInt(1, id);
 			ps.execute();
 			con.commit();
-			DBPool.close(con);
 			return 1;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -131,8 +152,9 @@ public class CommentsDao {
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
-			DBPool.close(con);
 			return -1;
+		} finally {
+			DBPool.close(con);
 		}
 	}
 
