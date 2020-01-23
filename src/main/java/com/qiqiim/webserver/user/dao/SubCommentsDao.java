@@ -70,13 +70,13 @@ public class SubCommentsDao {
 		String sql1 = null;
 		switch (type){
 			case 0://邀约
-				sql1 = "select a.*,b.name,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip,c.name as replyName from meeting_sub_comments a,user b,user c where floorid = ? and a.userid = b.id and a.replyid = c.id order by bigVip desc,vip desc,date desc";
+				sql1 = "select d.floorid,d.userid,d.name,d.content,d.date,d.replyid,c.name as replyName,d.showname,d.she_show_name,d.vip,d.bigVip from user as c right join (select a.*,b.name,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from meeting_sub_comments a,user b where floorid = ? and a.userid = b.id order by bigVip desc,vip desc,date desc) as d on d.replyid = c.id;";
 				break;
 			case 1:
-				sql1 = "select a.*,b.name,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip,c.name as replyName from article_sub_comments a,user b,user c where floorid = ? and a.userid = b.id and a.replyid = c.id order by bigVip desc,vip desc,date desc";
+				sql1 = "select d.floorid,d.userid,d.name,d.content,d.date,d.replyid,c.name as replyName,d.showname,d.she_show_name,d.vip,d.bigVip from user as c right join (select a.*,b.name,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from article_sub_comments a,user b where floorid = ? and a.userid = b.id order by bigVip desc,vip desc,date desc) as d on d.replyid = c.id;";
 				break;
 			case 2:
-				sql1 = "select a.*,b.name,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip,c.name as replyName from circle_sub_comments a,user b,user c where floorid = ? and a.userid = b.id and a.replyid = c.id order by bigVip desc,vip desc,date desc";
+				sql1 = "select d.floorid,d.userid,d.name,d.content,d.date,d.replyid,c.name as replyName,d.showname,d.she_show_name,d.vip,d.bigVip from user as c right join (select a.*,b.name,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from circle_sub_comments a,user b where floorid = ? and a.userid = b.id order by bigVip desc,vip desc,date desc) as d on d.replyid = c.id;";
 				break;
 		}
 		Connection con = DBPool.getConnection();
