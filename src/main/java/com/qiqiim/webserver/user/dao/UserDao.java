@@ -383,7 +383,7 @@ public class UserDao {
 		ArrayList<String> registArray = queryRegist(userId);
 		if (registArray == null || !registArray.contains(String.valueOf(meetingId))) {
 			String sql0 = "use first_mysql_test";
-			String sql1 = "update user set commentDate = CURDATE(),registId= case when isnull(registId) or registId='' then ? else concat(registId,'|',?) end where id =?";
+			String sql1 = "update user set registId= case when isnull(registId) or registId='' then ? else concat(registId,'|',?) end where id =?";
 			Connection con = DBPool.getConnection();
 			try {
 				con.setAutoCommit(false);
@@ -399,6 +399,44 @@ public class UserDao {
 				ps.setInt(2, meetingId);
 				ps.setInt(3, userId);
 				System.out.println(ps.toString());
+				ps.execute();
+				con.commit();
+				return 1;
+			}catch (Exception e){
+				e.printStackTrace();
+				return -1;
+			}finally{
+				DBPool.close(con);
+			}
+		}else 
+			return 0;
+	}
+	
+	public static int cancelEnlist(int userId,int meetingId){
+		ArrayList<String> registArray = queryRegist(userId);
+		if (registArray != null) {
+			StringBuilder builder = new StringBuilder();
+			for(String id : registArray){
+				if(Integer.valueOf(id) != meetingId){
+					builder.append(id).append("|");
+				}
+			}
+			String sql0 = "use first_mysql_test";
+			String sql1 = "update user set commentDate = CURDATE(),registId= ? where id =?";
+			Connection con = DBPool.getConnection();
+			try {
+				con.setAutoCommit(false);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			PreparedStatement ps;
+			try {
+				
+				ps = con.prepareStatement(sql0);
+				ps.execute();
+				ps = con.prepareStatement(sql1);
+				ps.setString(1, builder.toString());
+				ps.setInt(2, userId);
 				ps.execute();
 				con.commit();
 				return 1;
@@ -558,7 +596,11 @@ public class UserDao {
 	
 	public static int updateScore(int id,int value){
 		String sql0 = "use first_mysql_test";
-		String sql1 = "update user SET score = score + " + value + " where id = ?";
+		String sql1;
+		if(value == -1){//评论减分
+			sql1 = "update user SET commentDate = CURDATE(),score = score + " + value + " where id = ?";
+		} else
+			sql1 = "update user SET score = score + " + value + " where id = ?";
 		Connection con = DBPool.getConnection();
 		int res = 0;
 		try {
@@ -752,7 +794,7 @@ public class UserDao {
 		}
 		try{
 			PreparedStatement ps;
-			sql1 = "update user SET vip = timestampadd(year,1,CURRENT_TIMESTAMP), score = score + 300 where id = ?";
+			sql1 = "update user SET vip = timestampadd(year,1,CURRENT_TIMESTAMP), score = score + 450 where id = ?";
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, id);
 			ps.executeUpdate();
@@ -882,7 +924,7 @@ public class UserDao {
 		}
 		try{
 			PreparedStatement ps;
-			sql1 = "select EXISTS (select * from black where userid = ? and blackid = ?) exist;";
+			sql1 = "select EXISTS (select * from black where userid = ? and blackid = ?) exist";
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, userId);
 			ps.setInt(2, otherId);

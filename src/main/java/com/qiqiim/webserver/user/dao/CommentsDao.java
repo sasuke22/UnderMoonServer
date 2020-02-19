@@ -60,9 +60,9 @@ public class CommentsDao {
 		String sq0 = "use first_mysql_test";
 		String sql1;
 		if(isMeeting)
-			sql1 = "select * from meeting_three_sub_comments as c right join (select a.*,b.vip > now() as vip,b.bigVip > now() as bigVip from meetingcomments as a,user as b where a.commentid = ? and a.userid = b.id limit ?,20) as d on c.floorid = d.id";
+			sql1 = "select * from meeting_three_sub_comments as c right join (select a.*,b.vip > now() as vip,b.bigVip > now() as bigVip from meetingcomments as a,user as b where a.commentid = ? and a.userid = b.id order by bigVip desc,vip desc,date desc limit ?,20) as d on c.floorid = d.id";
 		else
-			sql1 = "select * from article_three_sub_comments as c right join (select a.*,b.vip > now() as vip,b.bigVip > now() as bigVip from articlecomments as a,user as b where a.commentid = ? and a.userid = b.id limit ?,20) as d on c.floorid = d.id";
+			sql1 = "select * from article_three_sub_comments as c right join (select a.*,b.vip > now() as vip,b.bigVip > now() as bigVip from articlecomments as a,user as b where a.commentid = ? and a.userid = b.id order by bigVip desc,vip desc,date desc limit ?,20) as d on c.floorid = d.id";
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;

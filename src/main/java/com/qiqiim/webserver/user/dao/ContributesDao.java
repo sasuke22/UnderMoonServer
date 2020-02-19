@@ -476,7 +476,7 @@ public class ContributesDao {
 		if(approve == 1)
 			sql1 = "update meetings SET approve = ?, reason = ? where meetingid = ? ";
 		else 
-			sql1 = "update meetings a,user b set a.approve = ?,a.reason = ?,b.score = b.score + 25 where a.meetingid = ? and a.id = b.id";
+			sql1 = "update meetings a,user b set a.approve = ?,a.reason = ?,b.score = b.score + 30 where a.meetingid = ? and a.id = b.id";
 		Connection con = DBPool.getConnection();
 		try {
 			con.setAutoCommit(false);

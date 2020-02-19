@@ -132,7 +132,7 @@ public class ImController extends BaseController{
 			}
 			try{
 				int recommend = Integer.valueOf(req.getParameter("recommend"));
-				UserDao.updateScore(recommend, 10);//推荐人获得10金币
+				UserDao.updateScore(recommend, 2);//推荐人获得3金币
 			}catch (Exception e){
 				e.printStackTrace();
 			}
@@ -435,7 +435,7 @@ public class ImController extends BaseController{
 		MeetingDetail meetingDetail = gson.fromJson(req.getParameter("meetingDetail"), MeetingDetail.class);
 		int meetingId = ContributesDao.addContribute(meetingDetail,files.length);
 		if (meetingId != -1) {
-			int restScore = UserDao.updateScore(meetingDetail.id, - 25);
+			int restScore = UserDao.updateScore(meetingDetail.id, - 30);
 			System.out.println("have files " + files.length);
 			if (files != null && files.length > 0) {
 				MultipartFile file;
@@ -517,6 +517,19 @@ public class ImController extends BaseController{
 	}
 	
 	/**
+	 * 取消对一个meeting报名
+	 * return 1:成功;return -1:失败;return 0:没报过名
+	 */
+	@RequestMapping(value = "/cancelenlist",produces="application/json")
+	@ResponseBody
+	public int cancelEnlist(@RequestParam("user_id")int userId,@RequestParam("meeting_id")int meetingId,
+			HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		int registRes = UserDao.cancelEnlist(userId,meetingId);
+		return registRes;
+	}
+	
+	/**
 	 * 获取自己发布的所有meeting
 	 */
 	@RequestMapping(value = "/mycontributes",produces="application/json")
@@ -569,7 +582,7 @@ public class ImController extends BaseController{
 	}
 	
 	/**
-	 * 获取报名者的信息
+	 * 获取是否被拉黑
 	 */
 	@RequestMapping(value = "/isblack",produces="application/json")
 	@ResponseBody
@@ -579,7 +592,7 @@ public class ImController extends BaseController{
 	}
 	
 	/**
-	 * 获取报名者的信息
+	 * 拉黑
 	 */
 	@RequestMapping(value = "/beblack",produces="application/json")
 	@ResponseBody
@@ -875,16 +888,13 @@ public class ImController extends BaseController{
 	@RequestMapping(value = "/checkupdate",produces="application/json")
 	@ResponseBody
 	public String checkUpdate(HttpServletRequest request,HttpServletResponse response){
-		File webRootDir = new File("D:\\images");
+		File webRootDir = new File("D:\\update");
 		File[] files = webRootDir.listFiles();
 		if(files == null)
 			return "1.0.0";
-		for(int i = 0;i < files.length;i++){
-			if(files[i].getName().endsWith(".apk")){
-				return files[i].getName().substring(4, 9);
-			}
+		else{
+			return files[0].getName().substring(0, 5);
 		}
-		return null;
 	}
 	
 	/**
@@ -908,6 +918,9 @@ public class ImController extends BaseController{
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		ChatEntity chat = JSONObject.parseObject(req.getParameter("msg"), ChatEntity.class);
+		int result = CountDao.addTalkCount(chat.getUserId(), chat.getAnotherId());
+		if (result == 2)
+			return result;
 		boolean isBlack = UserDao.isBlack(chat.getUserId(), chat.getAnotherId());
 		if(isBlack){
 			return -1;
@@ -1123,7 +1136,7 @@ public class ImController extends BaseController{
 		System.out.println("add comment:"+req.getParameter("commentDetail"));
 		CommentDetail comment = JSONObject.parseObject(req.getParameter("commentDetail"),CommentDetail.class);
 		int id;
-		if(commentContent.equals(comment.commentContent))
+		if(commentContent.equals(comment.commentContent) || commentContent.equals(""))
 			id = 1;
 		else{
 			commentContent = comment.commentContent;
@@ -1149,7 +1162,7 @@ public class ImController extends BaseController{
 		SubComment comment = JSONObject.parseObject(req.getParameter("subComment"),SubComment.class);
 		System.out.println("add comment:"+comment.getContent());
 		int id;
-		if(commentContent.equals(comment.getContent()))
+		if(commentContent.equals(comment.getContent()) || commentContent.equals(""))
 			id = 1;
 		else{
 			commentContent = comment.getContent();
@@ -1200,8 +1213,13 @@ public class ImController extends BaseController{
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		CommentDetail comment = new Gson().fromJson(req.getParameter("commentDetail"), CommentDetail.class);
-		int id = CommentsDao.addComment(false, comment);
-		ArticleDao.addCommentCount(comment.commentId);
+		int id;
+		if(commentContent.equals(comment.getCommentContent()) || commentContent.equals(""))
+			id = 1;
+		else{
+			id = CommentsDao.addComment(false, comment);
+			ArticleDao.addCommentCount(comment.commentId);	
+		}
 		return id;
 	}
 	

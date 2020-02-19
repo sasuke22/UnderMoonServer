@@ -44,8 +44,8 @@ public class NewMsgListDao {
 				+ "(?,?,?,1,CURRENT_TIMESTAMP) on duplicate key update content=?,time=CURRENT_TIMESTAMP;";
 		String sql2 = "insert into msg_list (userId,anotherId,content,unread,time) values "
 				+ "(?,?,?,1,CURRENT_TIMESTAMP) on duplicate key update content=?,unread=unread+1,time=CURRENT_TIMESTAMP;";
-		String sql3 = "insert into messages (userId,anotherId,content,time) values "
-				+ "(?,?,?,CURRENT_TIMESTAMP);";
+		String sql3 = "insert into messages (userId,anotherId,content,time,type) values "
+				+ "(?,?,?,CURRENT_TIMESTAMP,?);";
 		Connection con = DBPool.getConnection();
 		try {
 			con.setAutoCommit(false);
@@ -54,28 +54,31 @@ public class NewMsgListDao {
 		}
 		PreparedStatement ps;
 		try {
-			ps = con.prepareStatement(sql1);
-			ps.setInt(1, chat.getUserId());
-			ps.setInt(2, chat.getAnotherId());
-			ps.setString(3, chat.getContent());
-			ps.setString(4, chat.getContent());
-			ps.execute();
-			
-			ps = con.prepareStatement(sql2);
-			ps.setInt(1, chat.getAnotherId());
-			ps.setInt(2, chat.getUserId());
-			ps.setString(3, chat.getContent());
-			ps.setString(4, chat.getContent());
-			ps.execute();
+			if(chat.getType() == 0){
+				ps = con.prepareStatement(sql1);
+				ps.setInt(1, chat.getUserId());
+				ps.setInt(2, chat.getAnotherId());
+				ps.setString(3, chat.getContent());
+				ps.setString(4, chat.getContent());
+				ps.execute();
+				
+				ps = con.prepareStatement(sql2);
+				ps.setInt(1, chat.getAnotherId());
+				ps.setInt(2, chat.getUserId());
+				ps.setString(3, chat.getContent());
+				ps.setString(4, chat.getContent());
+				ps.execute();
+			}
 			
 			ps = con.prepareStatement(sql3);
 			ps.setInt(1, chat.getUserId());
 			ps.setInt(2, chat.getAnotherId());
 			ps.setString(3, chat.getContent());
+			ps.setInt(4, chat.getType());
 			ps.execute();
 			con.commit();
 		} catch (SQLException e) {
-			System.out.println("正在回滚");
+			System.out.println("插入消息正在回滚");
 			try {
 				con.rollback();
 			} catch (SQLException e1) {
@@ -105,7 +108,7 @@ public class NewMsgListDao {
 			con.commit();
 			res = 1;
 		} catch (SQLException e) {
-			System.out.println("正在回滚");
+			System.out.println("删除消息列表正在回滚");
 			try {
 				con.rollback();
 			} catch (SQLException e1) {
