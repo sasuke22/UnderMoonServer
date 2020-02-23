@@ -673,11 +673,11 @@ public class UserDao {
 			System.out.println(ps.toString());
 			ps.execute();
 			con.commit();
-			DBPool.close(con);
 			return 1;
 		}catch (Exception e){
-			DBPool.close(con);
 			return 0;
+		}finally{
+			DBPool.close(con);
 		}
 	}
 
@@ -742,12 +742,12 @@ public class UserDao {
 			ps.setInt(2, id);
 			ps.executeUpdate();
 			con.commit();
-			DBPool.close(con);
 			return 1;
 		}catch (SQLException e) {
 			e.printStackTrace();
-			DBPool.close(con);
 			return -1;
+		}finally{
+			DBPool.close(con);
 		}
 	}
 
@@ -794,7 +794,7 @@ public class UserDao {
 		}
 		try{
 			PreparedStatement ps;
-			sql1 = "update user SET vip = timestampadd(year,1,CURRENT_TIMESTAMP), score = score + 450 where id = ?";
+			sql1 = "update user SET vip = timestampadd(year,1,CURRENT_TIMESTAMP), score = score + 300 where id = ?";
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, id);
 			ps.executeUpdate();
@@ -816,10 +816,6 @@ public class UserDao {
 		Connection con = DBPool.getConnection();
 		try {
 			con.setAutoCommit(false);
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		try{
 			PreparedStatement ps;
 			sql1 = "select score from user where id = ?";
 			ps = con.prepareStatement(sql1);
@@ -864,10 +860,6 @@ public class UserDao {
 		int res;
 		try {
 			con.setAutoCommit(false);
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		try{
 			PreparedStatement ps;
 			sql1 = "update user SET showname = ? where id = ?";
 			ps = con.prepareStatement(sql1);
@@ -892,10 +884,6 @@ public class UserDao {
 		Connection con = DBPool.getConnection();
 		try {
 			con.setAutoCommit(false);
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		try{
 			PreparedStatement ps;
 			sql1 = "select password from user where account = ?";
 			ps = con.prepareStatement(sql1);
@@ -919,10 +907,6 @@ public class UserDao {
 		boolean isBlack = false;
 		try {
 			con.setAutoCommit(false);
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		try{
 			PreparedStatement ps;
 			sql1 = "select EXISTS (select * from black where userid = ? and blackid = ?) exist";
 			ps = con.prepareStatement(sql1);
@@ -950,11 +934,7 @@ public class UserDao {
 		Connection con = DBPool.getConnection();
 		try {
 			con.setAutoCommit(false);
-		} catch (SQLException e2) {
-			e2.printStackTrace();
-		}
-		PreparedStatement ps;
-		try {
+			PreparedStatement ps;
 			ps = con.prepareStatement(sql0);
 			ps.execute();
 			ps = con.prepareStatement(sql1);

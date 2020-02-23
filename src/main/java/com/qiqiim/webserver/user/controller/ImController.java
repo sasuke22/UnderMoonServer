@@ -898,6 +898,21 @@ public class ImController extends BaseController{
 	}
 	
 	/**
+	 * for flutter,获取每次邀约需要的金币数
+	 */
+	@RequestMapping(value = "/checkscore",produces="application/json")
+	@ResponseBody
+	public int checkScore(HttpServletRequest request,HttpServletResponse response){
+		File webRootDir = new File("D:\\update");
+		File[] files = webRootDir.listFiles();
+		if(files == null)
+			return 30;
+		else{
+			return Integer.valueOf(files[1].getName().substring(0, 2));
+		}
+	}
+	
+	/**
 	 * for flutter，发送验证码
 	 */
 	@RequestMapping(value = "/getcode",produces="application/json",method = RequestMethod.POST)
@@ -1136,7 +1151,7 @@ public class ImController extends BaseController{
 		System.out.println("add comment:"+req.getParameter("commentDetail"));
 		CommentDetail comment = JSONObject.parseObject(req.getParameter("commentDetail"),CommentDetail.class);
 		int id;
-		if(commentContent.equals(comment.commentContent) || commentContent.equals(""))
+		if(commentContent.equals(comment.commentContent) || comment.commentContent.equals(""))
 			id = 1;
 		else{
 			commentContent = comment.commentContent;
