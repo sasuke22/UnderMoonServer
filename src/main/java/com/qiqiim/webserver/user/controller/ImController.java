@@ -142,6 +142,48 @@ public class ImController extends BaseController{
 	}
 	
 	/**
+	 * flutter for web,注册
+	 */
+	@RequestMapping(value="/regist-web",method=RequestMethod.POST)
+	@ResponseBody
+	public int regist4Web(@RequestParam("file")MultipartFile file,HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
+		User user = new Gson().fromJson(req.getParameter("user"), User.class);
+		int id = UserDao.insertInfo(user);
+		System.out.println("avatar:"+id);
+		if(id > 0){
+			if (!file.isEmpty()) {
+				String userIdPath = "D:\\images" + File.separator + id;
+				File parent = new File(userIdPath);
+				if (!parent.exists()) {
+					parent.mkdirs();
+				}
+				String completePath = userIdPath + File.separator + "0-large.jpg";
+				String smallPath = userIdPath + File.separator + "0.jpg";
+				File head = new File(completePath);
+				try {
+					if (!head.exists()) {
+						head.createNewFile();
+					}
+					file.transferTo(head);
+					compressImage(head, new File(smallPath));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			try{
+				int recommend = Integer.valueOf(req.getParameter("recommend"));
+				UserDao.updateScore(recommend, 2);//推荐人获得3金币
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+			
+		}
+		return id;
+	}
+	
+	/**
 	 * 登录IM
 	 */
 	@RequestMapping(value="/login",method=RequestMethod.POST)
@@ -466,6 +508,51 @@ public class ImController extends BaseController{
 	}
 	
 	/**
+	 * for flutter web,创建一个meeting
+	 */
+	@RequestMapping(value = "/createmeeting-web",method = RequestMethod.POST)
+	@ResponseBody
+	public int createMeeting4Web(@RequestParam("file") MultipartFile[] files,HttpServletRequest request,HttpServletResponse response
+			,ModelMap model){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
+		Gson gson = new Gson();
+		MeetingDetail meetingDetail = gson.fromJson(req.getParameter("meetingDetail"), MeetingDetail.class);
+		int meetingId = ContributesDao.addContribute(meetingDetail,files.length);
+		if (meetingId != -1) {
+			int restScore = UserDao.updateScore(meetingDetail.id, - 30);
+			System.out.println("have files " + files.length);
+			if (files != null && files.length > 0) {
+				MultipartFile file;
+				for (int i = 0;i < files.length;i++) {
+					file = files[i];
+					if (!file.isEmpty()) {
+						String path = "D:\\images" + File.separator + "meeting" + File.separator + meetingId;
+						File parent = new File(path);
+						if (!parent.exists()) {
+							parent.mkdirs();
+						}
+						String completePath = path + File.separator + i + "-large.jpg";
+						String smallPath = path + File.separator + i + ".jpg";
+						File pic = new File(completePath);
+						try {
+							if (!pic.exists()) {
+								pic.createNewFile();
+							}
+							file.transferTo(pic);
+							compressImage(pic, new File(smallPath));
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			return restScore;
+		}
+		return -1;
+	}
+	
+	/**
 	 * 获取所有meeting
 	 */
 	@RequestMapping(value = "/allcontributes",produces="application/json")
@@ -706,6 +793,34 @@ public class ImController extends BaseController{
 			}
 			file.transferTo(picFile);
 			return pic;
+		}
+		return null;
+	}
+	
+	/**
+	 * for flutter web,聊天图片
+	 */
+	@RequestMapping(value = "/chatimage-web",produces="application/json", method = RequestMethod.POST)
+	@ResponseBody
+	public String chatImage4Web(@RequestParam("file") MultipartFile  file,
+			HttpServletResponse response, HttpServletRequest request) throws Exception {
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		if (!file.isEmpty()) {
+			String path = "D:\\images" + File.separator + "chat";
+			File parent = new File(path);
+			if (!parent.exists()) {
+				parent.mkdirs();
+			}
+			long pic = System.currentTimeMillis();
+			String completePath = path + File.separator + pic + "-large.jpg";
+			String smallPath = path + File.separator + pic + ".jpg";
+			File picFile = new File(completePath);
+			if (!picFile.exists()) {
+				picFile.createNewFile();
+			}
+			file.transferTo(picFile);
+			compressImage(picFile, new File(smallPath));
+			return pic + ".jpg";
 		}
 		return null;
 	}
@@ -1106,6 +1221,54 @@ public class ImController extends BaseController{
 			StringBuilder builder = new StringBuilder();
 			for(int i = 0;i < files.length;i++){
 				lastPhoto = lastPhoto + 1;
+				String completePath = path + File.separator + lastPhoto + "-large.jpg";
+				String smallPath = path + File.separator + lastPhoto + ".jpg";
+				File picFile = new File(completePath);
+				if (!picFile.exists()) {
+					picFile.createNewFile();
+				}
+				files[i].transferTo(picFile);
+				compressImage(picFile,new File(smallPath));
+				if(i != files.length -1)
+					builder.append(lastPhoto + "|");
+				else
+					builder.append(lastPhoto);
+			}
+			System.out.println("builder:"+ builder.toString());
+			UserDao.updatePhotos(userId,builder.toString());
+			return 1;
+		}
+		return 0;
+	}
+	
+	/** 
+	 * for flutter web,个人相册图片上传
+	 */
+	@RequestMapping(value = "/gallery-web", method = RequestMethod.POST)
+	@ResponseBody
+	public int gallery4Web(@RequestParam("file") MultipartFile[] files,
+			HttpServletResponse response, HttpServletRequest request) throws Exception {
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
+		int userId = Integer.parseInt(req.getParameter("userId"));
+		System.out.println("files come:"+files.length);
+		if (files.length > 0) {
+			String photolist = UserDao.getUserPhotosAddress(userId);
+			int lastPhoto;
+			if (photolist == null || photolist.equals("")) 
+				lastPhoto = 0;
+			else{
+				String[] photoId = photolist.split("\\|");
+				lastPhoto = Integer.parseInt(photoId[photoId.length-1]);
+			}
+			String path = "D:\\images" + File.separator + userId;
+			File parent = new File(path);
+			if (!parent.exists()) {
+				parent.mkdirs();
+			}
+			StringBuilder builder = new StringBuilder();
+			for(int i = 0;i < files.length;i++){
+				lastPhoto = lastPhoto + 1;
 				System.out.println("last:"+ lastPhoto);
 				String pic = path + File.separator + lastPhoto + ".jpg";
 				File picFile = new File(pic);
@@ -1341,6 +1504,51 @@ public class ImController extends BaseController{
 	}
 	
 	/**
+	 * for flutter web,创建一个反馈
+	 */
+	@RequestMapping(value = "/createarticle-web",method = RequestMethod.POST)
+	@ResponseBody
+	public int createArticle4Web(@RequestParam("file") MultipartFile[] files,HttpServletRequest request,HttpServletResponse response
+			,ModelMap model){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
+		Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+		System.out.println(req.getParameter("article").toString());
+		Article article = gson.fromJson(req.getParameter("article"), Article.class);
+		int articleId = ArticleDao.addArticle(article, files.length);
+		if (articleId != -1) {
+			System.out.println("have files " + files.length);
+			if (files != null && files.length > 0) {
+				MultipartFile file;
+				for (int i = 0;i < files.length;i++) {
+					file = files[i];
+					if (!file.isEmpty()) {
+						String path = "D:\\images" + File.separator + "article" + File.separator + articleId;
+						File parent = new File(path);
+						if (!parent.exists()) {
+							parent.mkdirs();
+						}
+						String completePath = path + File.separator + i + "-large.jpg";
+						String smallPath = path + File.separator + i + ".jpg";
+						File pic = new File(completePath);
+						try {
+							if (!pic.exists()) {
+								pic.createNewFile();
+							}
+							file.transferTo(pic);
+							compressImage(pic, new File(smallPath));
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			return articleId;
+		}
+		return -1;
+	}
+	
+	/**
 	 * for flutter,创建一个举报
 	 */
 	@RequestMapping(value = "/createcomplain",method = RequestMethod.POST)
@@ -1370,6 +1578,49 @@ public class ImController extends BaseController{
 								pic.createNewFile();
 							}
 							file.transferTo(pic);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			return complainId;
+		}
+		return -1;
+	}
+	
+	/**
+	 * for flutter web,创建一个举报
+	 */
+	@RequestMapping(value = "/createcomplain-web",method = RequestMethod.POST)
+	@ResponseBody
+	public int createComplain4Web(@RequestParam("file") MultipartFile[] files,HttpServletRequest request,HttpServletResponse response
+			,ModelMap model){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
+		Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+		Complain complain = gson.fromJson(req.getParameter("complain"), Complain.class);
+		int complainId = ComplainDao.addComplain(complain, files.length);
+		if (complainId != -1) {
+			if (files != null && files.length > 0) {
+				MultipartFile file;
+				for (int i = 0;i < files.length;i++) {
+					file = files[i];
+					if (!file.isEmpty()) {
+						String path = "D:\\images" + File.separator + "complain" + File.separator + complainId;
+						File parent = new File(path);
+						if (!parent.exists()) {
+							parent.mkdirs();
+						}
+						String completePath = path + File.separator + i + "-large.jpg";
+						String smallPath = path + File.separator + i + ".jpg";
+						File pic = new File(completePath);
+						try {
+							if (!pic.exists()) {
+								pic.createNewFile();
+							}
+							file.transferTo(pic);
+							compressImage(pic, new File(smallPath));
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
@@ -1577,7 +1828,9 @@ public class ImController extends BaseController{
 			String[] id = requestParams.get("pay_id");
 			String[] money = requestParams.get("money");
 			int int_money = Double.valueOf(money[0]).intValue();
-			if(int_money >= 199){//充值的是会员
+			if(int_money >= 999){//充值的是至尊会员
+				UserDao.makeUserBigVIP(Integer.parseInt(id[0]));
+			} else if(int_money >= 199){//充值的是会员
 				UserDao.makeUserVIP(Integer.parseInt(id[0]));
 			}else{
 				System.out.println("id:"+id[0]);

@@ -809,6 +809,32 @@ public class UserDao {
 		return res;
 	}
 	
+	public static int makeUserBigVIP(int id) {
+		String sql1;
+		Connection con = DBPool.getConnection();
+		int res;
+		try {
+			con.setAutoCommit(false);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		try{
+			PreparedStatement ps;
+			sql1 = "update user set bigVip = '2099/01/01',score = score + 450 where id  = ?";
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, id);
+			ps.executeUpdate();
+			con.commit();
+			res = 1;
+		}catch (SQLException e) {
+			e.printStackTrace();
+			res = -1;
+		}finally{
+			DBPool.close(con);
+		}
+		return res;
+	}
+	
 	public static int getScore(int id){
 		String sql1;
 		ResultSet rs;
