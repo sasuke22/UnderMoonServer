@@ -475,6 +475,10 @@ public class ImController extends BaseController{
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		Gson gson = new Gson();
 		MeetingDetail meetingDetail = gson.fromJson(req.getParameter("meetingDetail"), MeetingDetail.class);
+		if(meetingDetail.gender == 1){
+			int score = UserDao.getScore(meetingDetail.id);
+			if(score < 30) return -1;
+		}
 		int meetingId = ContributesDao.addContribute(meetingDetail,files.length);
 		if (meetingId != -1) {
 			int restScore = UserDao.updateScore(meetingDetail.id, - 30);
