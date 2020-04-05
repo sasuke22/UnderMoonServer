@@ -56,7 +56,7 @@ public class CommentsDao {
 	}
 	
 	public static ArrayList<CommentDetail> selectCommentsByCount(boolean isMeeting,int id,int count){
-		ArrayList<CommentDetail> commentsList = new ArrayList<CommentDetail>();
+		ArrayList<CommentDetail> commentsList = new ArrayList<>();
 		String sq0 = "use first_mysql_test";
 		String sql1;
 		if(isMeeting)
@@ -226,7 +226,7 @@ public class CommentsDao {
 				commentsList.add(comment);
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage().toString());
+			System.out.println(e.getMessage());
 			DBPool.close(con);
 		}
 		DBPool.close(con);

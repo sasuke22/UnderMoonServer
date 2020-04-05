@@ -25,7 +25,7 @@ public class ContributesDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, count);
-			ps.setInt(2, 20);
+			ps.setInt(2, 10);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				MeetingDetail meetingDetail = new MeetingDetail();
@@ -64,7 +64,7 @@ public class ContributesDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, count);
-			ps.setInt(2, 20);
+			ps.setInt(2, 10);
 			System.out.println(ps.toString());
 			rs = ps.executeQuery();
 			while (rs.next()) {
@@ -105,7 +105,7 @@ public class ContributesDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, count);
-			ps.setInt(2, 20);
+			ps.setInt(2, 10);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				MeetingDetail meetingDetail = new MeetingDetail();
@@ -145,7 +145,7 @@ public class ContributesDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, count);
-			ps.setInt(2, 20);
+			ps.setInt(2, 10);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				MeetingDetail meetingDetail = new MeetingDetail();
@@ -278,7 +278,7 @@ public class ContributesDao {
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, userId);
 			ps.setInt(2, count);
-			ps.setInt(3, 20);
+			ps.setInt(3, 10);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				MeetingDetail meetingDetail = new MeetingDetail();
@@ -326,7 +326,7 @@ public class ContributesDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, count);
-			ps.setInt(2, 20);
+			ps.setInt(2, 10);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				MeetingDetail meetingDetail = new MeetingDetail();
@@ -363,7 +363,7 @@ public class ContributesDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, oldCount);
-			ps.setInt(2, 20);
+			ps.setInt(2, 10);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				MeetingDetail meetingDetail = new MeetingDetail();
@@ -403,7 +403,7 @@ public class ContributesDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, oldCount);
-			ps.setInt(2, 20);
+			ps.setInt(2, 10);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				MeetingDetail meetingDetail = new MeetingDetail();
@@ -443,7 +443,7 @@ public class ContributesDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, oldCount);
-			ps.setInt(2, 20);
+			ps.setInt(2, 10);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				MeetingDetail meetingDetail = new MeetingDetail();
@@ -654,7 +654,7 @@ public class ContributesDao {
 			ps = con.prepareStatement(sql1);
 //			ps.setString(1, keyword);
 			ps.setInt(1, count);
-			ps.setInt(2, 20);
+			ps.setInt(2, 10);
 			System.out.println(ps.toString());
 			rs = ps.executeQuery();
 			while (rs.next()) {

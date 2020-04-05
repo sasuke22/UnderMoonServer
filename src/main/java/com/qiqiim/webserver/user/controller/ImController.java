@@ -72,9 +72,9 @@ public class ImController extends BaseController{
 	@Autowired
 	private MessageProxy proxy;
 	
-	private final String ALIPAY_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuqvR/vs7EV/H1r2RkOporp2NhRctxWOIRJp6PjJGHANqJVshOAaBQ6e4+WIav4fpWMRuLstRpSS65t0L0YUOtsV9wSl0Xz50l9tyTMFTcmJGwokv1pSMRjW8RtjnjzhPEy2Xh5IDPXR/N7NR874lc4zrKuLcKsZON/u+tI/sZZH84NHzVjZ61SKOSdfNn3fweZrwjqIS7hvYDuylZNj7b0BJtxHO6NVTv/QuefQxZ1WDnxm7h56+8qYQNFaSB2A+pMFdx35hpANX2hlAF+sL1CwgLfuM8KiiS+FzgTLy/fVRKaOrJvE9KUhEPbb7sskWYXFP0AaSlmlYm0GnWXmtOwIDAQAB";
+//	private final String ALIPAY_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuqvR/vs7EV/H1r2RkOporp2NhRctxWOIRJp6PjJGHANqJVshOAaBQ6e4+WIav4fpWMRuLstRpSS65t0L0YUOtsV9wSl0Xz50l9tyTMFTcmJGwokv1pSMRjW8RtjnjzhPEy2Xh5IDPXR/N7NR874lc4zrKuLcKsZON/u+tI/sZZH84NHzVjZ61SKOSdfNn3fweZrwjqIS7hvYDuylZNj7b0BJtxHO6NVTv/QuefQxZ1WDnxm7h56+8qYQNFaSB2A+pMFdx35hpANX2hlAF+sL1CwgLfuM8KiiS+FzgTLy/fVRKaOrJvE9KUhEPbb7sskWYXFP0AaSlmlYm0GnWXmtOwIDAQAB";
 	
-	private final String APP_PRIVATE_KEY = "MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCWEtrIbT9Xy6LORoFKWkyhH/JBGavRPwf+SDlOHImAHybgWg1rBgoXmZufLvFlW7DqPGwxacxEpd7hOZhShYRahVhZRhgjsbvIROV5iuh42S2/WmFZ5YDN3niKhEttyxwoWYhgVI6Oh1kqGgtotgAVeqteqPPBCb5jCzhlVoq5TOS6KEqA4mnSh8i9nDdOOgnOmXJnT7ZoK76n4P74ADvStXohqKABq9trqdvrBWb78x3/jB6N/m3JnsfyPYydBnVKYXWK0oGBNVErdJUp8JhkvQj6H9f8KgkN8XKH9UMVzcN9/3qj7sSvoVxScS1UJGztYgoWRo7afglZYE/OAYFnAgMBAAECggEAJuKJx8bu07vS2mnQVEijdFhHt/CD4XrYgl2KY5/nTMhFlXof4ew1rznA5fUO3Tlt1LOFQSRtphfocSkwO6mWyrGkW7VaydzikBix8NU6OR3kyaEMenOJ9U3Ao/t1Y+RtzlKskHE4YtvVEaCf9ii6StZ3EtbqGcmBiD4/BZrv5OUNfQd5EitRjbK1r41vK/65lY1v0ZyDeStu5rRSQN5Qn9zKKIjjaPXviGP1Yo2pCgAyFUIa/eNoaw7wqomp2Up1e6AtmvWgH/t1DnqatfyLyLGjNaRML8oPhMEugSjmIC/chw92/pWY6TAV2Vfr8iy0R6RE59ivOuGhi0kHRK4kUQKBgQDpQ9ImgU4M1Vvw8SDcRuGk4KeHte35V9RbmIiyUF5mHXPf5tG7tGkW65sWn6hquKMHcYVAUFUBwIpsWWstHfRz9JZGxDz68+1ijnybCjXGXoJBVOfT1e8zky7/nl1UGYMrWkvYr3P0nNjDqEX7hDoUh3bRlz7jXvtys2Nis6PlXwKBgQCks1VPWKfj8jUQQNGq/6iDQe5mBrhcsJjf5kaCwi/a86IWIcSTYLu+DtjZL8JM0T8sBAVyfsCmJSj8SAa5mrboBZTFaOZ+6hfXEOAjuVEc/fY3l9bLuEOeTiuVLKEBOczh76Fj5x0gBd0g/NEohiulcdXdg0W8ORa7DrHqlvmY+QKBgQCNCk7krUZOCCuhUYq25bzFfniNW/lZzDtAbsgoWOPbBm/rr5qczgbErwyE72BbtuwMMh2Jt4jOmGaaAK8HBpeqDPdYLotYiWi9ML4y2EePe9FyQy4xLaeGHbZLJKv1j7951Q0LJXsNKlD+bJ5z541eoFG9hJ+nxuRug/zRzyCILQKBgQCHSOciLeh6TFFZ8GRI2YdJibaRB6QYPtbT0wrIDUnRx520IDif9i1AiGGGxLwM7TO+q+7thUApOQzZbTBY9MSZATyaivgJ969tcOcrcOU3s0Ozln1RCSJBvmP+PJJjt16bl4Ix1X0O+MISfpgveUYQt9i8A0Acw6fwLrnlv+11wQKBgQCRj261ACARPL0TOBZJxjR+iFXEDsoZLUhiwNnK3Fr/EaCDKEaN92F4NbTXYY/Xf/vD5v4+Jyupe8EL4Ka2Y3fksAWkk++YR9ouQxniTzclhM5Yf5DYe8Nuy5M1RqxDmdecGYru+/nX6HhhKdtimuBoI+Hjjq2vEt/kUHLJLyNtFw==";
+//	private final String APP_PRIVATE_KEY = "MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCWEtrIbT9Xy6LORoFKWkyhH/JBGavRPwf+SDlOHImAHybgWg1rBgoXmZufLvFlW7DqPGwxacxEpd7hOZhShYRahVhZRhgjsbvIROV5iuh42S2/WmFZ5YDN3niKhEttyxwoWYhgVI6Oh1kqGgtotgAVeqteqPPBCb5jCzhlVoq5TOS6KEqA4mnSh8i9nDdOOgnOmXJnT7ZoK76n4P74ADvStXohqKABq9trqdvrBWb78x3/jB6N/m3JnsfyPYydBnVKYXWK0oGBNVErdJUp8JhkvQj6H9f8KgkN8XKH9UMVzcN9/3qj7sSvoVxScS1UJGztYgoWRo7afglZYE/OAYFnAgMBAAECggEAJuKJx8bu07vS2mnQVEijdFhHt/CD4XrYgl2KY5/nTMhFlXof4ew1rznA5fUO3Tlt1LOFQSRtphfocSkwO6mWyrGkW7VaydzikBix8NU6OR3kyaEMenOJ9U3Ao/t1Y+RtzlKskHE4YtvVEaCf9ii6StZ3EtbqGcmBiD4/BZrv5OUNfQd5EitRjbK1r41vK/65lY1v0ZyDeStu5rRSQN5Qn9zKKIjjaPXviGP1Yo2pCgAyFUIa/eNoaw7wqomp2Up1e6AtmvWgH/t1DnqatfyLyLGjNaRML8oPhMEugSjmIC/chw92/pWY6TAV2Vfr8iy0R6RE59ivOuGhi0kHRK4kUQKBgQDpQ9ImgU4M1Vvw8SDcRuGk4KeHte35V9RbmIiyUF5mHXPf5tG7tGkW65sWn6hquKMHcYVAUFUBwIpsWWstHfRz9JZGxDz68+1ijnybCjXGXoJBVOfT1e8zky7/nl1UGYMrWkvYr3P0nNjDqEX7hDoUh3bRlz7jXvtys2Nis6PlXwKBgQCks1VPWKfj8jUQQNGq/6iDQe5mBrhcsJjf5kaCwi/a86IWIcSTYLu+DtjZL8JM0T8sBAVyfsCmJSj8SAa5mrboBZTFaOZ+6hfXEOAjuVEc/fY3l9bLuEOeTiuVLKEBOczh76Fj5x0gBd0g/NEohiulcdXdg0W8ORa7DrHqlvmY+QKBgQCNCk7krUZOCCuhUYq25bzFfniNW/lZzDtAbsgoWOPbBm/rr5qczgbErwyE72BbtuwMMh2Jt4jOmGaaAK8HBpeqDPdYLotYiWi9ML4y2EePe9FyQy4xLaeGHbZLJKv1j7951Q0LJXsNKlD+bJ5z541eoFG9hJ+nxuRug/zRzyCILQKBgQCHSOciLeh6TFFZ8GRI2YdJibaRB6QYPtbT0wrIDUnRx520IDif9i1AiGGGxLwM7TO+q+7thUApOQzZbTBY9MSZATyaivgJ969tcOcrcOU3s0Ozln1RCSJBvmP+PJJjt16bl4Ix1X0O+MISfpgveUYQt9i8A0Acw6fwLrnlv+11wQKBgQCRj261ACARPL0TOBZJxjR+iFXEDsoZLUhiwNnK3Fr/EaCDKEaN92F4NbTXYY/Xf/vD5v4+Jyupe8EL4Ka2Y3fksAWkk++YR9ouQxniTzclhM5Yf5DYe8Nuy5M1RqxDmdecGYru+/nX6HhhKdtimuBoI+Hjjq2vEt/kUHLJLyNtFw==";
 	
 	private String commentContent = "";
 	/**
@@ -131,10 +131,10 @@ public class ImController extends BaseController{
 				}
 			}
 			try{
-				int recommend = Integer.valueOf(req.getParameter("recommend"));
+				int recommend = Integer.parseInt(req.getParameter("recommend"));
 				UserDao.updateScore(recommend, 2);//推荐人获得3金币
 			}catch (Exception e){
-				e.printStackTrace();
+				System.out.println("recommend error");
 			}
 			
 		}
@@ -173,7 +173,7 @@ public class ImController extends BaseController{
 				}
 			}
 			try{
-				int recommend = Integer.valueOf(req.getParameter("recommend"));
+				int recommend = Integer.parseInt(req.getParameter("recommend"));
 				UserDao.updateScore(recommend, 2);//推荐人获得3金币
 			}catch (Exception e){
 				e.printStackTrace();
@@ -212,11 +212,6 @@ public class ImController extends BaseController{
 	
 	/** 
 	 *  取得所有聊天用户
-	 * @param response
-	 * @param request
-	 * @param redirectAttributes
-	 * @return
-	 * @throws Exception
 	 */
 	@RequestMapping(value = "/getusers", produces="text/html;charset=UTF-8")
 	@ResponseBody
@@ -260,12 +255,6 @@ public class ImController extends BaseController{
 	
 	/** 
 	 * 图片上传
-	 * @param file
-	 * @param response
-	 * @param request
-	 * @param redirectAttributes
-	 * @return
-	 * @throws Exception
 	 */
 	@RequestMapping(value = "/imgupload", method = RequestMethod.POST)
 	@ResponseBody
@@ -320,12 +309,6 @@ public class ImController extends BaseController{
 	
 	/** 
 	 * 文件上传
-	 * @param file
-	 * @param response
-	 * @param request
-	 * @param redirectAttributes
-	 * @return
-	 * @throws Exception
 	 */
 	@RequestMapping(value = "/fileupload", produces="text/html;charset=UTF-8", method = RequestMethod.POST)
 	@ResponseBody
@@ -355,11 +338,6 @@ public class ImController extends BaseController{
 	
 	/**
 	 * 模拟最新系统消息
-	 * @param response
-	 * @param request
-	 * @param redirectAttributes
-	 * @return
-	 * @throws Exception
 	 */
 	@RequestMapping(value = "/message", method = RequestMethod.GET)
 	public String userMessage(HttpServletResponse response,HttpServletRequest request,
@@ -379,11 +357,6 @@ public class ImController extends BaseController{
 	}
 	/**
 	 * 取得离线消息
-	 * @param response
-	 * @param request
-	 * @param redirectAttributes
-	 * @return
-	 * @throws Exception
 	 */
 	@RequestMapping(value = "/getofflinemsg", produces="text/html;charset=UTF-8",method = RequestMethod.POST)
 	@ResponseBody
@@ -401,11 +374,6 @@ public class ImController extends BaseController{
 	
 	/**
 	 * 聊天记录
-	 * @param response
-	 * @param request
-	 * @param redirectAttributes
-	 * @return
-	 * @throws Exception
 	 */
 	@RequestMapping(value = "/historymessageajax", produces="text/html;charset=UTF-8", method = RequestMethod.POST)
 	@ResponseBody
@@ -424,11 +392,6 @@ public class ImController extends BaseController{
 	
 	/**
 	 * 聊天记录页面
-	 * @param response
-	 * @param request
-	 * @param redirectAttributes
-	 * @return
-	 * @throws Exception
 	 */
 	@RequestMapping(value = "/historymessage", method = RequestMethod.GET)
 	public String userHistoryMessagesPage(HttpServletResponse response,HttpServletRequest request,
@@ -479,7 +442,7 @@ public class ImController extends BaseController{
 		if (meetingId != -1) {
 			int restScore = UserDao.updateScore(meetingDetail.id, - 30);
 			System.out.println("have files " + files.length);
-			if (files != null && files.length > 0) {
+			if (files.length > 0) {
 				MultipartFile file;
 				for (int i = 0;i < files.length;i++) {
 					file = files[i];
@@ -512,8 +475,7 @@ public class ImController extends BaseController{
 	 */
 	@RequestMapping(value = "/createmeeting-web",method = RequestMethod.POST)
 	@ResponseBody
-	public int createMeeting4Web(@RequestParam("file") MultipartFile[] files,HttpServletRequest request,HttpServletResponse response
-			,ModelMap model){
+	public int createMeeting4Web(@RequestParam("file") MultipartFile[] files,HttpServletRequest request,HttpServletResponse response,ModelMap model){
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		Gson gson = new Gson();
@@ -522,7 +484,7 @@ public class ImController extends BaseController{
 		if (meetingId != -1) {
 			int restScore = UserDao.updateScore(meetingDetail.id, - 30);
 			System.out.println("have files " + files.length);
-			if (files != null && files.length > 0) {
+			if (files.length > 0) {
 				MultipartFile file;
 				for (int i = 0;i < files.length;i++) {
 					file = files[i];
@@ -582,8 +544,8 @@ public class ImController extends BaseController{
 	public Map<String,List<MeetingDetail>> queryKeyword(HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		String keyword = request.getParameter("key");
-		int type = Integer.valueOf(request.getParameter("type"));
-		int count = Integer.valueOf(request.getParameter("count"));
+		int type = Integer.parseInt(request.getParameter("type"));
+		int count = Integer.parseInt(request.getParameter("count"));
 		List<MeetingDetail> msgList = ContributesDao.selectContributesByKeyword(keyword,type,count);
 		HashMap<String,List<MeetingDetail>> map = new HashMap<String,List<MeetingDetail>>();
 		map.put("meetings", msgList);
@@ -599,8 +561,7 @@ public class ImController extends BaseController{
 	public int addEnlist(@RequestParam("userId")int userId,@RequestParam("meetingId")int meetingId,
 			@RequestParam("userName")String userName,HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		int registRes = UserDao.updateRegist(userId,meetingId);
-		return registRes;
+		return UserDao.updateRegist(userId,meetingId);
 	}
 	
 	/**
@@ -612,8 +573,7 @@ public class ImController extends BaseController{
 	public int cancelEnlist(@RequestParam("user_id")int userId,@RequestParam("meeting_id")int meetingId,
 			HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		int registRes = UserDao.cancelEnlist(userId,meetingId);
-		return registRes;
+		return UserDao.cancelEnlist(userId,meetingId);
 	}
 	
 	/**
@@ -707,12 +667,12 @@ public class ImController extends BaseController{
 	public int updateUserScore(HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
-		int userId = Integer.valueOf(req.getParameter("userId"));
-		int score = Integer.valueOf(req.getParameter("score"));
+		int userId = Integer.parseInt(req.getParameter("userId"));
+		int score = Integer.parseInt(req.getParameter("score"));
 		return UserDao.updateScore(userId, score);
 	}
 	
-	/**
+	/*
 	 * 给客户端生成orderString
 	 
 	@RequestMapping(value = "/alipay")
@@ -740,7 +700,7 @@ public class ImController extends BaseController{
 		return null;
 	}*/
 	
-	/**
+	/*
 	 * 给客户端生成orderString
 	 
 	@RequestMapping(value = "/alipayresult",method=RequestMethod.POST)
@@ -928,8 +888,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public int changeArticleApprove(HttpServletRequest request,HttpServletResponse response){
 		Article article = new Gson().fromJson(request.getParameter("article"), Article.class);
-		int result = ArticleDao.changeArticleApprove(article);
-		return result;
+		return ArticleDao.changeArticleApprove(article);
 	}
 	
 	/**
@@ -938,8 +897,9 @@ public class ImController extends BaseController{
 	@RequestMapping(value = "/changearticleperfect",produces="application/json",method = RequestMethod.POST)
 	@ResponseBody
 	public int changeArticlePerfect(@RequestParam("id")int id,HttpServletRequest request,HttpServletResponse response){
-		int result = ArticleDao.changeArticlePerfect(id);
-		result = UserDao.updateScore(id, 25);
+		int result;
+		ArticleDao.changeArticlePerfect(id);
+		result = UserDao.updateScore(id, 15);
 		return result;
 	}
 	
@@ -1018,12 +978,12 @@ public class ImController extends BaseController{
 	@RequestMapping(value = "/checkscore",produces="application/json")
 	@ResponseBody
 	public int checkScore(HttpServletRequest request,HttpServletResponse response){
-		File webRootDir = new File("D:\\update");
+		File webRootDir = new File("D:\\score");
 		File[] files = webRootDir.listFiles();
 		if(files == null)
 			return 30;
 		else{
-			return Integer.valueOf(files[1].getName().substring(0, 2));
+			return Integer.parseInt(files[0].getName().substring(0, 2));
 		}
 	}
 	
@@ -1035,8 +995,7 @@ public class ImController extends BaseController{
 	public HashMap<String, String> getCode(
 			@RequestParam("phone")String phone,HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		HashMap<String,String> map = SmsUtil.getInstance().sendSmsReturnErrorCode(phone);
-		return map;
+		return SmsUtil.getInstance().sendSmsReturnErrorCode(phone);
 	}
 	
 	/**
@@ -1189,12 +1148,6 @@ public class ImController extends BaseController{
 	
 	/** 
 	 * for flutter,个人相册图片上传
-	 * @param file
-	 * @param response
-	 * @param request
-	 * @param redirectAttributes
-	 * @return
-	 * @throws Exception
 	 */
 	@RequestMapping(value = "/gallery", method = RequestMethod.POST)
 	@ResponseBody
@@ -1230,7 +1183,7 @@ public class ImController extends BaseController{
 				files[i].transferTo(picFile);
 				compressImage(picFile,new File(smallPath));
 				if(i != files.length -1)
-					builder.append(lastPhoto + "|");
+					builder.append(lastPhoto).append("|");
 				else
 					builder.append(lastPhoto);
 			}
@@ -1277,7 +1230,7 @@ public class ImController extends BaseController{
 				}
 				files[i].transferTo(picFile);
 				if(i != files.length -1)
-					builder.append(lastPhoto + "|");
+					builder.append(lastPhoto).append("|");
 				else
 					builder.append(lastPhoto);
 			}
@@ -1334,7 +1287,7 @@ public class ImController extends BaseController{
 	 */
 	@RequestMapping(value="/addsubcomment",produces="application/json",method = RequestMethod.POST)
 	@ResponseBody
-	public int addSubComments(HttpServletRequest request,HttpServletResponse response,@RequestParam("type") int type){
+	public int addSubComments(HttpServletRequest request,HttpServletResponse response,@RequestParam("type") int type,@RequestParam("meeting_id") int meetingId){
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		SubComment comment = JSONObject.parseObject(req.getParameter("subComment"),SubComment.class);
@@ -1346,7 +1299,7 @@ public class ImController extends BaseController{
 			commentContent = comment.getContent();
 			id = SubCommentsDao.addCommentToComment(type, comment);
 			if(id > 0){
-//				ContributesDao.addCommentCount(comment.commentId);
+				ContributesDao.addCommentCount(meetingId);
 				if(req.getParameter("isVip").equals("false"))
 				UserDao.updateScore(comment.getUserId(), -1);
 			}
@@ -1423,7 +1376,8 @@ public class ImController extends BaseController{
 	public int deleteComment(@RequestParam("id") int id,@RequestParam("isMeeting") boolean isMeeting,
 			@RequestParam("commentId") int commentId,HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		int res = CommentsDao.deleteComment(isMeeting, id);
+		int res;
+		CommentsDao.deleteComment(isMeeting, id);
 		if(isMeeting)
 			res = ContributesDao.reduceCommentCount(commentId);
 		else
@@ -1441,7 +1395,7 @@ public class ImController extends BaseController{
 		int res;
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		CommentDetail comment = new Gson().fromJson(req.getParameter("commentDetail"), CommentDetail.class);
-		boolean isMeeting = Boolean.valueOf(req.getParameter("ismeeting"));
+		boolean isMeeting = Boolean.parseBoolean(req.getParameter("ismeeting"));
 		res = CommentsDao.updateComplain(isMeeting,comment);
 		return res;
 	}
@@ -1453,7 +1407,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public HashMap<String, ArrayList<CommentDetail>> getComplainedComment(@RequestParam("count") int count, @RequestParam("ismeeting") boolean isMeeting, HttpServletRequest request, HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		ArrayList<CommentDetail> list = null;
+		ArrayList<CommentDetail> list;
 		list = CommentsDao.getComplainedComments(count,isMeeting);
 		HashMap<String, ArrayList<CommentDetail>> map = new HashMap<String,ArrayList<CommentDetail>>();
 		map.put("comments", list);
@@ -1470,12 +1424,12 @@ public class ImController extends BaseController{
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-		System.out.println(req.getParameter("article").toString());
+		System.out.println(req.getParameter("article"));
 		Article article = gson.fromJson(req.getParameter("article"), Article.class);
 		int articleId = ArticleDao.addArticle(article, files.length);
 		if (articleId != -1) {
 			System.out.println("have files " + files.length);
-			if (files != null && files.length > 0) {
+			if ( files.length > 0) {
 				MultipartFile file;
 				for (int i = 0;i < files.length;i++) {
 					file = files[i];
@@ -1518,7 +1472,7 @@ public class ImController extends BaseController{
 		int articleId = ArticleDao.addArticle(article, files.length);
 		if (articleId != -1) {
 			System.out.println("have files " + files.length);
-			if (files != null && files.length > 0) {
+			if (files.length > 0) {
 				MultipartFile file;
 				for (int i = 0;i < files.length;i++) {
 					file = files[i];
@@ -1561,7 +1515,7 @@ public class ImController extends BaseController{
 		Complain complain = gson.fromJson(req.getParameter("complain"), Complain.class);
 		int complainId = ComplainDao.addComplain(complain, files.length);
 		if (complainId != -1) {
-			if (files != null && files.length > 0) {
+			if (files.length > 0) {
 				MultipartFile file;
 				for (int i = 0;i < files.length;i++) {
 					file = files[i];
@@ -1602,7 +1556,7 @@ public class ImController extends BaseController{
 		Complain complain = gson.fromJson(req.getParameter("complain"), Complain.class);
 		int complainId = ComplainDao.addComplain(complain, files.length);
 		if (complainId != -1) {
-			if (files != null && files.length > 0) {
+			if (files.length > 0) {
 				MultipartFile file;
 				for (int i = 0;i < files.length;i++) {
 					file = files[i];
@@ -1639,7 +1593,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public HashMap<String, List<Complain>> getComplain(@RequestParam("count")int count,HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		List<Complain> complains = null;
+		List<Complain> complains;
 		complains = ComplainDao.selectComplain(count);
 		HashMap<String, List<Complain>> map = new HashMap<String,List<Complain>>();
 		map.put("complain", complains);
@@ -1691,8 +1645,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public int getScore(@RequestParam("id") int id, HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		int score = UserDao.getScore(id);
-		return score;
+		return UserDao.getScore(id);
 	}
 	
 	/**
@@ -1739,8 +1692,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public int queryIfUnread(@RequestParam("user_id") int userId, HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		int unread = NewMsgListDao.queryIfUnread(userId);
-		return unread;
+		return NewMsgListDao.queryIfUnread(userId);
 	}
 	
 	/**
@@ -1812,7 +1764,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/payresult",produces="text/html",method = RequestMethod.POST)
 	@ResponseBody
 	public void payResult(HttpServletRequest request,HttpServletResponse response){
-		/**
+		/*
 		*验证通知 处理自己的业务
 		*/
 //		String key = "nMVsggorZ4XPr2VwXja5WiMtpJTwjaGq"; //记得更改 http://codepay.fateqq.com 后台可设置
@@ -1830,7 +1782,7 @@ public class ImController extends BaseController{
 			int int_money = Double.valueOf(money[0]).intValue();
 			if(int_money >= 999){//充值的是至尊会员
 				UserDao.makeUserBigVIP(Integer.parseInt(id[0]));
-			} else if(int_money >= 199){//充值的是会员
+			} else if(int_money >= 249){//充值的是会员
 				UserDao.makeUserVIP(Integer.parseInt(id[0]));
 			}else{
 				System.out.println("id:"+id[0]);
@@ -1839,17 +1791,12 @@ public class ImController extends BaseController{
 			}
 			result = "ok";
 		}
-		PrintWriter pw =null;
-        try {
-            pw = response.getWriter();
-            pw.write(result);
-            pw.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        finally {
-            pw.close();
-        }
+		try (PrintWriter pw = response.getWriter()) {
+			pw.write(result);
+			pw.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 //		for (Iterator<String> iter = requestParams.keySet().iterator(); iter.hasNext();) {
 //			String name = (String) iter.next();
 //			System.out.println("key:"+name);

@@ -72,7 +72,7 @@ public class ArticleDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, count);
-			ps.setInt(2, 20);
+			ps.setInt(2, 10);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				Article article = new Article();
@@ -88,10 +88,10 @@ public class ArticleDao {
 				articlesList.add(article);
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage().toString());
+			System.out.println(e.getMessage());
+		}finally{
 			DBPool.close(con);
 		}
-		DBPool.close(con);
 		return articlesList;
 	}
 	
@@ -108,7 +108,7 @@ public class ArticleDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, count);
-			ps.setInt(2, 20);
+			ps.setInt(2, 10);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				Article article = new Article();
@@ -144,7 +144,7 @@ public class ArticleDao {
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, userId);
 			ps.setInt(2, count);
-			ps.setInt(3, 20);
+			ps.setInt(3, 10);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				Article article = new Article();
@@ -180,7 +180,7 @@ public class ArticleDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, count);
-			ps.setInt(2, 20);
+			ps.setInt(2, 10);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				Article article = new Article();
@@ -308,7 +308,7 @@ public class ArticleDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, count);
-			ps.setInt(2, 20);
+			ps.setInt(2, 10);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				Article article = new Article();
@@ -324,7 +324,7 @@ public class ArticleDao {
 				articlesList.add(article);
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage().toString());
+			System.out.println(e.getMessage());
 		}finally{
 			DBPool.close(con);
 		}
