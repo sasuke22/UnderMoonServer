@@ -3,6 +3,9 @@ package com.qiqiim.webserver.user.dao;
 import com.qiqiim.constant.CommentDetail;
 import com.qiqiim.constant.SubComment;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +33,18 @@ public class CommentsDao {
 			ps.setInt(2, comment.getUserId());
 			ps.setString(3, comment.getCommentName());
 			ps.setInt(4, comment.getCommentGender());
-			ps.setString(5, comment.getCommentContent());
+			try {
+				ps.setString(5, URLEncoder.encode(comment.getCommentContent(),"utf-8"));
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+				try {
+					con.rollback();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+				e.printStackTrace();
+				return -1;
+			}
 			if(isMeeting)
 				ps.setInt(6, comment.isShow() ? 1 : 0);
 			ps.execute();
@@ -80,7 +94,7 @@ public class CommentsDao {
 					subComment.setFloorId(rs.getInt("floorid"));
 					subComment.setUserId(rs.getInt("c.userid"));
 					subComment.setUserName(rs.getString("user_name"));
-					subComment.setContent(rs.getString("c.content"));
+					subComment.setContent(URLDecoder.decode(rs.getString("c.content"),"utf-8"));
 					subComment.setDate(new Date(rs.getTimestamp("c.date").getTime()));
 					subComment.setReplyId(rs.getInt("replyid"));
 					subComment.setReplyName(rs.getString("reply_name"));
@@ -102,7 +116,7 @@ public class CommentsDao {
 					comment.setUserId(rs.getInt("d.userid"));
 					comment.setCommentName(rs.getString("commentname"));
 					comment.setCommentGender(rs.getInt("commentgender"));
-					comment.setCommentContent(rs.getString("d.content"));
+					comment.setCommentContent(URLDecoder.decode(rs.getString("d.content"),"utf-8"));
 					comment.setCommentDate(new Date(rs.getTimestamp("d.date").getTime()));
 					comment.setShow(rs.getInt("d.showname") > 0);
 					comment.setIsVip(rs.getInt("vip") > 0);
@@ -219,7 +233,7 @@ public class CommentsDao {
 				comment.setUserId(rs.getInt("userid"));
 				comment.setCommentName(rs.getString("commentname"));
 				comment.setCommentGender(rs.getInt("commentgender"));
-				comment.setCommentContent(rs.getString("content"));
+				comment.setCommentContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
 				comment.setCommentDate(new Date(rs.getTimestamp("date").getTime()));
 				comment.setShow(rs.getInt("showname") > 0);
 				comment.setIsVip(rs.getInt("vip") > 0);

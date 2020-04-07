@@ -2,6 +2,9 @@ package com.qiqiim.webserver.user.dao;
 
 import com.qiqiim.constant.SubComment;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -41,7 +44,7 @@ public class SubCommentsDao {
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, comment.getFloorId());
 			ps.setInt(2, comment.getUserId());
-			ps.setString(3, comment.getContent());
+			ps.setString(3, URLEncoder.encode(comment.getContent(),"utf-8"));
 			ps.setInt(4, comment.getReplyId());
 			ps.setInt(5, comment.isShowName() ? 1 : 0);
 			ps.setInt(6, comment.isSheShowName() ? 1 : 0);
@@ -49,7 +52,7 @@ public class SubCommentsDao {
 			con.commit();
 			
 			result = 1;
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			System.out.println("正在回滚");
 			try {
 				con.rollback();
@@ -94,7 +97,7 @@ public class SubCommentsDao {
 				comment.setFloorId(rs.getInt("floorid"));
 				comment.setUserId(rs.getInt("userid"));
 				comment.setUserName(rs.getString("name"));
-				comment.setContent(rs.getString("content"));
+				comment.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
 				comment.setDate(new Date(rs.getTimestamp("date").getTime()));
 				comment.setReplyId(rs.getInt("replyid"));
 				comment.setReplyName(rs.getString("replyName"));
@@ -159,7 +162,7 @@ public class SubCommentsDao {
 				break;
 		}
 		PreparedStatement ps;
-		int result = 0;
+		int result;
 		
 		try {
 			con.setAutoCommit(false);
@@ -167,13 +170,13 @@ public class SubCommentsDao {
 			ps.setInt(1, comment.getFloorId());
 			ps.setInt(2, comment.getUserId());
 			ps.setString(3,comment.getUserName());
-			ps.setString(4, comment.getContent());
+			ps.setString(4, URLEncoder.encode(comment.getContent(),"utf-8"));
 			ps.setInt(5, comment.getReplyId());
 			ps.setInt(6, comment.isShowName() ? 1 : 0);
 			ps.execute();
 			con.commit();
 			result = 1;
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			result = -1;
 		}

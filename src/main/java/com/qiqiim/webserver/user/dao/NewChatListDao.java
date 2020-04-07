@@ -1,5 +1,6 @@
 package com.qiqiim.webserver.user.dao;
 
+import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -28,7 +29,7 @@ public class NewChatListDao {
 				chat.setUserId(rs.getInt("userId"));
 				chat.setAnotherId(rs.getInt("anotherId"));
 				chat.setTime(new Date(rs.getTimestamp("time").getTime()));
-				chat.setContent(rs.getString("content"));
+				chat.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
 				chat.setType(rs.getInt("type"));
 				chatList.add(chat);
 			}

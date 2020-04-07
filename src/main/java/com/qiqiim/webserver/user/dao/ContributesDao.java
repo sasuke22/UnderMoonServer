@@ -1,5 +1,7 @@
 package com.qiqiim.webserver.user.dao;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -32,8 +34,8 @@ public class ContributesDao {
 				meetingDetail.setMeetingId(rs.getInt("meetingId"));
 				meetingDetail.setId(rs.getInt("id"));
 				meetingDetail.setCity(rs.getString("city"));
-				meetingDetail.setSummary(rs.getString("summary"));
-				meetingDetail.setContent(rs.getString("content"));
+				meetingDetail.setSummary(URLDecoder.decode(rs.getString("summary"),"utf-8"));
+				meetingDetail.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
 				meetingDetail.setDate(new Date(rs.getTimestamp("date").getTime()));
 				meetingDetail.setCommentCount(rs.getInt("commentcount"));
 				meetingDetail.setGender(rs.getInt("gender"));
@@ -72,8 +74,8 @@ public class ContributesDao {
 				meetingDetail.setMeetingId(rs.getInt("meetingId"));
 				meetingDetail.setId(rs.getInt("id"));
 				meetingDetail.setCity(rs.getString("city"));
-				meetingDetail.setSummary(rs.getString("summary"));
-				meetingDetail.setContent(rs.getString("content"));
+				meetingDetail.setSummary(URLDecoder.decode(rs.getString("summary"),"utf-8"));
+				meetingDetail.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
 				meetingDetail.setDate(new Date(rs.getTimestamp("date").getTime()));
 				meetingDetail.setCommentCount(rs.getInt("commentcount"));
 				meetingDetail.setGender(rs.getInt("gender"));
@@ -112,8 +114,8 @@ public class ContributesDao {
 				meetingDetail.setMeetingId(rs.getInt("meetingId"));
 				meetingDetail.setId(rs.getInt("id"));
 				meetingDetail.setCity(rs.getString("city"));
-				meetingDetail.setSummary(rs.getString("summary"));
-				meetingDetail.setContent(rs.getString("content"));
+				meetingDetail.setSummary(URLDecoder.decode(rs.getString("summary"),"utf-8"));
+				meetingDetail.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
 				meetingDetail.setDate(new Date(rs.getTimestamp("date").getTime()));
 				meetingDetail.setCommentCount(rs.getInt("commentcount"));
 				meetingDetail.setGender(rs.getInt("gender"));
@@ -152,8 +154,8 @@ public class ContributesDao {
 				meetingDetail.setMeetingId(rs.getInt("meetingId"));
 				meetingDetail.setId(rs.getInt("id"));
 				meetingDetail.setCity(rs.getString("city"));
-				meetingDetail.setSummary(rs.getString("summary"));
-				meetingDetail.setContent(rs.getString("content"));
+				meetingDetail.setSummary(URLDecoder.decode(rs.getString("summary"),"utf-8"));
+				meetingDetail.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
 				meetingDetail.setDate(new Date(rs.getTimestamp("date").getTime()));
 				meetingDetail.setCommentCount(rs.getInt("commentcount"));
 				meetingDetail.setGender(rs.getInt("gender"));
@@ -187,7 +189,7 @@ public class ContributesDao {
 			while (rs.next()) {
 				meetingDetail.setId(rs.getInt("id"));
 				meetingDetail.setMeetingId(rs.getInt("meetingid"));
-				meetingDetail.setSummary(rs.getString("summary"));
+				meetingDetail.setSummary(URLDecoder.decode(rs.getString("summary"),"utf-8"));
 				meetingDetail.setAge(rs.getInt("age"));
 				meetingDetail.setMarry(rs.getString("marry"));
 				meetingDetail.setHeight(rs.getInt("height"));
@@ -195,7 +197,7 @@ public class ContributesDao {
 				meetingDetail.setGender(rs.getInt("gender"));
 				meetingDetail.setCity(rs.getString("city"));
 				meetingDetail.setDate(new Date(rs.getTimestamp("date").getTime()));
-				meetingDetail.setContent(rs.getString("content"));
+				meetingDetail.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
 				meetingDetail.setXingzuo(rs.getString("xingzuo"));
 				meetingDetail.setCommentCount(rs.getInt("commentcount"));
 				meetingDetail.setPics(rs.getInt("photos"));
@@ -232,13 +234,13 @@ public class ContributesDao {
 			ps = con.prepareStatement(sql1,Statement.RETURN_GENERATED_KEYS);
 			ps.setInt(1, meetingDetail.id);
 			ps.setString(2, meetingDetail.city);
-			ps.setString(3, meetingDetail.summary);
+			ps.setString(3, URLEncoder.encode(meetingDetail.summary,"utf-8"));
 			ps.setInt(4, meetingDetail.age);
 			ps.setString(5, meetingDetail.marry);
 			ps.setInt(6, meetingDetail.height);
 			ps.setString(7, meetingDetail.job);
 			ps.setString(8, meetingDetail.xingzuo);
-			ps.setString(9, meetingDetail.content);
+			ps.setString(9, URLEncoder.encode(meetingDetail.content,"utf-8"));
 			ps.setInt(10, pics);
 			ps.setInt(11, meetingDetail.gender);
 			ps.execute();
@@ -250,7 +252,7 @@ public class ContributesDao {
 			}
 			DBPool.close(con);
 			return result;
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			System.out.println("正在回滚");
 			try {
 				con.rollback();
@@ -285,8 +287,8 @@ public class ContributesDao {
 				meetingDetail.setMeetingId(rs.getInt("meetingid"));
 				meetingDetail.setId(rs.getInt("id"));//?
 				meetingDetail.setCity(rs.getString("city"));
-				meetingDetail.setSummary(rs.getString("summary"));
-				meetingDetail.setContent(rs.getString("content"));
+				meetingDetail.setSummary(URLDecoder.decode(rs.getString("summary"),"utf-8"));
+				meetingDetail.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
 				meetingDetail.setCommentCount(rs.getInt("commentcount"));
 				meetingDetail.setDate(new Date(rs.getTimestamp("date").getTime()));
 				meetingDetail.setGender(rs.getInt("gender"));
@@ -333,8 +335,8 @@ public class ContributesDao {
 				meetingDetail.setMeetingId(rs.getInt("meetingid"));
 				meetingDetail.setId(rs.getInt("id"));//用户id
 				meetingDetail.setCity(rs.getString("city"));
-				meetingDetail.setSummary(rs.getString("summary"));
-				meetingDetail.setContent(rs.getString("content"));
+				meetingDetail.setSummary(URLDecoder.decode(rs.getString("summary"),"utf-8"));
+				meetingDetail.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
 				meetingDetail.setDate(new Date(rs.getTimestamp("date").getTime()));
 				meetingDetail.setCommentCount(rs.getInt("commentcount"));
 				meetingDetail.setGender(rs.getInt("gender"));
@@ -370,8 +372,8 @@ public class ContributesDao {
 				meetingDetail.setMeetingId(rs.getInt("meetingid"));
 				meetingDetail.setId(rs.getInt("id"));//?
 				meetingDetail.setCity(rs.getString("city"));
-				meetingDetail.setSummary(rs.getString("summary"));
-				meetingDetail.setContent(rs.getString("content"));
+				meetingDetail.setSummary(URLDecoder.decode(rs.getString("summary"),"utf-8"));
+				meetingDetail.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
 				meetingDetail.setDate(new Date(rs.getTimestamp("date").getTime()));
 				meetingDetail.setGender(rs.getInt("gender"));
 				meetingDetail.setApprove(rs.getInt("approve"));
@@ -410,8 +412,8 @@ public class ContributesDao {
 				meetingDetail.setMeetingId(rs.getInt("meetingid"));
 				meetingDetail.setId(rs.getInt("id"));//?
 				meetingDetail.setCity(rs.getString("city"));
-				meetingDetail.setSummary(rs.getString("summary"));
-				meetingDetail.setContent(rs.getString("content"));
+				meetingDetail.setSummary(URLDecoder.decode(rs.getString("summary"),"utf-8"));
+				meetingDetail.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
 				meetingDetail.setDate(new Date(rs.getTimestamp("date").getTime()));
 				meetingDetail.setGender(rs.getInt("gender"));
 				meetingDetail.setApprove(rs.getInt("approve"));
@@ -450,8 +452,8 @@ public class ContributesDao {
 				meetingDetail.setMeetingId(rs.getInt("meetingid"));
 				meetingDetail.setId(rs.getInt("id"));//?
 				meetingDetail.setCity(rs.getString("city"));
-				meetingDetail.setSummary(rs.getString("summary"));
-				meetingDetail.setContent(rs.getString("content"));
+				meetingDetail.setSummary(URLDecoder.decode(rs.getString("summary"),"utf-8"));
+				meetingDetail.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
 				meetingDetail.setDate(new Date(rs.getTimestamp("date").getTime()));
 				meetingDetail.setGender(rs.getInt("gender"));
 				meetingDetail.setApprove(rs.getInt("approve"));
@@ -462,7 +464,7 @@ public class ContributesDao {
 				contributesList.add(meetingDetail);
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage().toString());
+			System.out.println(e.getMessage());
 		}finally{
 			DBPool.close(con);
 		}
@@ -662,8 +664,8 @@ public class ContributesDao {
 				meetingDetail.setMeetingId(rs.getInt("meetingId"));
 				meetingDetail.setId(rs.getInt("id"));
 				meetingDetail.setCity(rs.getString("city"));
-				meetingDetail.setSummary(rs.getString("summary"));
-				meetingDetail.setContent(rs.getString("content"));
+				meetingDetail.setSummary(URLDecoder.decode(rs.getString("summary"),"utf-8"));
+				meetingDetail.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
 				meetingDetail.setDate(new Date(rs.getTimestamp("date").getTime()));
 				meetingDetail.setCommentCount(rs.getInt("commentcount"));
 				meetingDetail.setGender(rs.getInt("gender"));

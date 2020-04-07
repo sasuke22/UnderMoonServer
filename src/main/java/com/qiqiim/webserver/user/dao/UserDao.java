@@ -1,5 +1,7 @@
 package com.qiqiim.webserver.user.dao;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -38,19 +40,14 @@ public class UserDao {
 			ps = con.prepareStatement(sql1);
 			ps.setString(1, account);
 			ResultSet rs = ps.executeQuery();
-			System.out.println("1");
 			if(rs.first()){
-				System.out.println("2");
 				if(!isLogin){//注册，查重
-					System.out.println("3");
 					res = true;
 				}else{//登陆，查锁
-					System.out.println("4");
 					res = rs.getInt("isLock") == 1;
 				}
 			}
 		} catch (SQLException e) {
-			System.out.println("5");
 			e.printStackTrace();
 			res = false;
 		}finally{
@@ -141,7 +138,7 @@ public class UserDao {
 				user.setHeight(rs.getInt("height"));
 				user.setMarry(rs.getString("marry"));
 				user.setJob(rs.getString("job"));
-				user.setUserBriefIntro(rs.getString("userintro"));
+				user.setUserBriefIntro(URLDecoder.decode(rs.getString("userintro"),"utf-8"));
 				user.setXingzuo(rs.getString("xingzuo"));
 				user.setScore(rs.getInt("score"));
 				user.setCommentDate(rs.getDate("commentDate"));
@@ -150,7 +147,7 @@ public class UserDao {
 				user.setVipDate(new Date(rs.getTimestamp("vip").getTime()));
 				user.setBigVip(rs.getDate("bigVip"));
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}finally{
 			DBPool.close(con);
@@ -361,7 +358,7 @@ public class UserDao {
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, user.getAge());
 			ps.setInt(2, user.getHeight());
-			ps.setString(3, user.getUserBriefIntro());
+			ps.setString(3, URLEncoder.encode(user.getUserBriefIntro(),"utf-8"));
 			ps.setString(4, user.getJob());
 			ps.setString(5, user.getMarry());
 			ps.setString(6, user.getXingzuo());
@@ -371,7 +368,7 @@ public class UserDao {
 			ps.executeUpdate();
 			con.commit();
 			return 1;
-		}catch (SQLException e) {
+		}catch (Exception e) {
 			e.printStackTrace();
 			return 0;
 		}finally{
@@ -519,7 +516,7 @@ public class UserDao {
 				enlister.setMarry(rs.getString("marry"));
 				enlister.setJob(rs.getString("job"));
 				enlister.setPhotoAddress(rs.getString("photos"));
-				enlister.setUserBriefIntro(rs.getString("userintro"));
+				enlister.setUserBriefIntro(URLDecoder.decode(rs.getString("userintro"),"utf-8"));
 				enlister.setCommentDate(rs.getDate("commentDate"));
 				enlister.setVipDate(new Date(rs.getTimestamp("vip").getTime()));
 				enlister.setBigVip(rs.getDate("bigVip"));
@@ -529,7 +526,7 @@ public class UserDao {
 				enlister.setNeihan(rs.getInt("neihan"));
 				enlister.setShencai(rs.getInt("shencai"));
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}finally{
 			DBPool.close(con);
@@ -820,7 +817,7 @@ public class UserDao {
 		}
 		try{
 			PreparedStatement ps;
-			sql1 = "update user set bigVip = '2099/01/01',score = score + 450 where id  = ?";
+			sql1 = "update user set bigVip = '2099/01/01',score = score + 600 where id  = ?";
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, id);
 			ps.executeUpdate();

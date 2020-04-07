@@ -1786,7 +1786,7 @@ public class ImController extends BaseController{
 			int int_money = Double.valueOf(money[0]).intValue();
 			if(int_money >= 999){//充值的是至尊会员
 				UserDao.makeUserBigVIP(Integer.parseInt(id[0]));
-			} else if(int_money >= 249){//充值的是会员
+			} else if(int_money >= 240){//充值的是会员
 				UserDao.makeUserVIP(Integer.parseInt(id[0]));
 			}else{
 				System.out.println("id:"+id[0]);

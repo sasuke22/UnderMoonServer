@@ -1,5 +1,7 @@
 package com.qiqiim.webserver.user.dao;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -30,8 +32,8 @@ public class ArticleDao {
 			ps = con.prepareStatement(sql1,Statement.RETURN_GENERATED_KEYS);
 			ps.setInt(1, article.userId);
 			ps.setInt(2, article.gender);
-			ps.setString(3, article.title);
-			ps.setString(4, article.content);
+			ps.setString(3, URLEncoder.encode(article.title,"utf-8"));
+			ps.setString(4, URLEncoder.encode(article.content,"utf-8"));
 			ps.setInt(5, pics);
 			ps.setInt(6, 0);
 			ps.setInt(7, 0);
@@ -43,7 +45,7 @@ public class ArticleDao {
 			}
 			DBPool.close(con);
 			return res;
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			System.out.println("正在回滚");
 			try {
 				con.rollback();
@@ -80,8 +82,8 @@ public class ArticleDao {
 				article.setUserId(rs.getInt("userId"));
 				article.setGender(rs.getInt("gender"));
 				article.setDate(new Date(rs.getTimestamp("date").getTime()));
-				article.setTitle(rs.getString("title"));
-				article.setContent(rs.getString("content"));
+				article.setTitle(URLDecoder.decode(rs.getString("title"),"utf-8"));
+				article.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
 				article.setPics(rs.getInt("pics"));
 				article.setApprove(rs.getInt("approve"));
 				article.setComment(rs.getInt("comment"));
@@ -116,8 +118,8 @@ public class ArticleDao {
 				article.setUserId(rs.getInt("userId"));
 				article.setGender(rs.getInt("gender"));
 				article.setDate(new Date(rs.getTimestamp("date").getTime()));
-				article.setTitle(rs.getString("title"));
-				article.setContent(rs.getString("content"));
+				article.setTitle(URLDecoder.decode(rs.getString("title"),"utf-8"));
+				article.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
 				article.setPics(rs.getInt("pics"));
 				article.setApprove(rs.getInt("approve"));
 				article.setComment(rs.getInt("comment"));
@@ -152,8 +154,8 @@ public class ArticleDao {
 				article.setUserId(rs.getInt("userId"));
 				article.setGender(rs.getInt("gender"));
 				article.setDate(new Date(rs.getTimestamp("date").getTime()));
-				article.setTitle(rs.getString("title"));
-				article.setContent(rs.getString("content"));
+				article.setTitle(URLDecoder.decode(rs.getString("title"),"utf-8"));
+				article.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
 				article.setPics(rs.getInt("pics"));
 				article.setApprove(rs.getInt("approve"));
 				article.setComment(rs.getInt("comment"));
@@ -188,8 +190,8 @@ public class ArticleDao {
 				article.setUserId(rs.getInt("userId"));
 				article.setGender(rs.getInt("gender"));
 				article.setDate(new Date(rs.getTimestamp("date").getTime()));
-				article.setTitle(rs.getString("title"));
-				article.setContent(rs.getString("content"));
+				article.setTitle(URLDecoder.decode(rs.getString("title"),"utf-8"));
+				article.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
 				article.setPics(rs.getInt("pics"));
 				article.setApprove(rs.getInt("approve"));
 				article.setComment(rs.getInt("comment"));
@@ -316,8 +318,8 @@ public class ArticleDao {
 				article.setUserId(rs.getInt("userId"));
 				article.setGender(rs.getInt("gender"));
 				article.setDate(new Date(rs.getTimestamp("date").getTime()));
-				article.setTitle(rs.getString("title"));
-				article.setContent(rs.getString("content"));
+				article.setTitle(URLDecoder.decode(rs.getString("title"),"utf-8"));
+				article.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
 				article.setPics(rs.getInt("pics"));
 				article.setApprove(rs.getInt("approve"));
 				article.setComment(rs.getInt("comment"));

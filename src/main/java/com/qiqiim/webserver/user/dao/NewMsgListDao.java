@@ -1,5 +1,6 @@
 package com.qiqiim.webserver.user.dao;
 
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -26,7 +27,7 @@ public class NewMsgListDao {
 				article.setUserId(rs.getInt("userId"));
 				article.setAnotherId(rs.getInt("anotherId"));
 				article.setTime(new Date(rs.getTimestamp("time").getTime()));
-				article.setContent(rs.getString("content"));
+				article.setContent(URLEncoder.encode(rs.getString("content"),"utf-8"));
 				article.setUnread(rs.getInt("unread"));
 				article.setName(rs.getString("name"));
 				articlesList.add(article);
@@ -58,26 +59,26 @@ public class NewMsgListDao {
 				ps = con.prepareStatement(sql1);
 				ps.setInt(1, chat.getUserId());
 				ps.setInt(2, chat.getAnotherId());
-				ps.setString(3, chat.getContent());
-				ps.setString(4, chat.getContent());
+				ps.setString(3, URLEncoder.encode(chat.getContent(),"utf-8"));
+				ps.setString(4, URLEncoder.encode(chat.getContent(),"utf-8"));
 				ps.execute();
 				
 				ps = con.prepareStatement(sql2);
 				ps.setInt(1, chat.getAnotherId());
 				ps.setInt(2, chat.getUserId());
-				ps.setString(3, chat.getContent());
-				ps.setString(4, chat.getContent());
+				ps.setString(3, URLEncoder.encode(chat.getContent(),"utf-8"));
+				ps.setString(4, URLEncoder.encode(chat.getContent(),"utf-8"));
 				ps.execute();
 			}
 			
 			ps = con.prepareStatement(sql3);
 			ps.setInt(1, chat.getUserId());
 			ps.setInt(2, chat.getAnotherId());
-			ps.setString(3, chat.getContent());
+			ps.setString(3, URLEncoder.encode(chat.getContent(),"utf-8"));
 			ps.setInt(4, chat.getType());
 			ps.execute();
 			con.commit();
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			System.out.println("插入消息正在回滚");
 			try {
 				con.rollback();

@@ -1,5 +1,7 @@
 package com.qiqiim.webserver.user.dao;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,7 +28,7 @@ public class ComplainDao {
 				complain.setUserId(rs.getInt("userId"));
 				complain.setComplainId(rs.getInt("complainId"));
 				complain.setPics(rs.getInt("pics"));
-				complain.setRemark(rs.getString("remark"));
+				complain.setRemark(URLDecoder.decode(rs.getString("remark"),"utf-8"));
 				complainList.add(complain);
 			}
 		} catch (Exception e) {
@@ -56,7 +58,7 @@ public class ComplainDao {
 			ps.setInt(1, complain.getUserId());
 			ps.setInt(2, complain.getComplainId());
 			ps.setInt(3, complain.getPics());
-			ps.setString(4, complain.getRemark());
+			ps.setString(4, URLEncoder.encode(complain.getRemark(),"utf-8"));
 			ps.setString(5, complain.getType());
 			ps.execute();
 			con.commit();
@@ -64,7 +66,7 @@ public class ComplainDao {
 			if (rs.next()) {
 				res = rs.getInt(1);
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			res = -1;
 			System.out.println("正在回滚");
 			try {

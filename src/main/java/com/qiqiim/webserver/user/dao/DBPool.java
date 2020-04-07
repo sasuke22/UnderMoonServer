@@ -29,8 +29,6 @@ public class DBPool {
 			Properties pro = new Properties();
 			pro.load(in);
 			ds = BasicDataSourceFactory.createDataSource(pro);
-		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
