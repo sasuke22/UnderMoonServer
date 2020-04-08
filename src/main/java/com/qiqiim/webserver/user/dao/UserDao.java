@@ -138,7 +138,7 @@ public class UserDao {
 				user.setHeight(rs.getInt("height"));
 				user.setMarry(rs.getString("marry"));
 				user.setJob(rs.getString("job"));
-				user.setUserBriefIntro(URLDecoder.decode(rs.getString("userintro"),"utf-8"));
+				user.setUserBriefIntro(URLDecoder.decode(rs.getString("userintro") == null ? "" : rs.getString("userintro"),"utf-8"));
 				user.setXingzuo(rs.getString("xingzuo"));
 				user.setScore(rs.getInt("score"));
 				user.setCommentDate(rs.getDate("commentDate"));

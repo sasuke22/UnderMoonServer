@@ -1,5 +1,6 @@
 package com.qiqiim.webserver.user.dao;
 
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.Date;
@@ -27,7 +28,7 @@ public class NewMsgListDao {
 				article.setUserId(rs.getInt("userId"));
 				article.setAnotherId(rs.getInt("anotherId"));
 				article.setTime(new Date(rs.getTimestamp("time").getTime()));
-				article.setContent(URLEncoder.encode(rs.getString("content"),"utf-8"));
+				article.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
 				article.setUnread(rs.getInt("unread"));
 				article.setName(rs.getString("name"));
 				articlesList.add(article);
