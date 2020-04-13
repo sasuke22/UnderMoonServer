@@ -507,6 +507,7 @@ public class UserDao {
 			while (rs.next()) {
 				enlister.setId(rs.getInt("id"));
 				enlister.setAccount(rs.getString("account"));
+				enlister.setPassword(rs.getString("password"));
 				enlister.setGender(rs.getInt("gender"));
 				enlister.setUserName(rs.getString("name"));
 				enlister.setLocation(rs.getString("city"));
@@ -516,10 +517,11 @@ public class UserDao {
 				enlister.setMarry(rs.getString("marry"));
 				enlister.setJob(rs.getString("job"));
 				enlister.setPhotoAddress(rs.getString("photos"));
-				enlister.setUserBriefIntro(URLDecoder.decode(rs.getString("userintro"),"utf-8"));
+				enlister.setUserBriefIntro(URLDecoder.decode(rs.getString("userintro") == null ? "" : rs.getString("userintro"),"utf-8"));
 				enlister.setCommentDate(rs.getDate("commentDate"));
 				enlister.setVipDate(new Date(rs.getTimestamp("vip").getTime()));
 				enlister.setBigVip(rs.getDate("bigVip"));
+				enlister.setScore(rs.getInt("score"));
 				enlister.setZhencheng(rs.getInt("zhencheng"));
 				enlister.setJingji(rs.getInt("jingji"));
 				enlister.setChuangpin(rs.getInt("chuangpin"));
@@ -707,7 +709,7 @@ public class UserDao {
 				enlister.setMarry(rs.getString("marry"));
 				enlister.setJob(rs.getString("job"));
 				enlister.setPhotoAddress(rs.getString("photos"));
-				enlister.setUserBriefIntro(rs.getString("userintro"));
+				enlister.setUserBriefIntro(URLDecoder.decode(rs.getString("userintro") == null ? "" : rs.getString("userintro"),"utf-8"));
 				enlister.setScore(rs.getInt("score"));
 				enlister.setLock(rs.getInt("isLock"));
 				enlister.setPassword(rs.getString("password"));

@@ -14,7 +14,7 @@ import com.qiqiim.constant.Complain;
 public class ComplainDao {
 	public static List<Complain> selectComplain(int count){
 		ArrayList<Complain> complainList = new ArrayList<Complain>();
-		String sql1 = "select * from complain order by id desc limit ?,20" ;
+		String sql1 = "select a.*,b.zhencheng,b.jingji,b.chuangpin,b.neihan,b.shencai from complain a,user b where a.complainid = b.id order by a.id desc limit ?,20" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
@@ -25,10 +25,16 @@ public class ComplainDao {
 			while (rs.next()) {
 				Complain complain = new Complain();
 				complain.setId(rs.getInt("id"));
-				complain.setUserId(rs.getInt("userId"));
-				complain.setComplainId(rs.getInt("complainId"));
+				complain.setUserId(rs.getInt("userid"));
+				complain.setComplainId(rs.getInt("complainid"));
 				complain.setPics(rs.getInt("pics"));
 				complain.setRemark(URLDecoder.decode(rs.getString("remark"),"utf-8"));
+				complain.setType(rs.getString("type"));
+				complain.setZhencheng(rs.getInt("zhencheng"));
+				complain.setJingji(rs.getInt("jingji"));
+				complain.setChuangpin(rs.getInt("chuangpin"));
+				complain.setNeihan(rs.getInt("neihan"));
+				complain.setShencai(rs.getInt("shencai"));
 				complainList.add(complain);
 			}
 		} catch (Exception e) {
