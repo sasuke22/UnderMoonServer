@@ -240,7 +240,7 @@ public class UserDao {
 		String sql0 = "use first_mysql_test";
 		String sql1 = "select * "
 				+ "from user "
-				+ "where ((YEAR(CURDATE())-YEAR(birthday))-(RIGHT(CURDATE(),5)<RIGHT(birthday,5))) "
+//				+ "where ((YEAR(CURDATE())-YEAR(birthday))-(RIGHT(CURDATE(),5)<RIGHT(birthday,5))) "
 				+ "between ? and ? ";
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
@@ -965,6 +965,39 @@ public class UserDao {
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, otherId);
 			ps.setInt(2, userId);
+			ps.execute();
+			con.commit();
+			return 1;
+		} catch (SQLException e) {
+			try {
+				System.out.println("插入数据库异常，正在进行回滚..");
+				con.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+			return -1;
+		}finally{
+			DBPool.close(con);
+		}
+	}
+
+	public static int saveComplain(int userId, int zhencheng, int jingji, int chuangpin, int neihan, int shencai) {
+		String sql0 = "use first_mysql_test";
+		String sql1 = "update user set zhencheng = ?,jingji = ?,chuangpin = ?,neihan = ?,shencai = ? where id = ?";
+		Connection con = DBPool.getConnection();
+		try {
+			con.setAutoCommit(false);
+			PreparedStatement ps;
+			ps = con.prepareStatement(sql0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, zhencheng);
+			ps.setInt(2, jingji);
+			ps.setInt(3, chuangpin);
+			ps.setInt(4, neihan);
+			ps.setInt(5, shencai);
+			ps.setInt(6, userId);
 			ps.execute();
 			con.commit();
 			return 1;

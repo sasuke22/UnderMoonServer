@@ -1603,6 +1603,17 @@ public class ImController extends BaseController{
 		map.put("complain", complains);
 		return map;
 	}
+
+	/**
+	 * for flutter,保存五围
+	 */
+	@RequestMapping(value = "/savecomplain",produces="application/json")
+	@ResponseBody
+	public int saveComplain(@RequestParam("id")int userid, @RequestParam("zhencheng")int zhencheng, @RequestParam("jingji")int jingji,
+		@RequestParam("chuangpin")int chuangpin, @RequestParam("neihan")int neihan, @RequestParam("shencai")int shencai, HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		return UserDao.saveComplain(userid,zhencheng,jingji,chuangpin,neihan,shencai);
+	}
 	
 	/**
 	 * for flutter,获取所有反馈
