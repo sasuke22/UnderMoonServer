@@ -631,6 +631,17 @@ public class ImController extends BaseController{
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		return UserDao.getUserInfo(userId);
 	}
+
+	/**
+	 * 获取报名者的信息
+	 */
+	@RequestMapping(value = "/getuserinfoaccount",produces="application/json")
+	@ResponseBody
+	public User getUserInfoByAccount(@RequestParam("account")String account,
+							HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		return UserDao.getUserInfoByAccount(account);
+	}
 	
 	/**
 	 * 获取是否被拉黑
@@ -967,6 +978,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value = "/checkupdate",produces="application/json")
 	@ResponseBody
 	public String checkUpdate(HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		File webRootDir = new File("D:\\update");
 		File[] files = webRootDir.listFiles();
 		if(files == null)
@@ -982,6 +994,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value = "/checkscore",produces="application/json")
 	@ResponseBody
 	public int checkScore(HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		File webRootDir = new File("D:\\score");
 		File[] files = webRootDir.listFiles();
 		if(files == null)
@@ -1297,7 +1310,7 @@ public class ImController extends BaseController{
 		SubComment comment = JSONObject.parseObject(req.getParameter("subComment"),SubComment.class);
 		System.out.println("add comment:"+comment.getContent());
 		int id;
-		if(commentContent.equals(comment.getContent()) || commentContent.equals(""))
+		if(commentContent.equals(comment.getContent()) || comment.getContent().equals(""))
 			id = 1;
 		else{
 			commentContent = comment.getContent();

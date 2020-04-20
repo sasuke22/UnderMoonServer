@@ -521,6 +521,53 @@ public class UserDao {
 				enlister.setCommentDate(rs.getDate("commentDate"));
 				enlister.setVipDate(new Date(rs.getTimestamp("vip").getTime()));
 				enlister.setBigVip(rs.getDate("bigVip"));
+				enlister.setLock(rs.getInt("islock"));
+				enlister.setScore(rs.getInt("score"));
+				enlister.setZhencheng(rs.getInt("zhencheng"));
+				enlister.setJingji(rs.getInt("jingji"));
+				enlister.setChuangpin(rs.getInt("chuangpin"));
+				enlister.setNeihan(rs.getInt("neihan"));
+				enlister.setShencai(rs.getInt("shencai"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			DBPool.close(con);
+		}
+		return enlister;
+	}
+
+	public static User getUserInfoByAccount(String account){
+		String sql0 = "use first_mysql_test";
+		String sql1 = "select * from user where account=?";
+		Connection con = DBPool.getConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		User enlister = new User();
+		try {
+			ps = con.prepareStatement(sql0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setString(1, account);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				enlister.setId(rs.getInt("id"));
+				enlister.setAccount(rs.getString("account"));
+				enlister.setPassword(rs.getString("password"));
+				enlister.setGender(rs.getInt("gender"));
+				enlister.setUserName(rs.getString("name"));
+				enlister.setLocation(rs.getString("city"));
+				enlister.setAge(rs.getInt("age"));
+				enlister.setHeight(rs.getInt("height"));
+				enlister.setXingzuo(rs.getString("xingzuo"));
+				enlister.setMarry(rs.getString("marry"));
+				enlister.setJob(rs.getString("job"));
+				enlister.setPhotoAddress(rs.getString("photos"));
+				enlister.setUserBriefIntro(URLDecoder.decode(rs.getString("userintro") == null ? "" : rs.getString("userintro"),"utf-8"));
+				enlister.setCommentDate(rs.getDate("commentDate"));
+				enlister.setVipDate(new Date(rs.getTimestamp("vip").getTime()));
+				enlister.setBigVip(rs.getDate("bigVip"));
+				enlister.setLock(rs.getInt("islock"));
 				enlister.setScore(rs.getInt("score"));
 				enlister.setZhencheng(rs.getInt("zhencheng"));
 				enlister.setJingji(rs.getInt("jingji"));
