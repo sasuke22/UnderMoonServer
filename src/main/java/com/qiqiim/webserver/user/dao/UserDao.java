@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.qiqiim.constant.User;
+import com.qiqiim.webserver.util.MD5Util;
+import sun.security.provider.MD5;
 
 
 /**
@@ -506,8 +508,8 @@ public class UserDao {
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				enlister.setId(rs.getInt("id"));
-				enlister.setAccount(rs.getString("account"));
-				enlister.setPassword(rs.getString("password"));
+				enlister.setAccount(MD5Util.getMD5(rs.getString("account"),32));
+				enlister.setPassword(MD5Util.getMD5(rs.getString("password"),32));
 				enlister.setGender(rs.getInt("gender"));
 				enlister.setUserName(rs.getString("name"));
 				enlister.setLocation(rs.getString("city"));
