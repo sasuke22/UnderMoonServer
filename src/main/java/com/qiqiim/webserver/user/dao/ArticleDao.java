@@ -11,6 +11,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import com.qiqiim.constant.Article;
+import com.qiqiim.constant.MeetingDetail;
 
 
 public class ArticleDao {
@@ -65,7 +66,7 @@ public class ArticleDao {
 		ArrayList<Article> articlesList = new ArrayList<Article>();
 		String sq0 = "use first_mysql_test";
 		String sql1 = "select * from articles " +
-			      "where approve = 1 order by comment desc limit ?,?" ;
+			      "where approve = 1 and islock = 0 order by comment desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
@@ -101,7 +102,7 @@ public class ArticleDao {
 		ArrayList<Article> articlesList = new ArrayList<Article>();
 		String sq0 = "use first_mysql_test";
 		String sql1 = "select * from articles " +
-			      "where approve = 1 order by date desc limit ?,?" ;
+			      "where approve = 1 and islock = 0 order by date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
@@ -173,7 +174,7 @@ public class ArticleDao {
 		String sq0 = "use first_mysql_test";
 		String sql1 = "select * " +
 			      "from articles " +
-			      "where perfect = 1 order by date desc limit ?,?" ;
+			      "where perfect = 1 and islock = 0 order by date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
@@ -207,7 +208,7 @@ public class ArticleDao {
 	
 	public static int deleteArticle(int id){
 		String sql0 = "use first_mysql_test";
-		String sql1= "delete from articles where id = ?";
+		String sql1= "update articles set islock = 1 where id = ?";
 		Connection con = DBPool.getConnection();
 		int res;
 		try {
@@ -296,7 +297,7 @@ public class ArticleDao {
 		return res;
 	}
 	
-	public static ArrayList<Article> selectAllContrbutesByOldCount(int count){
+	public static ArrayList<Article> selectAllArticlesByOldCount(int count){
 		ArrayList<Article> articlesList = new ArrayList<Article>();
 		String sq0 = "use first_mysql_test";
 		String sql1 = "select * " +
@@ -346,8 +347,8 @@ public class ArticleDao {
 			if(article.getApprove() == 1){
 				sql1 = "update articles SET approve = 1, title = ?,content = ? where id = ?";
 				ps = con.prepareStatement(sql1);
-				ps.setString(1, article.getTitle());
-				ps.setString(2, article.getContent());
+				ps.setString(1, URLEncoder.encode(article.getTitle(),"utf-8"));
+				ps.setString(2, URLEncoder.encode(article.getContent(),"utf-8"));
 				ps.setInt(3, article.getId());
 			}else{
 				sql1 = "update articles SET approve = ?, reason = ? where id = ? ";
@@ -359,7 +360,7 @@ public class ArticleDao {
 			ps.executeUpdate();
 			con.commit();
 			return 1;
-		}catch (SQLException e) {
+		}catch (Exception e) {
 			e.printStackTrace();
 			return -1;
 		}finally{
@@ -389,5 +390,38 @@ public class ArticleDao {
 		}finally{
 			DBPool.close(con);
 		}
+	}
+
+	public static Article getArticleDetail(int articleId) {
+		String sq0 = "use first_mysql_test";
+		String sql1 = "select id,userId,gender,date,title,content,pics,approve,comment from articles where id = ? limit 1" ;
+		Connection con = DBPool.getConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		Article detail = new Article();
+		try {
+			ps = con.prepareStatement(sq0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, articleId);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				detail.setId(rs.getInt("id"));
+				detail.setUserId(rs.getInt("userId"));
+				detail.setGender(rs.getInt("gender"));
+				detail.setDate(new Date(rs.getTimestamp("date").getTime()));
+				detail.setTitle(URLDecoder.decode(rs.getString("title"),"utf-8"));
+				detail.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
+				detail.setPics(rs.getInt("pics"));
+				detail.setApprove(rs.getInt("approve"));
+				detail.setComment(rs.getInt("comment"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}finally{
+			DBPool.close(con);
+		}
+		return detail;
 	}
 }

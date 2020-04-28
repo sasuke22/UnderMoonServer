@@ -633,6 +633,17 @@ public class ImController extends BaseController{
 	}
 
 	/**
+	 * for server app,获取报名者的信息
+	 */
+	@RequestMapping(value = "/getuserinfoserver",produces="application/json")
+	@ResponseBody
+	public User getUserInfoServer(@RequestParam("userId")int userId,
+							HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		return UserDao.getUserInfoServer(userId);
+	}
+
+	/**
 	 * 获取报名者的信息
 	 */
 	@RequestMapping(value = "/getuserinfoaccount",produces="application/json")
@@ -816,6 +827,23 @@ public class ImController extends BaseController{
 		}
 		return meetingDetail;
 	}
+
+	/**
+	 * &flutter server,根据id获取meetingDetail
+	 */
+	@RequestMapping(value = "/articleDetail",produces="application/json")
+	@ResponseBody
+	public Article getArticleDetail(@RequestParam("id")int articleId,
+											 HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Article articleDetail = ArticleDao.getArticleDetail(articleId);
+		String path = "D:\\images"+File.separator+"article" + File.separator + articleId;
+		File dir = new File(path);
+		if (dir.exists()) {
+			articleDetail.setPics(dir.listFiles().length);
+		}
+		return articleDetail;
+	}
 	
 	/**
 	 * for flutter server app,根据客户端传递的已加载的数量来获取20个meeting
@@ -877,7 +905,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public HashMap<String,ArrayList<Article>> getAllMoreArticles(@RequestParam("count")int oldCount,
 			HttpServletRequest request,HttpServletResponse response){
-		ArrayList<Article> articles = ArticleDao.selectAllContrbutesByOldCount(oldCount);
+		ArrayList<Article> articles = ArticleDao.selectAllArticlesByOldCount(oldCount);
 		HashMap<String, ArrayList<Article>> map = new HashMap<String,ArrayList<Article>>();
 		map.put("articles", articles);
 		return map;
