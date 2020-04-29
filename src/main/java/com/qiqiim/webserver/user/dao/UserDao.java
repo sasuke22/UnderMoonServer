@@ -1,19 +1,13 @@
 package com.qiqiim.webserver.user.dao;
 
+import com.qiqiim.constant.User;
+import com.qiqiim.webserver.util.AESUtil;
+
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import com.qiqiim.constant.User;
-import com.qiqiim.webserver.util.MD5Util;
-import sun.security.provider.MD5;
 
 
 /**
@@ -554,7 +548,7 @@ public class UserDao {
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				enlister.setId(rs.getInt("id"));
-				enlister.setAccount(MD5Util.encryptPhone(rs.getString("account")));
+				enlister.setAccount(AESUtil.encrypt(rs.getString("account")));
 				enlister.setPassword(rs.getString("password"));
 				enlister.setGender(rs.getInt("gender"));
 				enlister.setUserName(rs.getString("name"));
@@ -600,7 +594,7 @@ public class UserDao {
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				enlister.setId(rs.getInt("id"));
-				enlister.setAccount(MD5Util.encryptPhone(rs.getString("account")));
+				enlister.setAccount(AESUtil.encrypt(rs.getString("account")));
 				enlister.setPassword(rs.getString("password"));
 				enlister.setGender(rs.getInt("gender"));
 				enlister.setUserName(rs.getString("name"));
@@ -794,7 +788,7 @@ public class UserDao {
 			while (rs.next()) {
 				User enlister = new User();
 				enlister.setId(rs.getInt("id"));
-				enlister.setAccount(MD5Util.encryptPhone(rs.getString("account")));
+				enlister.setAccount(AESUtil.encrypt(rs.getString("account")));
 				enlister.setGender(rs.getInt("gender"));
 				enlister.setUserName(rs.getString("name"));
 				enlister.setLocation(rs.getString("city"));
