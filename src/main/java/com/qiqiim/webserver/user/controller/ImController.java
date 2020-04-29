@@ -167,7 +167,7 @@ public class ImController extends BaseController{
 						head.createNewFile();
 					}
 					file.transferTo(head);
-					compressImage(head, new File(smallPath));
+					compressImage(head.getAbsolutePath(), smallPath);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -506,7 +506,7 @@ public class ImController extends BaseController{
 								pic.createNewFile();
 							}
 							file.transferTo(pic);
-							compressImage(pic, new File(smallPath));
+							compressImage(pic.getAbsolutePath(), smallPath);
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
@@ -805,7 +805,7 @@ public class ImController extends BaseController{
 				picFile.createNewFile();
 			}
 			file.transferTo(picFile);
-			compressImage(picFile, new File(smallPath));
+			compressImage(picFile.getAbsolutePath(), smallPath);
 			return pic + ".jpg";
 		}
 		return null;
@@ -1150,7 +1150,7 @@ public class ImController extends BaseController{
 					pic.createNewFile();
 				}
 				file.transferTo(pic);
-				compressImage(pic,new File(smallPath));
+				compressImage(pic.getAbsolutePath(),smallPath);
 				result = 1;
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -1159,14 +1159,30 @@ public class ImController extends BaseController{
 		}
 		return result;
 	}
-	
-	private void compressImage(File src,File des) throws IOException{
+
+	public static void compressImage(String s,String d){
+		String newJpg;
 		double scale = 1.0;
+		if(s.endsWith(".png")){
+			newJpg = s.split(".png")[0] + ".jpg";
+			compress(s,newJpg,scale);
+		}else{
+			newJpg = d;
+		}
+		File src = new File(newJpg);
 		long size = src.length();
 		if (size >= 150*1024){
-			scale = (double) Math.round((150*1024)*100 / size)/100;
+			scale = (double)(150*1024) / size;
+			compress(newJpg,d,scale);
 		}
-		Thumbnails.of(src).scale(scale).toFile(des);
+	}
+
+	public static void compress(String src,String des,double scale){
+		try {
+			Thumbnails.of(src).scale(scale).toFile(des);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -1226,7 +1242,7 @@ public class ImController extends BaseController{
 					picFile.createNewFile();
 				}
 				files[i].transferTo(picFile);
-				compressImage(picFile,new File(smallPath));
+				compressImage(picFile.getAbsolutePath(),smallPath);
 				if(i != files.length -1)
 					builder.append(lastPhoto).append("|");
 				else
@@ -1535,7 +1551,7 @@ public class ImController extends BaseController{
 								pic.createNewFile();
 							}
 							file.transferTo(pic);
-							compressImage(pic, new File(smallPath));
+							compressImage(pic.getAbsolutePath(), smallPath);
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
@@ -1609,19 +1625,21 @@ public class ImController extends BaseController{
 						String path = "D:\\images" + File.separator + "complain" + File.separator + complainId;
 						File parent = new File(path);
 						if (!parent.exists()) {
-							parent.mkdirs();
-						}
-						String completePath = path + File.separator + i + "-large.jpg";
-						String smallPath = path + File.separator + i + ".jpg";
-						File pic = new File(completePath);
-						try {
-							if (!pic.exists()) {
-								pic.createNewFile();
+							if(parent.mkdirs()){
+								String completePath = path + File.separator + i + "-large.jpg";
+								String smallPath = path + File.separator + i + ".jpg";
+								File pic = new File(completePath);
+								try {
+									if (!pic.exists()) {
+										if(pic.createNewFile()){
+											file.transferTo(pic);
+											compressImage(pic.getAbsolutePath(), smallPath);
+										}
+									}
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
 							}
-							file.transferTo(pic);
-							compressImage(pic, new File(smallPath));
-						} catch (IOException e) {
-							e.printStackTrace();
 						}
 					}
 				}
