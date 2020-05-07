@@ -73,19 +73,31 @@ public class CommentsDao {
 		ArrayList<CommentDetail> commentsList = new ArrayList<>();
 		String sq0 = "use first_mysql_test";
 		String sql1;
-		if(isMeeting)
-			sql1 = "select * from meeting_three_sub_comments as c right join (select a.*,b.vip > now() as vip,b.bigVip > now() as bigVip from meetingcomments as a,user as b where a.commentid = ? and a.userid = b.id order by bigVip desc,vip desc,date desc limit ?,20) as d on c.floorid = d.id";
-		else
-			sql1 = "select * from article_three_sub_comments as c right join (select a.*,b.vip > now() as vip,b.bigVip > now() as bigVip from articlecomments as a,user as b where a.commentid = ? and a.userid = b.id order by bigVip desc,vip desc,date desc limit ?,20) as d on c.floorid = d.id";
+		String sql2;
+		if(isMeeting){
+			sql1 = "select id from meetings where meetingid = " + id + " limit 1";
+			sql2 = "select * from meeting_three_sub_comments as c right join (select a.*,b.vip > now() as vip,b.bigVip > now() as bigVip,a.userid = ? as self from meetingcomments as a,user as b where a.commentid = ? and a.userid = b.id order by self desc,bigVip desc,vip desc,date desc limit ?,20) as d on c.floorid = d.id";
+		} else {
+			sql1 = "select userId from articles where id = " + id + " limit 1";
+			sql2 = "select * from article_three_sub_comments as c right join (select a.*,b.vip > now() as vip,b.bigVip > now() as bigVip,a.userid = ? as self from articlecomments as a,user as b where a.commentid = ? and a.userid = b.id order by self desc,bigVip desc,vip desc,date desc limit ?,20) as d on c.floorid = d.id";
+		}
+
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
+		int userId = 0;
 		try {
 			ps = con.prepareStatement(sq0);
 			ps.execute();
 			ps = con.prepareStatement(sql1);
-			ps.setInt(1, id);
-			ps.setInt(2, count);
+			rs = ps.executeQuery();
+			if(rs.next()){
+				userId = rs.getInt(isMeeting ? "id" : "userId");
+			}
+			ps = con.prepareStatement(sql2);
+			ps.setInt(1, userId);
+			ps.setInt(2, id);
+			ps.setInt(3, count);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				boolean exist = false;
