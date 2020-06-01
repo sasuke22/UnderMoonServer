@@ -187,7 +187,7 @@ public class ImController extends BaseController{
 	/**
 	 * 获取token
 	 */
-	@RequestMapping(value="/token",produces="application/json",method=RequestMethod.POST)
+	@RequestMapping(value="/token",method=RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String,String> token(HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
@@ -198,8 +198,10 @@ public class ImController extends BaseController{
 
 		if (exist) {
 			String token = TokenUtil.makeToken();
+			System.out.println(token);
 			UserDao.insertToken(account, token);
 			String result = AESUtil.encrypt(token);
+			System.out.println(result);
 			map.put("result","success");
 			map.put("token", result);
 			return map;
@@ -959,10 +961,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value = "/changearticleperfect",produces="application/json",method = RequestMethod.POST)
 	@ResponseBody
 	public int changeArticlePerfect(@RequestParam("id")int id,HttpServletRequest request,HttpServletResponse response){
-		int result;
-		ArticleDao.changeArticlePerfect(id);
-		result = UserDao.updateScore(id, 15);
-		return result;
+		return ArticleDao.changeArticlePerfect(id);
 	}
 	
 	/**

@@ -416,7 +416,7 @@ public class ArticleDao {
 		}
 		try{
 			PreparedStatement ps;
-			sql1 = "update articles SET perfect = 1 where id = ? ";
+			sql1 = "update articles a,user b SET perfect = 1,score = score + 15 where id = ? and a.userId = b.id";
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, id);
 			ps.executeUpdate();
