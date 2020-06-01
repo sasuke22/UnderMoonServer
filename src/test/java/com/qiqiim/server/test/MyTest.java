@@ -20,15 +20,52 @@ import net.coobird.thumbnailator.Thumbnails;
 
 public class MyTest {
 	public static void main(String[] args) {
-		String encrypt = AESUtil.encrypt("123456");
-		System.out.println("encrypt:"+encrypt);
-		String decrypt = AESUtil.decrypt(encrypt);
-		System.out.println(decrypt);
+		int result = single4Num(new int[]{1,2,1,5,1,1,2,2,2});
+		System.out.println(result);
 	}
 	
 	public static String longestCommonPrefix(String[] strs){
 		StringBuilder same = new StringBuilder();
 		return same.toString();
+	}
+
+	/**
+	 * 数组中只有一个数出现一次，其他出现三次，找出这个数
+	 */
+	public static int singleNum(int[] arr){
+		int ones = 0;//记录只出现过1次的bits
+		int twos = 0;//记录只出现过2次的bits
+		int threes;
+		for(int i = 0; i < arr.length; i++){
+			int t = arr[i];
+			twos |= ones&t;//要在更新ones前面更新twos
+			ones ^= t;
+			threes = ones&twos;//ones和twos中都为1即出现了3次
+			ones &= ~threes;//抹去出现了3次的bits
+			twos &= ~threes;
+		}
+		return ones;
+	}
+
+	/**
+	 * 数组中只有一个数出现一次，其他出现三次，找出这个数
+	 */
+	public static int single4Num(int[] arr){
+		int ones = 0;//记录只出现过1次的bits
+		int twos = 0;//记录只出现过2次的bits
+		int threes = 0;
+		int fours;
+		for(int i = 0; i < arr.length; i++){
+			int t = arr[i];
+			threes |= twos&ones&t;
+			twos |= ones&t;//要在更新ones前面更新twos
+			ones ^= t;
+			fours = ones&twos&threes;//ones和twos中都为1即出现了3次
+			ones &= ~fours;//抹去出现了3次的bits
+			twos &= ~fours;
+			threes &= ~fours;
+		}
+		return ones;
 	}
 	
 	/**

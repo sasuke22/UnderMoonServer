@@ -98,7 +98,7 @@ public class WsServer extends WebSocketServer{
 		// 验证密码和用户名是否存在，若存在则为user对象赋值
 		System.out.println("1:"+user.getAccount());
 		boolean isExisted = UserDao.login(user);
-		if (isExisted == true) {
+		if (isExisted) {
 			System.out.println("2:");
 			ClientActivity newClient = new ClientActivity(conn,this);
 			System.out.println("3:");

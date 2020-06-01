@@ -2,6 +2,7 @@ package com.qiqiim.webserver.user.dao;
 
 import com.qiqiim.constant.CommentDetail;
 import com.qiqiim.constant.SubComment;
+import org.apache.http.util.TextUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -12,6 +13,8 @@ import java.util.List;
 
 public class CommentsDao {
 	public static int addComment(boolean isMeeting,CommentDetail comment){
+		if (TextUtils.isEmpty(comment.commentContent))
+			return -1;
 		String sql0 = "use first_mysql_test";
 		String sql1;
 		if(isMeeting)
@@ -19,13 +22,10 @@ public class CommentsDao {
 		else
 			sql1 = "insert into articleComments (commentid,userid,commentname,commentgender,content) values(?,?,?,?,?)";
 		Connection con = DBPool.getConnection();
+		PreparedStatement ps;
+		int result = 0;
 		try {
 			con.setAutoCommit(false);
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		PreparedStatement ps;
-		try {
 			ps = con.prepareStatement(sql0);
 			ps.execute();
 			ps = con.prepareStatement(sql1,Statement.RETURN_GENERATED_KEYS);
@@ -33,31 +33,17 @@ public class CommentsDao {
 			ps.setInt(2, comment.getUserId());
 			ps.setString(3, comment.getCommentName());
 			ps.setInt(4, comment.getCommentGender());
-			try {
-				ps.setString(5, URLEncoder.encode(comment.getCommentContent(),"utf-8"));
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-				try {
-					con.rollback();
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-				}
-				e.printStackTrace();
-				return -1;
-			}
+			ps.setString(5, URLEncoder.encode(comment.getCommentContent(),"utf-8"));
 			if(isMeeting)
 				ps.setInt(6, comment.isShow() ? 1 : 0);
 			ps.execute();
 			con.commit();
 			
 			ResultSet rs = ps.getGeneratedKeys();
-			int result = 0;
 			if (rs.next()) {
 				result = rs.getInt(1);
 			}
-			DBPool.close(con);
-			return result;
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			System.out.println("正在回滚");
 			try {
 				con.rollback();
@@ -65,8 +51,11 @@ public class CommentsDao {
 				e1.printStackTrace();
 			}
 			e.printStackTrace();
-			return -1;
+			result = -1;
+		} finally {
+			DBPool.close(con);
 		}
+		return result;
 	}
 	
 	public static ArrayList<CommentDetail> selectCommentsByCount(boolean isMeeting,int id,int count){

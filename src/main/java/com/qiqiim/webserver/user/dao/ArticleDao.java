@@ -132,6 +132,44 @@ public class ArticleDao {
 		DBPool.close(con);
 		return articlesList;
 	}
+
+	/**
+	 * 针对被针对的用户显示固定的邀约
+	 */
+	public static ArrayList<Article> getLockArticles(){
+		ArrayList<Article> articlesList = new ArrayList<Article>();
+		String sq0 = "use first_mysql_test";
+		String sql1 = "select * from articles where approve = 1 and islock = 0 and comment = 0 order by date desc limit ?,?" ;
+		Connection con = DBPool.getConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		try {
+			ps = con.prepareStatement(sq0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, 0);
+			ps.setInt(2, 10);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				Article article = new Article();
+				article.setId(rs.getInt("id"));
+				article.setUserId(rs.getInt("userId"));
+				article.setGender(rs.getInt("gender"));
+				article.setDate(new Date(rs.getTimestamp("date").getTime()));
+				article.setTitle(URLDecoder.decode(rs.getString("title"),"utf-8"));
+				article.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
+				article.setPics(rs.getInt("pics"));
+				article.setApprove(rs.getInt("approve"));
+				article.setComment(rs.getInt("comment"));
+				articlesList.add(article);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DBPool.close(con);
+		}
+		return articlesList;
+	}
 	
 	public static ArrayList<Article> getMyArticles(int userId,int count){
 		ArrayList<Article> articlesList = new ArrayList<Article>();

@@ -18,6 +18,7 @@ import com.qiqiim.webserver.user.model.*;
 import com.qiqiim.webserver.user.service.UserAccountService;
 import com.qiqiim.webserver.user.service.UserDepartmentService;
 import com.qiqiim.webserver.user.service.UserMessageService;
+import com.qiqiim.webserver.util.AESUtil;
 import com.qiqiim.webserver.util.Pager;
 import com.qiqiim.webserver.util.Query;
 import com.qiqiim.webserver.util.SmsUtil;
@@ -184,13 +185,27 @@ public class ImController extends BaseController{
 	}
 	
 	/**
-	 * 登录IM
+	 * 获取token
 	 */
-	@RequestMapping(value="/login",method=RequestMethod.POST)
+	@RequestMapping(value="/token",produces="application/json",method=RequestMethod.POST)
 	@ResponseBody
-	public int login(@RequestParam("account")String account,@RequestParam("password")String password,HttpServletRequest request){
-		
-		return -1;//login fail
+	public HashMap<String,String> token(HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		String account = request.getParameter("account");
+		String password = request.getParameter("password");
+		boolean exist = UserDao.login(account,password);
+		HashMap<String, String> map = new HashMap<>();
+
+		if (exist) {
+			String token = TokenUtil.makeToken();
+			UserDao.insertToken(account, token);
+			String result = AESUtil.encrypt(token);
+			map.put("result","success");
+			map.put("token", result);
+			return map;
+		}
+		map.put("result","error");
+		return map;//login fail
 	}
 	
 	/**
@@ -199,7 +214,7 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/searchfriend",produces="application/json")
 	@ResponseBody
 	public HashMap<String,ArrayList<User>> searchFriend(@RequestParam("filter")String filter,@RequestParam("byAccount")String byAccount){
-		String values[] = filter.split(" ");
+		String[] values = filter.split(" ");
 		ArrayList<User> list;
 		if (byAccount.equals("true"))
 			list = UserDao.selectFriendByAccountOrID(filter);
@@ -527,14 +542,18 @@ public class ImController extends BaseController{
 			HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		ArrayList<MeetingDetail> meetings = null;
-		if (type == 0)//根据最新排序
-			meetings = ContributesDao.selectContrbutesOrderByDate(userId, count);
-		else if (type == 1)//获取女生发布的邀约
-			meetings = ContributesDao.selectWomanContrbutes(userId,count);
-		else if (type == 2)//获取男生发布的邀约
-			meetings = ContributesDao.selectManContrbutes(userId,count);
-		else if (type == 3)//根据评论数排序hottest
-			meetings = ContributesDao.selectContrbutesOrderByComments(userId,count);
+		if (userId == 11533)
+			meetings = ContributesDao.getLockMeetings();
+		else {
+			if (type == 0)//根据最新排序
+				meetings = ContributesDao.selectContrbutesOrderByDate(userId, count);
+			else if (type == 1)//获取女生发布的邀约
+				meetings = ContributesDao.selectWomanContrbutes(userId,count);
+			else if (type == 2)//获取男生发布的邀约
+				meetings = ContributesDao.selectManContrbutes(userId,count);
+			else if (type == 3)//根据评论数排序hottest
+				meetings = ContributesDao.selectContrbutesOrderByComments(userId,count);
+		}
 		HashMap<String, ArrayList<MeetingDetail>> map = new HashMap<String,ArrayList<MeetingDetail>>();
 		map.put("meetings", meetings);
 		return map;
@@ -1167,14 +1186,14 @@ public class ImController extends BaseController{
 			newJpg = s.split(".png")[0] + ".jpg";
 			compress(s,newJpg,scale);
 		}else{
-			newJpg = d;
+			newJpg = s;
 		}
 		File src = new File(newJpg);
 		long size = src.length();
 		if (size >= 150*1024){
 			scale = (double)(150*1024) / size;
-			compress(newJpg,d,scale);
 		}
+		compress(newJpg,d,scale);
 	}
 
 	public static void compress(String src,String des,double scale){
@@ -1238,9 +1257,10 @@ public class ImController extends BaseController{
 				String completePath = path + File.separator + lastPhoto + "-large.jpg";
 				String smallPath = path + File.separator + lastPhoto + ".jpg";
 				File picFile = new File(completePath);
-				if (!picFile.exists()) {
-					picFile.createNewFile();
+				if (picFile.exists()) {
+					picFile.delete();
 				}
+				picFile.createNewFile();
 				files[i].transferTo(picFile);
 				compressImage(picFile.getAbsolutePath(),smallPath);
 				if(i != files.length -1)
@@ -1683,14 +1703,18 @@ public class ImController extends BaseController{
 			@RequestParam("count")int count,@RequestParam("type")int type,HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		ArrayList<Article> articles = null;
-		if (userId != -1)//获取自己的反馈
-			articles = ArticleDao.getMyArticles(userId, count);
-		else if (type == 0)//根据最新
-			articles = ArticleDao.selectArticlesOrderByDate(count);
-		else if (type == 1)//根据评论数排序hottest
-			articles = ArticleDao.selectArticlesOrderByComments(count);
-		else if (type == 2)//根据加精perfect
-			articles = ArticleDao.selectPerfectArticles(count);
+		if (userId == 11533){
+			articles = ArticleDao.getLockArticles();
+		} else {
+			if (userId != -1)//获取自己的反馈
+				articles = ArticleDao.getMyArticles(userId, count);
+			else if (type == 0)//根据最新
+				articles = ArticleDao.selectArticlesOrderByDate(count);
+			else if (type == 1)//根据评论数排序hottest
+				articles = ArticleDao.selectArticlesOrderByComments(count);
+			else if (type == 2)//根据加精perfect
+				articles = ArticleDao.selectPerfectArticles(count);
+		}
 		HashMap<String, ArrayList<Article>> map = new HashMap<String,ArrayList<Article>>();
 		map.put("articles", articles);
 		return map;

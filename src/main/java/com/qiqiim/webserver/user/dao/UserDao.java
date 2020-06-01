@@ -105,6 +105,32 @@ public class UserDao {
 	/**
 	 * 进行登录的验证
 	 */
+	public static boolean login(String account, String password) {
+		boolean isExisted = false;
+		String sql0 = "use first_mysql_test";
+		String sql1 = "select * from user where account=? and password=? limit 1";
+		Connection con = DBPool.getConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		try {
+			ps = con.prepareStatement(sql0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setString(1, account);
+			ps.setString(2, password);
+			rs = ps.executeQuery();
+			return rs.first();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			DBPool.close(con);
+		}
+		return isExisted;
+	}
+
+	/**
+	 * 进行登录的验证
+	 */
 	public static boolean login(User user) {
 		boolean isExisted = false;
 		String sql0 = "use first_mysql_test";
@@ -410,12 +436,12 @@ public class UserDao {
 		if (registArray != null) {
 			StringBuilder builder = new StringBuilder();
 			for(String id : registArray){
-				if(Integer.valueOf(id) != meetingId){
+				if(Integer.parseInt(id) != meetingId){
 					builder.append(id).append("|");
 				}
 			}
 			String sql0 = "use first_mysql_test";
-			String sql1 = "update user set commentDate = CURDATE(),registId= ? where id =?";
+			String sql1 = "update user set registId= ? where id =?";
 			Connection con = DBPool.getConnection();
 			try {
 				con.setAutoCommit(false);
@@ -467,13 +493,9 @@ public class UserDao {
 				if(id != null){
 					String[] idArray = id.split("\\|");
 					for (String string : idArray) {
-						System.out.println("meetingId:"+string);
-						if (!string.equalsIgnoreCase("\\|")) {
-							if (string.equals(String.valueOf(userId))) {
-								continue;
-							}else
-								registArray.add(string);
-						}
+						//如果不是分割线就加到报名列表
+						if (!string.equalsIgnoreCase("\\|"))
+							registArray.add(string);
 					}
 				} else 
 					return null;
@@ -716,20 +738,17 @@ public class UserDao {
 	
 	public static int updatePassword(int id,String password){
 		String sql0 = "use first_mysql_test";
-		String sql1 = "update user SET password = " + password + " where id = ?";
+		String sql1 = "update user SET password = ? where id = ?";
 		Connection con = DBPool.getConnection();
 		int res = 0;
-		try {
-			con.setAutoCommit(false);
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
 		PreparedStatement ps;
 		try{
+			con.setAutoCommit(false);
 			ps = con.prepareStatement(sql0);
 			ps.execute();
 			ps = con.prepareStatement(sql1);
-			ps.setInt(1, id);
+			ps.setString(1,password);
+			ps.setInt(2, id);
 			System.out.println(ps);
 			ps.executeUpdate();
 			con.commit();
@@ -1099,6 +1118,33 @@ public class UserDao {
 			}
 			e.printStackTrace();
 			return -1;
+		}finally{
+			DBPool.close(con);
+		}
+	}
+
+	public static void insertToken(String account, String token) {
+		String sql0 = "use first_mysql_test";
+		String sql1 = "update user set token = ? where account = ?";
+		Connection con = DBPool.getConnection();
+		try {
+			con.setAutoCommit(false);
+			PreparedStatement ps;
+			ps = con.prepareStatement(sql0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setString(1, token);
+			ps.setString(2, account);
+			ps.execute();
+			con.commit();
+		} catch (SQLException e) {
+			try {
+				System.out.println("插入数据库异常，正在进行回滚..");
+				con.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
 		}finally{
 			DBPool.close(con);
 		}

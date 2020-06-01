@@ -93,6 +93,49 @@ public class ContributesDao {
 		return contributesList;
 	}
 
+	/**
+	 * 针对被针对注册账号显示假数据
+	 */
+	public static ArrayList<MeetingDetail> getLockMeetings(){
+		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
+		String sq0 = "use first_mysql_test";
+		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from meetings a,user b " +
+				"where approve = 1 and a.id = b.id and a.islock = 0 and commentcount = 0 order by top desc,date desc limit ?,?" ;
+		Connection con = DBPool.getConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		try {
+			ps = con.prepareStatement(sq0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, 0);
+			ps.setInt(2, 10);
+			System.out.println(ps.toString());
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				MeetingDetail meetingDetail = new MeetingDetail();
+				meetingDetail.setMeetingId(rs.getInt("meetingId"));
+				meetingDetail.setId(rs.getInt("id"));
+				meetingDetail.setCity(rs.getString("city"));
+				meetingDetail.setSummary(URLDecoder.decode(rs.getString("summary"),"utf-8"));
+				meetingDetail.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
+				meetingDetail.setDate(new Date(rs.getTimestamp("date").getTime()));
+				meetingDetail.setCommentCount(rs.getInt("commentcount"));
+				meetingDetail.setGender(rs.getInt("gender"));
+				meetingDetail.setApprove(rs.getInt("approve"));
+				meetingDetail.setTop(rs.getInt("top"));
+				meetingDetail.setVip(rs.getInt("vip") > 0);
+				meetingDetail.setBigVip(rs.getInt("bigVip") > 0);
+				contributesList.add(meetingDetail);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			DBPool.close(con);
+		}
+		return contributesList;
+	}
+
 	public static ArrayList<MeetingDetail> selectWomanContrbutes(int userId,
 			int count) {
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
