@@ -1149,4 +1149,28 @@ public class UserDao {
 			DBPool.close(con);
 		}
 	}
+
+	public static boolean checkToken(int id, String token) {
+		String sql1;
+		ResultSet rs;
+		Connection con = DBPool.getConnection();
+		boolean isBlack = false;
+		try {
+			con.setAutoCommit(false);
+			PreparedStatement ps;
+			sql1 = "select EXISTS (select * from user where id = ? and token = ? limit 1) exist";
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, id);
+			ps.setString(2, token);
+			rs = ps.executeQuery();
+			if (rs.first())
+				isBlack = rs.getInt("exist") > 0;
+		}catch (SQLException e) {
+			e.printStackTrace();
+			isBlack = false;
+		}finally{
+			DBPool.close(con);
+		}
+		return isBlack;
+	}
 }

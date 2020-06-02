@@ -1067,21 +1067,37 @@ public class ImController extends BaseController{
 	 */
 	@RequestMapping(value = "/sendmsg",produces="application/json",method = RequestMethod.POST)
 	@ResponseBody
-	public int sendMsg(HttpServletRequest request,HttpServletResponse response){
+	public HashMap<String, Object> sendMsg(HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
+		String token = req.getHeader("token");
 		ChatEntity chat = JSONObject.parseObject(req.getParameter("msg"), ChatEntity.class);
+		boolean tokenValid = checkToken(chat.getUserId(), token);
+		HashMap<String, Object> map = new HashMap<>();
+		if (!tokenValid) {
+			map.put("result", "fail");
+			return map;
+		}
 		int result = CountDao.addTalkCount(chat.getUserId(), chat.getAnotherId());
-		if (result == 2)
-			return result;
+		map.put("result", "success");
+		if (result == 2) {//到达10次限制
+			map.put("body", result);
+			return map;
+		}
 		boolean isBlack = UserDao.isBlack(chat.getUserId(), chat.getAnotherId());
 		if(isBlack){
-			return -1;
+			map.put("body",-1);
+			return map;
 		} else
 			NewMsgListDao.insertMessage(chat);
-		return 1;
+		map.put("body", 1);
+		return map;
 	}
-	
+
+	private boolean checkToken(int id, String token) {
+		return UserDao.checkToken(id, token);
+	}
+
 	/**
 	 * for flutter,检查是否有过注册
 	 */
