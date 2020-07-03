@@ -2,6 +2,7 @@ package com.qiqiim.webserver.user.dao;
 
 import com.qiqiim.constant.User;
 import com.qiqiim.webserver.util.AESUtil;
+import org.apache.http.util.TextUtils;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -494,7 +495,7 @@ public class UserDao {
 					String[] idArray = id.split("\\|");
 					for (String string : idArray) {
 						//如果不是分割线就加到报名列表
-						if (!string.equalsIgnoreCase("\\|"))
+						if (!TextUtils.isEmpty(string) && !string.equalsIgnoreCase("\\|"))
 							registArray.add(string);
 					}
 				} else 
@@ -736,9 +737,9 @@ public class UserDao {
 		return res;
 	}
 	
-	public static int updatePassword(int id,String password){
+	public static int updatePassword(String account,String password){
 		String sql0 = "use first_mysql_test";
-		String sql1 = "update user SET password = ? where id = ?";
+		String sql1 = "update user SET password = ? where account = ?";
 		Connection con = DBPool.getConnection();
 		int res = 0;
 		PreparedStatement ps;
@@ -748,7 +749,7 @@ public class UserDao {
 			ps.execute();
 			ps = con.prepareStatement(sql1);
 			ps.setString(1,password);
-			ps.setInt(2, id);
+			ps.setString(2, account);
 			System.out.println(ps);
 			ps.executeUpdate();
 			con.commit();

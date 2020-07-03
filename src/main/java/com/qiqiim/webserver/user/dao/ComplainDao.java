@@ -78,7 +78,6 @@ public class ComplainDao {
 			try {
 				con.rollback();
 			} catch (SQLException e1) {
-				DBPool.close(con);
 				e1.printStackTrace();
 			}
 			e.printStackTrace();

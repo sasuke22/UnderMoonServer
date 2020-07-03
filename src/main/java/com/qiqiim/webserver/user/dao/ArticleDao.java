@@ -383,7 +383,7 @@ public class ArticleDao {
 		try{
 			PreparedStatement ps;
 			if(article.getApprove() == 1){
-				sql1 = "update articles SET approve = 1, title = ?,content = ? where id = ?";
+				sql1 = "update articles a,user b SET a.approve = 1, a.title = ?,a.content = ?,b.score = b.score + 10 where a.id = ? and a.userId = b.id and a.approve = 0";
 				ps = con.prepareStatement(sql1);
 				ps.setString(1, URLEncoder.encode(article.getTitle(),"utf-8"));
 				ps.setString(2, URLEncoder.encode(article.getContent(),"utf-8"));
@@ -409,14 +409,10 @@ public class ArticleDao {
 	public static int changeArticlePerfect(int id) {
 		String sql1;
 		Connection con = DBPool.getConnection();
-		try {
-			con.setAutoCommit(false);
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
 		try{
+			con.setAutoCommit(false);
 			PreparedStatement ps;
-			sql1 = "update articles a,user b SET perfect = 1,score = score + 15 where id = ? and a.userId = b.id";
+			sql1 = "update articles a,user b SET perfect = 1,score = score + 15 where a.id = ? and a.userId = b.id and a.perfect = 0";
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, id);
 			ps.executeUpdate();

@@ -1066,10 +1066,11 @@ public class ImController extends BaseController{
 	 */
 	@RequestMapping(value = "/sendmsg",produces="application/json",method = RequestMethod.POST)
 	@ResponseBody
-	public HashMap<String, Object> sendMsg(HttpServletRequest request,HttpServletResponse response){
+	public Map<String, Object> sendMsg(HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		String token = req.getHeader("token");
+		System.out.println("header token:" + token);
 		ChatEntity chat = JSONObject.parseObject(req.getParameter("msg"), ChatEntity.class);
 		boolean tokenValid = checkToken(chat.getUserId(), token);
 		HashMap<String, Object> map = new HashMap<>();
@@ -1082,15 +1083,18 @@ public class ImController extends BaseController{
 		if (result == 2) {//到达10次限制
 			map.put("body", result);
 			return map;
+//			return 2;
 		}
 		boolean isBlack = UserDao.isBlack(chat.getUserId(), chat.getAnotherId());
 		if(isBlack){
 			map.put("body",-1);
 			return map;
+//			return -1;
 		} else
 			NewMsgListDao.insertMessage(chat);
 		map.put("body", 1);
 		return map;
+//		return result;
 	}
 
 	private boolean checkToken(int id, String token) {
@@ -1224,10 +1228,10 @@ public class ImController extends BaseController{
 	 */
 	@RequestMapping(value="/changepassword",produces="application/json",method = RequestMethod.POST)
 	@ResponseBody
-	public int changePassword(@RequestParam("userId") int userId,@RequestParam("password") String password,
+	public int changePassword(@RequestParam("account") String account,@RequestParam("password") String password,
 			HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		return UserDao.updatePassword(userId,password);
+		return UserDao.updatePassword(account,password);
 	}
 	
 	/**
@@ -1610,24 +1614,34 @@ public class ImController extends BaseController{
 		Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 		Complain complain = gson.fromJson(req.getParameter("complain"), Complain.class);
 		int complainId = ComplainDao.addComplain(complain, files.length);
+		System.out.println("1");
 		if (complainId != -1) {
+			System.out.println("2");
 			if (files.length > 0) {
+				System.out.println("3");
 				MultipartFile file;
 				for (int i = 0;i < files.length;i++) {
+					System.out.println("4");
 					file = files[i];
 					if (!file.isEmpty()) {
+						System.out.println("5");
 						String path = "D:\\images" + File.separator + "complain" + File.separator + complainId;
+						System.out.println("6: " + path);
 						File parent = new File(path);
 						if (!parent.exists()) {
-							parent.mkdirs();
+							boolean result = parent.mkdirs();
+							System.out.println("7: " + result);
 						}
 						String completePath = path + File.separator + i + ".jpg";
+						System.out.println("8: " + completePath);
 						File pic = new File(completePath);
 						try {
 							if (!pic.exists()) {
-								pic.createNewFile();
+								boolean result = pic.createNewFile();
+								System.out.println("9: " + result);
 							}
 							file.transferTo(pic);
+							System.out.println("10");
 						} catch (IOException e) {
 							e.printStackTrace();
 						}

@@ -1,12 +1,15 @@
 package com.qiqiim.webserver.util;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import java.security.Security;
 
 public class AESUtil{
 	/*   算法/模式/填充 */
-    private static final String CipherMode = "AES/ECB/PKCS5Padding";
-    private static final String PASSWORD = "sasuke";
+    private static final String CipherMode = "AES/ECB/PKCS7Padding";
+    private static final String PASSWORD = "sasukesakurahaha";
 
     /*  创建密钥  */
     private static SecretKeySpec createKey(String password) {
@@ -14,13 +17,13 @@ public class AESUtil{
         if (password == null) {
             password = "";
         }
-        StringBuffer sb = new StringBuffer(32);
+        StringBuffer sb = new StringBuffer(16);
         sb.append(password);
-        while (sb.length() < 32) {
+        while (sb.length() < 16) {
             sb.append("0");
         }
-        if (sb.length() > 32) {
-            sb.setLength(32);
+        if (sb.length() > 16) {
+            sb.setLength(16);
         }
 
         try {
@@ -35,6 +38,7 @@ public class AESUtil{
     public static byte[] encrypt(byte[] content) {
         try {
         	SecretKeySpec key = createKey(PASSWORD);
+            Security.addProvider(new BouncyCastleProvider());
             Cipher cipher = Cipher.getInstance(CipherMode);
             cipher.init(Cipher.ENCRYPT_MODE, key);
             return cipher.doFinal(content);

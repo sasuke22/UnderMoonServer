@@ -2,11 +2,7 @@ package com.qiqiim.server.test.Test28;
 
 public class Test8 {
     public static void main(String[] args){
-        int[] arr = {5,2,7,1,4,6};
-        quickSort(arr,0,arr.length-1);
-        for (int i : arr) {
-            System.out.println(i);
-        }
+
     }
 
     private static void quickSort(int[] arr,int low,int high){
