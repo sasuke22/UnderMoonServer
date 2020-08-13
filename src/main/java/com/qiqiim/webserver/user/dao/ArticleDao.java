@@ -12,10 +12,11 @@ import java.util.ArrayList;
 
 import com.qiqiim.constant.Article;
 import com.qiqiim.constant.MeetingDetail;
+import com.qiqiim.constant.TempArticle;
 
 
 public class ArticleDao {
-	public static int addArticle(Article article,int pics){
+	public static int addArticle(TempArticle article, int pics){
 		int res = 0;
 		String sql0 = "use first_mysql_test";
 		String sql1= "insert into articles (userId,gender,title,content,pics,approve,perfect) " +
@@ -175,7 +176,7 @@ public class ArticleDao {
 		ArrayList<Article> articlesList = new ArrayList<Article>();
 		String sq0 = "use first_mysql_test";
 		String sql1 = "select * from articles " +
-			      "where userId = ? order by date desc limit ?,?" ;
+			      "where islock = 0 and userId = ? order by date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
@@ -338,8 +339,7 @@ public class ArticleDao {
 	public static ArrayList<Article> selectAllArticlesByOldCount(int count){
 		ArrayList<Article> articlesList = new ArrayList<Article>();
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select * " +
-			      "from articles " +
+		String sql1 = "select * from articles where approve > -1 " +
 			      "order by approve asc,date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;

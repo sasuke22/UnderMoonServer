@@ -1525,7 +1525,7 @@ public class ImController extends BaseController{
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 		System.out.println(req.getParameter("article"));
-		Article article = gson.fromJson(req.getParameter("article"), Article.class);
+		TempArticle article = gson.fromJson(req.getParameter("article"), TempArticle.class);
 		int articleId = ArticleDao.addArticle(article, files.length);
 		if (articleId != -1) {
 			System.out.println("have files " + files.length);
@@ -1568,7 +1568,7 @@ public class ImController extends BaseController{
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 		System.out.println(req.getParameter("article").toString());
-		Article article = gson.fromJson(req.getParameter("article"), Article.class);
+		TempArticle article = gson.fromJson(req.getParameter("article"), TempArticle.class);
 		int articleId = ArticleDao.addArticle(article, files.length);
 		if (articleId != -1) {
 			System.out.println("have files " + files.length);
