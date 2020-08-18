@@ -1676,34 +1676,24 @@ public class ImController extends BaseController{
 		Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 		Complain complain = gson.fromJson(req.getParameter("complain"), Complain.class);
 		int complainId = ComplainDao.addComplain(complain, files.length);
-		System.out.println("1");
 		if (complainId != -1) {
-			System.out.println("2");
 			if (files.length > 0) {
-				System.out.println("3");
 				MultipartFile file;
 				for (int i = 0;i < files.length;i++) {
-					System.out.println("4");
 					file = files[i];
 					if (!file.isEmpty()) {
-						System.out.println("5");
 						String path = "D:\\images" + File.separator + "complain" + File.separator + complainId;
-						System.out.println("6: " + path);
 						File parent = new File(path);
 						if (!parent.exists()) {
-							boolean result = parent.mkdirs();
-							System.out.println("7: " + result);
+							parent.mkdirs();
 						}
 						String completePath = path + File.separator + i + ".jpg";
-						System.out.println("8: " + completePath);
 						File pic = new File(completePath);
 						try {
 							if (!pic.exists()) {
-								boolean result = pic.createNewFile();
-								System.out.println("9: " + result);
+								pic.createNewFile();
 							}
 							file.transferTo(pic);
-							System.out.println("10");
 						} catch (IOException e) {
 							e.printStackTrace();
 						}

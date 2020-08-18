@@ -85,7 +85,7 @@ public class ArticleDao {
 				article.setGender(rs.getInt("gender"));
 				article.setDate(new Date(rs.getTimestamp("date").getTime()));
 				article.setTitle(URLDecoder.decode(rs.getString("title"),"utf-8"));
-				article.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
+				article.setContent("请更换新版本后查看反馈详情");
 				article.setPics(rs.getInt("pics"));
 				article.setApprove(rs.getInt("approve"));
 				article.setComment(rs.getInt("comment"));
@@ -98,7 +98,7 @@ public class ArticleDao {
 		}
 		return articlesList;
 	}
-	
+
 	public static ArrayList<Article> selectArticlesOrderByDate(int count){
 		ArrayList<Article> articlesList = new ArrayList<Article>();
 		String sq0 = "use first_mysql_test";

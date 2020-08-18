@@ -385,7 +385,7 @@ public class ContributesDao {
 
 	public static ArrayList<MeetingDetail> getMyEnlistMeetings(ArrayList<String> enlist,int count) {
 		if (enlist == null || enlist.size() <= 0) {
-			return new ArrayList<MeetingDetail>();
+			return new ArrayList<>();
 		}
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
 		StringBuilder idBuilder = new StringBuilder();
@@ -424,7 +424,7 @@ public class ContributesDao {
 				contributesList.add(meetingDetail);
 			}
 		} catch (Exception e) {
-			System.out.println("get myenilst " + e.getMessage().toString());
+			System.out.println("get myenilst " + e.getMessage());
 		}finally{
 			DBPool.close(con);
 		}
@@ -463,7 +463,7 @@ public class ContributesDao {
 				contributesList.add(meetingDetail);
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage().toString());
+			System.out.println(e.getMessage());
 			
 		}finally{
 			DBPool.close(con);
