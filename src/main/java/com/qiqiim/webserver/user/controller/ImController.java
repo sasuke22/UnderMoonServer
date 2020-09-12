@@ -37,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -487,6 +488,47 @@ public class ImController extends BaseController{
 				}
 			}
 			return restScore;
+		}
+		return -1;
+	}
+
+	/**
+	 * for web,服务器修改邀约状态
+	 */
+	@RequestMapping(value = "/changemeeting",method = RequestMethod.POST)
+	@ResponseBody
+	public int changeMeeting(@RequestParam("file") MultipartFile[] files,HttpServletRequest request,HttpServletResponse response
+			,ModelMap model){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
+		Gson gson = new Gson();
+		MeetingDetail meetingDetail = gson.fromJson(req.getParameter("meetingDetail"), MeetingDetail.class);
+		int result = ContributesDao.updateContribute(meetingDetail,files.length);
+		if (result != -1) {
+			if (files.length > 0) {
+				MultipartFile file;
+				String path = "D:\\images" + File.separator + "meeting" + File.separator + meetingDetail.meetingId;
+				File parent = new File(path);
+				if (!parent.exists()) {
+					parent.mkdirs();
+				}
+				for (int i = 0;i < files.length;i++) {
+					file = files[i];
+					if (!file.isEmpty()) {
+						String completePath = path + File.separator + i + ".jpg";
+						File pic = new File(completePath);
+						try {
+							if (!pic.exists()) {
+								pic.createNewFile();
+							}
+							file.transferTo(pic);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			return result;
 		}
 		return -1;
 	}

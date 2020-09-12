@@ -308,6 +308,42 @@ public class ContributesDao {
 			return -1;
 		}
 	}
+
+	public static int updateContribute(MeetingDetail meetingDetail,int pics){
+		String sql0 = "use first_mysql_test";
+		String sql1= "update meetings set summary = ?,content = ?,photos = ? where meetingid = ?";
+		Connection con = DBPool.getConnection();
+		try {
+			con.setAutoCommit(false);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		PreparedStatement ps;
+		try {
+			ps = con.prepareStatement(sql0);
+			ps.execute();
+			ps = con.prepareStatement(sql1,Statement.RETURN_GENERATED_KEYS);
+			ps.setString(1, URLEncoder.encode(meetingDetail.summary,"utf-8"));
+			ps.setString(2, URLEncoder.encode(meetingDetail.content,"utf-8"));
+			ps.setInt(3, pics);
+			ps.setInt(4, meetingDetail.meetingId);
+			ps.execute();
+			con.commit();
+			DBPool.close(con);
+			return 1;
+		} catch (Exception e) {
+			System.out.println("正在回滚");
+			try {
+				con.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+				DBPool.close(con);
+			}
+			e.printStackTrace();
+			DBPool.close(con);
+			return -1;
+		}
+	}
 	
 	public static ArrayList<MeetingDetail> getMyContributes(int userId,int count){
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
