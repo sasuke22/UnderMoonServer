@@ -1260,26 +1260,23 @@ public class ImController extends BaseController{
 		return result;
 	}
 
+	/**
+	 * 压缩图片
+	 * @param s 大图路径
+	 * @param d 小图路径
+	 */
 	public static void compressImage(String s,String d){
-		String newJpg;
-		double scale = 1.0;
-		if(s.endsWith(".png")){
-			newJpg = s.split(".png")[0] + ".jpg";
-			compress(s,newJpg,scale);
-		}else{
-			newJpg = s;
-		}
-		File src = new File(newJpg);
+		File src = new File(s);
 		long size = src.length();
-		if (size >= 150*1024){
-			scale = (double)(150*1024) / size;
+		if (size < 50*1024){
+			return;
 		}
-		compress(newJpg,d,scale);
+		compress(s,d);
 	}
 
-	public static void compress(String src,String des,double scale){
+	public static void compress(String src,String des){
 		try {
-			Thumbnails.of(src).scale(scale).toFile(des);
+			Thumbnails.of(src).size(480,640).outputQuality(1f).outputFormat("jpg").toFile(des);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
