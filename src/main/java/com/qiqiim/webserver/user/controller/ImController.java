@@ -466,6 +466,7 @@ public class ImController extends BaseController{
 			System.out.println("have files " + files.length);
 			if (files.length > 0) {
 				MultipartFile file;
+				boolean hasRecord = false;
 				for (int i = 0;i < files.length;i++) {
 					file = files[i];
 					if (!file.isEmpty()) {
@@ -474,15 +475,34 @@ public class ImController extends BaseController{
 						if (!parent.exists()) {
 							parent.mkdirs();
 						}
-						String completePath = path + File.separator + i + ".jpg";
-						File pic = new File(completePath);
-						try {
-							if (!pic.exists()) {
-								pic.createNewFile();
+						if (file.getName().endsWith(".aac")){
+							hasRecord = true;
+							String smallPath = path + File.separator + "record.aac";
+							File pic = new File(smallPath);
+							try {
+								if (!pic.exists()) {
+									pic.createNewFile();
+								}
+								file.transferTo(pic);
+							} catch (IOException e) {
+								e.printStackTrace();
 							}
-							file.transferTo(pic);
-						} catch (IOException e) {
-							e.printStackTrace();
+						} else {
+							int count = i;
+							if (hasRecord)
+								count = i - 1;
+							String completePath = path + File.separator + count + "-large.jpg";
+							String smallPath = path + File.separator + count + ".jpg";
+							File pic = new File(completePath);
+							try {
+								if (!pic.exists()) {
+									pic.createNewFile();
+								}
+								file.transferTo(pic);
+								compressImage(pic.getAbsolutePath(), smallPath);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 						}
 					}
 				}

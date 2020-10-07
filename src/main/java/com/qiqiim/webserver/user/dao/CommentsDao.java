@@ -63,6 +63,7 @@ public class CommentsDao {
 		String sq0 = "use first_mysql_test";
 		String sql1;
 		String sql2;
+		// TODO 这里只显示3个子评论，导致app那边认为只有三个子评论，不显示点击查看更多评论
 		if(isMeeting){
 			sql1 = "select id from meetings where meetingid = " + id + " limit 1";
 			sql2 = "select * from meeting_three_sub_comments as c right join (select a.*,b.vip > now() as vip,b.bigVip > now() as bigVip,a.userid = ? as self from meetingcomments as a,user as b where a.commentid = ? and a.userid = b.id order by self desc,bigVip desc,vip desc,date desc limit ?,20) as d on c.floorid = d.id";
