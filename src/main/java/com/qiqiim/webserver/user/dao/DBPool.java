@@ -47,6 +47,7 @@ public class DBPool {
 	}
 
 	public static void close(Connection con) {
+		if (con == null) return;
 		try {
 			con.close();
 		} catch (SQLException e) {

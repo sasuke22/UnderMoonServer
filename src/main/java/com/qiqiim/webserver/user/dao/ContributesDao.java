@@ -249,6 +249,7 @@ public class ContributesDao {
 				meetingDetail.setTop(rs.getInt("top"));
 				meetingDetail.setVip(rs.getInt("vip") > 0);
 				meetingDetail.setBigVip(rs.getInt("bigVip") > 0);
+				meetingDetail.setDuration(rs.getInt("audio"));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -261,9 +262,8 @@ public class ContributesDao {
 	
 	public static int addContribute(MeetingDetail meetingDetail,int pics){
 		String sql0 = "use first_mysql_test";
-		String sql1= "insert into meetings(id,city,summary,age,marry,height,"
-				+ "job,xingzuo,content,photos,gender) " +
-				"values(?,?,?,?,?,?,?,?,?,?,?)";
+		String sql1= "insert into meetings(id,city,summary,age,marry,height,job,xingzuo,content,photos,gender,audio) " +
+				"values(?,?,?,?,?,?,?,?,?,?,?,?)";
 		Connection con = DBPool.getConnection();
 		try {
 			con.setAutoCommit(false);
@@ -286,6 +286,7 @@ public class ContributesDao {
 			ps.setString(9, URLEncoder.encode(meetingDetail.content,"utf-8"));
 			ps.setInt(10, pics);
 			ps.setInt(11, meetingDetail.gender);
+			ps.setInt(12,meetingDetail.duration);
 			ps.execute();
 			con.commit();
 			ResultSet rs = ps.getGeneratedKeys();

@@ -30,6 +30,7 @@ public class MeetingDetail implements Serializable{
     public int top;
     public boolean isVip;
     public boolean bigVip;
+    public int duration;//录音时长
     
     public int getTop() {
 		return top;
@@ -206,6 +207,12 @@ public class MeetingDetail implements Serializable{
 	public void setBigVip(boolean bigVip) {
 		this.bigVip = bigVip;
 	}
-    
-	
+
+	public int getDuration() {
+		return duration;
+	}
+
+	public void setDuration(int duration) {
+		this.duration = duration;
+	}
 }

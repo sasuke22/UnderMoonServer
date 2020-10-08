@@ -85,7 +85,7 @@ public class ArticleDao {
 				article.setGender(rs.getInt("gender"));
 				article.setDate(new Date(rs.getTimestamp("date").getTime()));
 				article.setTitle(URLDecoder.decode(rs.getString("title"),"utf-8"));
-				article.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
+				article.setContent("");
 				article.setPics(rs.getInt("pics"));
 				article.setApprove(rs.getInt("approve"));
 				article.setComment(rs.getInt("comment"));
@@ -121,7 +121,7 @@ public class ArticleDao {
 				article.setGender(rs.getInt("gender"));
 				article.setDate(new Date(rs.getTimestamp("date").getTime()));
 				article.setTitle(URLDecoder.decode(rs.getString("title"),"utf-8"));
-				article.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
+				article.setContent("");
 				article.setPics(rs.getInt("pics"));
 				article.setApprove(rs.getInt("approve"));
 				article.setComment(rs.getInt("comment"));
@@ -158,7 +158,7 @@ public class ArticleDao {
 				article.setGender(rs.getInt("gender"));
 				article.setDate(new Date(rs.getTimestamp("date").getTime()));
 				article.setTitle(URLDecoder.decode(rs.getString("title"),"utf-8"));
-				article.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
+				article.setContent("");
 				article.setPics(rs.getInt("pics"));
 				article.setApprove(rs.getInt("approve"));
 				article.setComment(rs.getInt("comment"));
@@ -195,7 +195,7 @@ public class ArticleDao {
 				article.setGender(rs.getInt("gender"));
 				article.setDate(new Date(rs.getTimestamp("date").getTime()));
 				article.setTitle(URLDecoder.decode(rs.getString("title"),"utf-8"));
-				article.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
+				article.setContent("");
 				article.setPics(rs.getInt("pics"));
 				article.setApprove(rs.getInt("approve"));
 				article.setComment(rs.getInt("comment"));
@@ -231,7 +231,7 @@ public class ArticleDao {
 				article.setGender(rs.getInt("gender"));
 				article.setDate(new Date(rs.getTimestamp("date").getTime()));
 				article.setTitle(URLDecoder.decode(rs.getString("title"),"utf-8"));
-				article.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
+				article.setContent("");
 				article.setPics(rs.getInt("pics"));
 				article.setApprove(rs.getInt("approve"));
 				article.setComment(rs.getInt("comment"));
