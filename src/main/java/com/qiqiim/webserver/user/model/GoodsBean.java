@@ -5,6 +5,7 @@ public class GoodsBean {
 	private String goodsName;
 	private String goodsPrice;
 	private String goodsUrl;
+	private int ownerId;
 	
 	public int getGoodsId() {
 		return goodsId;
@@ -30,6 +31,8 @@ public class GoodsBean {
 	public void setGoodsUrl(String goodsUrl) {
 		this.goodsUrl = goodsUrl;
 	}
-	
-	
+	public int getOwnerId(){return ownerId;}
+	public void setOwnerId(int ownderId) {
+		this.ownerId = ownderId;
+	}
 }

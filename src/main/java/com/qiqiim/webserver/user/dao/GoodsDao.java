@@ -1,12 +1,11 @@
 package com.qiqiim.webserver.user.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.net.URLEncoder;
+import java.sql.*;
 import java.util.ArrayList;
 
 import com.qiqiim.webserver.user.model.GoodsBean;
+import org.apache.http.util.TextUtils;
 
 public class GoodsDao {
 	public static ArrayList<GoodsBean> getGoodsList(){
@@ -58,5 +57,49 @@ public class GoodsDao {
 			e.printStackTrace();
 		}
 		DBPool.close(con);
+	}
+
+	/**
+	 * 上传商品
+	 * @param goods 商品类
+	 */
+	public static int uploadGoods(GoodsBean goods) {
+		if (TextUtils.isEmpty(goods.getGoodsName()) || TextUtils.isEmpty(goods.getGoodsPrice()))
+			return -1;
+		String sql0 = "use first_mysql_test";
+		String sql1;
+		sql1 = "insert into goods (goods_name, goods_price, goods_url, owner_id) values(?,?,?,?)";
+		Connection con = DBPool.getConnection();
+		PreparedStatement ps;
+		int result = 0;
+		try {
+			con.setAutoCommit(false);
+			ps = con.prepareStatement(sql0);
+			ps.execute();
+			ps = con.prepareStatement(sql1, Statement.RETURN_GENERATED_KEYS);
+			ps.setString(1, URLEncoder.encode(goods.getGoodsName(),"utf-8"));
+			ps.setString(2, goods.getGoodsPrice());
+			ps.setString(3, goods.getGoodsUrl());
+			ps.setInt(4, goods.getOwnerId());
+			ps.execute();
+			con.commit();
+
+			ResultSet rs = ps.getGeneratedKeys();
+			if (rs.next()) {
+				result = rs.getInt(1);
+			}
+		} catch (Exception e) {
+			System.out.println("正在回滚");
+			try {
+				con.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+			result = -1;
+		} finally {
+			DBPool.close(con);
+		}
+		return result;
 	}
 }

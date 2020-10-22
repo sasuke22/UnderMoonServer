@@ -25,6 +25,7 @@ import com.qiqiim.webserver.util.SmsUtil;
 
 import net.coobird.thumbnailator.Thumbnails;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -44,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.util.*;
 
 //import com.alipay.api.AlipayApiException;
@@ -471,7 +473,7 @@ public class ImController extends BaseController{
 			}
 
 			// 存储录音
-			if (!record.isEmpty()){
+			if (record != null && !record.isEmpty()){
 				String smallPath = path + File.separator + "record.mp3";
 				File pic = new File(smallPath);
 				try {
@@ -1266,6 +1268,11 @@ public class ImController extends BaseController{
 		File src = new File(s);
 		long size = src.length();
 		if (size < 50*1024){
+			try {
+				FileUtils.copyFile(src, new File(d));
+			} catch (Exception e){
+				e.printStackTrace();
+			}
 			return;
 		}
 		compress(s,d);
@@ -1832,6 +1839,20 @@ public class ImController extends BaseController{
 		HashMap<String, List<GoodsBean>> map = new HashMap<String, List<GoodsBean>>();
 		map.put("goodsList", goodsList);
 		return map;
+	}
+
+	/**
+	 * for flutter,获取商品列表
+	 */
+	@RequestMapping(value="/uploadgoods",produces="application/json")
+	@ResponseBody
+	public int uploadGoods(HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
+		Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+		System.out.println(req.getParameter("goods"));
+		GoodsBean goods = gson.fromJson(req.getParameter("goods"), GoodsBean.class);
+		return GoodsDao.uploadGoods(goods);
 	}
 	
 	/**
