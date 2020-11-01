@@ -1951,6 +1951,36 @@ public class ImController extends BaseController{
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * for flutter,创建一个购物订单并且跳转url
+	 */
+	@RequestMapping(value="/goodsorder",produces="application/json")
+	@ResponseBody
+	public void goodsOrder(@RequestParam("userid") int userId,@RequestParam("price") int price,@RequestParam("remark") String param,
+							HttpServletRequest request,HttpServletResponse response){
+		String token = "uAq9Uxb64dPitb3HMJrPrRPYHKWeCFVv"; //记得更改 http://codepay.fateqq.com 后台可设置
+		String codepay_id ="229949" ;//记得更改 http://codepay.fateqq.com 后台可获得
+
+//		String price=request.getParameter("price"); //表单提交的价格
+//		String type=request.getParameter("type"); //支付类型  1：支付宝 2：QQ钱包 3：微信
+//		String pay_id=request.getParameter("pay_id"); //支付人的唯一标识
+//		String param=request.getParameter("param"); //自定义一些参数 支付后返回
+
+		String notify_url="http://103.244.2.254:8080/qiqiim-server/payresult";//通知地址
+//		String return_url="";//支付后同步跳转地址
+
+		//参数有中文则需要URL编码
+		String url="http://api2.xiuxiu888.com/creat_order?id="
+				+codepay_id+"&pay_id="+userId+"&price="+price+"&type="+1+"&token="+token
+				+"&param="+param+"&notify_url="+notify_url;//+"&return_url="+return_url;
+
+		try {
+			response.sendRedirect(url);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	/**
 	 * for flutter,用户支付结果通知地址
@@ -1965,6 +1995,7 @@ public class ImController extends BaseController{
 //		Map<String,String> params = new HashMap<String,String>(); //申明hashMap变量储存接收到的参数名用于排序
 		Map<String, String[]> requestParams = request.getParameterMap(); //获取请求的全部参数
 		System.out.println("receive response:"+requestParams.get("money")[0]);
+		System.out.println("pay param:"+requestParams.get("param")[0]);
 //		String valueStr = ""; //申明字符变量 保存接收到的变量
 		String[] pay_no = requestParams.get("pay_no");
 		String result;
