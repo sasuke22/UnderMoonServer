@@ -1110,6 +1110,22 @@ public class ImController extends BaseController{
 			return Integer.parseInt(files[0].getName().substring(0, 2));
 		}
 	}
+
+	/**
+	 * for flutter,是否处于审核期间
+	 */
+	@RequestMapping(value = "/ischecking",produces="application/json")
+	@ResponseBody
+	public int isChecking(HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		File webRootDir = new File("D:\\score");
+		File[] files = webRootDir.listFiles();
+		if(files == null)
+			return 30;
+		else{
+			return Integer.parseInt(files[0].getName().substring(0, 2));
+		}
+	}
 	
 	/**
 	 * for flutter，发送验证码
@@ -1967,9 +1983,10 @@ public class ImController extends BaseController{
 //		String pay_id=request.getParameter("pay_id"); //支付人的唯一标识
 //		String param=request.getParameter("param"); //自定义一些参数 支付后返回
 
-		String notify_url="http://103.244.2.254:8080/qiqiim-server/payresult";//通知地址
+		String notify_url="http://103.244.2.254:8080/qiqiim-server/payGoodsresult";//通知地址
 //		String return_url="";//支付后同步跳转地址
-
+		OrderBean goods = new Gson().fromJson(param, OrderBean.class);
+		int order_id = OrderDao.createOrder(goods);
 		//参数有中文则需要URL编码
 		String url="http://api2.xiuxiu888.com/creat_order?id="
 				+codepay_id+"&pay_id="+userId+"&price="+price+"&type="+1+"&token="+token
@@ -2070,5 +2087,41 @@ public class ImController extends BaseController{
 //			//参数不合法
 //			System.out.println("fail");
 //		}
+	}
+
+	@RequestMapping(value="/payGoodsresult",produces="text/html",method = RequestMethod.POST)
+	@ResponseBody
+	public void payGoodsResult(HttpServletRequest request,HttpServletResponse response) {
+		/*
+		 *验证通知 处理自己的业务
+		 */
+//		String key = "nMVsggorZ4XPr2VwXja5WiMtpJTwjaGq"; //记得更改 http://codepay.fateqq.com 后台可设置
+//		Map<String,String> params = new HashMap<String,String>(); //申明hashMap变量储存接收到的参数名用于排序
+		Map<String, String[]> requestParams = request.getParameterMap(); //获取请求的全部参数
+		System.out.println("receive response:" + requestParams.get("money")[0]);
+		System.out.println("pay param:" + requestParams.get("param")[0]);
+//		String valueStr = ""; //申明字符变量 保存接收到的变量
+		String[] pay_no = requestParams.get("pay_no");
+		String result;
+		// order_id
+		String[] id = requestParams.get("pay_id");
+		int order_id = Integer.parseInt(id[0]);
+		if (pay_no[0].length() == 0) {
+			OrderDao.updateOrderStatus(-1, order_id);
+			result = "fail";
+		} else {
+			// price
+			String[] money = requestParams.get("money");
+			int int_money = Double.valueOf(money[0]).intValue();
+			// todo 有pay_no但是没支付成功情况需要考虑
+			OrderDao.updateOrderStatus(1, order_id);
+			result = "ok";
+		}
+		try (PrintWriter pw = response.getWriter()) {
+			pw.write(result);
+			pw.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
