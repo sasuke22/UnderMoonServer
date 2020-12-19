@@ -1118,13 +1118,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public int isChecking(HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		File webRootDir = new File("D:\\score");
-		File[] files = webRootDir.listFiles();
-		if(files == null)
-			return 30;
-		else{
-			return Integer.parseInt(files[0].getName().substring(0, 2));
-		}
+		return Constants.isChecking ? 1 : 0;
 	}
 	
 	/**

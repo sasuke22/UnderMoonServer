@@ -12,6 +12,8 @@ import com.googlecode.protobuf.format.JsonFormat;
 
 public class Constants {
 
+	public static boolean isChecking = false;
+
 	public static interface WebSite{
 		public static final int SUCCESS = 0;
 		public static final int ERROR = -1;

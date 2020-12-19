@@ -11,16 +11,18 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import com.qiqiim.constant.Article;
+import com.qiqiim.constant.Constants;
 import com.qiqiim.constant.MeetingDetail;
 import com.qiqiim.constant.TempArticle;
 
 
 public class ArticleDao {
+	static String TABLE = Constants.isChecking ? "articles" : "fake_articles";
+
 	public static int addArticle(TempArticle article, int pics){
 		int res = 0;
 		String sql0 = "use first_mysql_test";
-		String sql1= "insert into articles (userId,gender,title,content,pics,approve,perfect) " +
-				"values(?,?,?,?,?,?,?)";
+		String sql1= "insert into " + TABLE + " (userId,gender,title,content,pics,approve,perfect) values(?,?,?,?,?,?,?)";
 		Connection con = DBPool.getConnection();
 		try {
 			con.setAutoCommit(false);
@@ -66,8 +68,8 @@ public class ArticleDao {
 	public static ArrayList<Article> selectArticlesOrderByComments(int count){
 		ArrayList<Article> articlesList = new ArrayList<Article>();
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select * from articles " +
-			      "where approve = 1 and islock = 0 order by comment desc limit ?,?" ;
+		String sql1 = "select * from " + TABLE +
+			      " where approve = 1 and islock = 0 order by comment desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
@@ -102,8 +104,8 @@ public class ArticleDao {
 	public static ArrayList<Article> selectArticlesOrderByDate(int count){
 		ArrayList<Article> articlesList = new ArrayList<Article>();
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select * from articles " +
-			      "where approve = 1 and islock = 0 order by date desc limit ?,?" ;
+		String sql1 = "select * from " + TABLE +
+			      " where approve = 1 and islock = 0 order by date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
@@ -140,7 +142,7 @@ public class ArticleDao {
 	public static ArrayList<Article> getLockArticles(){
 		ArrayList<Article> articlesList = new ArrayList<Article>();
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select * from articles where approve = 1 and islock = 0 and comment = 0 order by date desc limit ?,?" ;
+		String sql1 = "select * from " + TABLE + " where approve = 1 and islock = 0 and comment = 0 order by date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
@@ -175,8 +177,8 @@ public class ArticleDao {
 	public static ArrayList<Article> getMyArticles(int userId,int count){
 		ArrayList<Article> articlesList = new ArrayList<Article>();
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select * from articles " +
-			      "where islock = 0 and userId = ? order by date desc limit ?,?" ;
+		String sql1 = "select * from " + TABLE +
+			      " where islock = 0 and userId = ? order by date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
@@ -211,9 +213,8 @@ public class ArticleDao {
 	public static ArrayList<Article> selectPerfectArticles(int count){
 		ArrayList<Article> articlesList = new ArrayList<Article>();
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select * " +
-			      "from articles " +
-			      "where perfect = 1 and islock = 0 order by date desc limit ?,?" ;
+		String sql1 = "select * from " + TABLE +
+			      " where perfect = 1 and islock = 0 order by date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
@@ -247,7 +248,7 @@ public class ArticleDao {
 	
 	public static int deleteArticle(int id){
 		String sql0 = "use first_mysql_test";
-		String sql1= "update articles set islock = 1 where id = ?";
+		String sql1= "update " + TABLE + " set islock = 1 where id = ?";
 		Connection con = DBPool.getConnection();
 		int res;
 		try {
@@ -282,7 +283,7 @@ public class ArticleDao {
 
 	public static int reduceCommentCount(int commentId) {
 		String sql0 = "use first_mysql_test";
-		String sql1 = "update articles SET comment = comment - 1 where id = ? ";
+		String sql1 = "update " + TABLE + " SET comment = comment - 1 where id = ? ";
 		Connection con = DBPool.getConnection();
 		int res;
 		try {
@@ -310,7 +311,7 @@ public class ArticleDao {
 	
 	public static int addCommentCount(int commentId) {
 		String sql0 = "use first_mysql_test";
-		String sql1 = "update articles SET comment = comment + 1 where id = ? ";
+		String sql1 = "update " + TABLE + " SET comment = comment + 1 where id = ? ";
 		Connection con = DBPool.getConnection();
 		int res;
 		try {
@@ -339,7 +340,7 @@ public class ArticleDao {
 	public static ArrayList<Article> selectAllArticlesByOldCount(int count){
 		ArrayList<Article> articlesList = new ArrayList<Article>();
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select * from articles where approve > -1 " +
+		String sql1 = "select * from " + TABLE + " where approve > -1 " +
 			      "order by approve asc,date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
@@ -383,13 +384,13 @@ public class ArticleDao {
 		try{
 			PreparedStatement ps;
 			if(article.getApprove() == 1){
-				sql1 = "update articles a,user b SET a.approve = 1, a.title = ?,a.content = ?,b.score = b.score + 10 where a.id = ? and a.userId = b.id and a.approve = 0";
+				sql1 = "update " + TABLE + " a,user b SET a.approve = 1, a.title = ?,a.content = ?,b.score = b.score + 10 where a.id = ? and a.userId = b.id and a.approve = 0";
 				ps = con.prepareStatement(sql1);
 				ps.setString(1, URLEncoder.encode(article.getTitle(),"utf-8"));
 				ps.setString(2, URLEncoder.encode(article.getContent(),"utf-8"));
 				ps.setInt(3, article.getId());
 			}else{
-				sql1 = "update articles SET approve = ?, reason = ? where id = ? ";
+				sql1 = "update " + TABLE + " SET approve = ?, reason = ? where id = ? ";
 				ps = con.prepareStatement(sql1);
 				ps.setInt(1, article.getApprove());
 				ps.setString(2, article.getReason());
@@ -412,7 +413,7 @@ public class ArticleDao {
 		try{
 			con.setAutoCommit(false);
 			PreparedStatement ps;
-			sql1 = "update articles a,user b SET perfect = 1,score = score + 15 where a.id = ? and a.userId = b.id and a.perfect = 0";
+			sql1 = "update " + TABLE + " a,user b SET perfect = 1,score = score + 15 where a.id = ? and a.userId = b.id and a.perfect = 0";
 			ps = con.prepareStatement(sql1);
 			ps.setInt(1, id);
 			ps.executeUpdate();
@@ -428,7 +429,7 @@ public class ArticleDao {
 
 	public static Article getArticleDetail(int articleId) {
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select id,userId,gender,date,title,content,pics,approve,comment from articles where id = ? limit 1" ;
+		String sql1 = "select id,userId,gender,date,title,content,pics,approve,comment from " + TABLE + " where id = ? limit 1" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
