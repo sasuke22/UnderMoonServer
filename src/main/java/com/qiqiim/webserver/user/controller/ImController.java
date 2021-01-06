@@ -38,14 +38,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
 import java.util.*;
 
 //import com.alipay.api.AlipayApiException;
@@ -452,19 +450,26 @@ public class ImController extends BaseController{
 	 */
 	@RequestMapping(value = "/createmeeting",method = RequestMethod.POST)
 	@ResponseBody
-	public int createMeeting(@RequestParam(value = "record",required = false) MultipartFile record, @RequestParam("file") MultipartFile[] files,HttpServletRequest request,HttpServletResponse response
-			,ModelMap model){
+	public int createMeeting(@RequestParam(value = "record",required = false) MultipartFile record, @RequestParam("file") MultipartFile[] files,
+							 @RequestParam(value = "version", required = false) String version,
+							 HttpServletRequest request,HttpServletResponse response,ModelMap model){
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		Gson gson = new Gson();
 		MeetingDetail meetingDetail = gson.fromJson(req.getParameter("meetingDetail"), MeetingDetail.class);
-		if(meetingDetail.gender == 1){
-			int score = UserDao.getScore(meetingDetail.id);
-			if(score < 30) return -1;
+		boolean isChecking = Constants.isChecking(version);
+		if(!isChecking) {// 如果是审核期间，不需要检查金币够不够
+			if (meetingDetail.gender == 1) {// 如果不是审核期间，男生发邀约需要检查金币够不够
+				int score = UserDao.getScore(meetingDetail.id);
+				if(score < 30) return -1;
+			}
 		}
-		int meetingId = ContributesDao.addContribute(meetingDetail,files.length);
+		int meetingId = ContributesDao.addContribute(isChecking, meetingDetail, files.length);
 		if (meetingId != -1) {
-			int restScore = UserDao.updateScore(meetingDetail.id, - 30);
+			int restScore = 1;
+			if (!isChecking) {// 审核期间不需要扣除金币
+				restScore = UserDao.updateScore(meetingDetail.id, - 30);
+			}
 			System.out.println("have files " + files.length);
 			String path = "D:\\images" + File.separator + "meeting" + File.separator + meetingId;
 			File parent = new File(path);
@@ -516,13 +521,14 @@ public class ImController extends BaseController{
 	 */
 	@RequestMapping(value = "/changemeeting",method = RequestMethod.POST)
 	@ResponseBody
-	public int changeMeeting(@RequestParam("file") MultipartFile[] files,HttpServletRequest request,HttpServletResponse response
-			,ModelMap model){
+	public int changeMeeting(@RequestParam("file") MultipartFile[] files,
+							 @RequestParam("fake") boolean fake,
+							 HttpServletRequest request,HttpServletResponse response, ModelMap model){
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		Gson gson = new Gson();
 		MeetingDetail meetingDetail = gson.fromJson(req.getParameter("meetingDetail"), MeetingDetail.class);
-		int result = ContributesDao.updateContribute(meetingDetail,files.length);
+		int result = ContributesDao.updateContribute(fake, meetingDetail, files.length);
 		if (result != -1) {
 			if (files.length > 0) {
 				MultipartFile file;
@@ -562,7 +568,7 @@ public class ImController extends BaseController{
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		Gson gson = new Gson();
 		MeetingDetail meetingDetail = gson.fromJson(req.getParameter("meetingDetail"), MeetingDetail.class);
-		int meetingId = ContributesDao.addContribute(meetingDetail,files.length);
+		int meetingId = ContributesDao.addContribute(false, meetingDetail,files.length);
 		if (meetingId != -1) {
 			int restScore = UserDao.updateScore(meetingDetail.id, - 30);
 			System.out.println("have files " + files.length);
@@ -602,20 +608,21 @@ public class ImController extends BaseController{
 	@RequestMapping(value = "/allcontributes",produces="application/json")
 	@ResponseBody
 	public HashMap<String, ArrayList<MeetingDetail>> getAllContributes(@RequestParam("userId")int userId, @RequestParam("count")int count,@RequestParam("type")int type,
-			HttpServletRequest request,HttpServletResponse response){
+																	   @RequestParam(value = "version", required = false) String version, HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		ArrayList<MeetingDetail> meetings = null;
+		boolean isChecking = Constants.isChecking(version);
 		if (userId == 11533)
 			meetings = ContributesDao.getLockMeetings();
 		else {
 			if (type == 0)//根据最新排序
-				meetings = ContributesDao.selectContrbutesOrderByDate(userId, count);
+				meetings = ContributesDao.selectContrbutesOrderByDate(isChecking, userId, count);
 			else if (type == 1)//获取女生发布的邀约
-				meetings = ContributesDao.selectWomanContrbutes(userId,count);
+				meetings = ContributesDao.selectWomanContributes(isChecking, userId,count);
 			else if (type == 2)//获取男生发布的邀约
-				meetings = ContributesDao.selectManContrbutes(userId,count);
+				meetings = ContributesDao.selectManContributes(isChecking, userId,count);
 			else if (type == 3)//根据评论数排序hottest
-				meetings = ContributesDao.selectContrbutesOrderByComments(userId,count);
+				meetings = ContributesDao.selectContrbutesOrderByComments(isChecking, userId,count);
 		}
 		HashMap<String, ArrayList<MeetingDetail>> map = new HashMap<String,ArrayList<MeetingDetail>>();
 		map.put("meetings", meetings);
@@ -632,7 +639,9 @@ public class ImController extends BaseController{
 		String keyword = request.getParameter("key");
 		int type = Integer.parseInt(request.getParameter("type"));
 		int count = Integer.parseInt(request.getParameter("count"));
-		List<MeetingDetail> msgList = ContributesDao.selectContributesByKeyword(keyword,type,count);
+		String version = request.getParameter("version");
+		boolean isChecking = Constants.isChecking(version);
+		List<MeetingDetail> msgList = ContributesDao.selectContributesByKeyword(isChecking, keyword,type,count);
 		HashMap<String,List<MeetingDetail>> map = new HashMap<String,List<MeetingDetail>>();
 		map.put("meetings", msgList);
 		return map;
@@ -667,11 +676,13 @@ public class ImController extends BaseController{
 	 */
 	@RequestMapping(value = "/mycontributes",produces="application/json")
 	@ResponseBody
-	public HashMap<String,ArrayList<MeetingDetail>> getMyContributes(@RequestParam("userId")int userId,
-			@RequestParam("count")int count,HttpServletRequest request,HttpServletResponse response){
+	public HashMap<String, ArrayList<MeetingDetail>> getMyContributes(@RequestParam("userId") int userId,
+																	  @RequestParam(value = "version", required = false) String version,
+																	  @RequestParam("count") int count, HttpServletRequest request, HttpServletResponse response) {
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		ArrayList<MeetingDetail> meetings = ContributesDao.getMyContributes(userId,count);
-		HashMap<String, ArrayList<MeetingDetail>> map = new HashMap<String,ArrayList<MeetingDetail>>();
+		boolean isChecking = Constants.isChecking(version);
+		ArrayList<MeetingDetail> meetings = ContributesDao.getMyContributes(isChecking, userId, count);
+		HashMap<String, ArrayList<MeetingDetail>> map = new HashMap<String, ArrayList<MeetingDetail>>();
 		map.put("meetings", meetings);
 		return map;
 	}
@@ -899,9 +910,11 @@ public class ImController extends BaseController{
 	@RequestMapping(value = "/invitationdetail",produces="application/json")
 	@ResponseBody
 	public MeetingDetail getInvitationDetail(@RequestParam("meetingid")String meetingId,
+											 @RequestParam(value = "version", required = false) String version,
 			HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		MeetingDetail meetingDetail = ContributesDao.getInvitationDetailById(Integer.parseInt(meetingId));
+		boolean isChecking = Constants.isChecking(version);
+		MeetingDetail meetingDetail = ContributesDao.getInvitationDetailById(isChecking, Integer.parseInt(meetingId));
 //		String path = "D:\\images"+File.separator+"meeting" + File.separator + meetingId;
 //		File dir = new File(path);
 //		if (dir.exists()) {
@@ -916,9 +929,11 @@ public class ImController extends BaseController{
 	@RequestMapping(value = "/articleDetail",produces="application/json")
 	@ResponseBody
 	public Article getArticleDetail(@RequestParam("id")int articleId,
+											 @RequestParam(value = "version", required = false) String version,
 											 HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		Article articleDetail = ArticleDao.getArticleDetail(articleId);
+		boolean isChecking = Constants.isChecking(version);
+		Article articleDetail = ArticleDao.getArticleDetail(isChecking, articleId);
 		String path = "D:\\images"+File.separator+"article" + File.separator + articleId;
 		File dir = new File(path);
 		if (dir.exists()) {
@@ -933,9 +948,10 @@ public class ImController extends BaseController{
 	@RequestMapping(value = "/morecontributes",produces="application/json")
 	@ResponseBody
 	public HashMap<String,ArrayList<MeetingDetail>> getAllMoreContributes(@RequestParam("count")int oldCount,
+			@RequestParam("fake")boolean fake,
 			HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		ArrayList<MeetingDetail> meetings = ContributesDao.selectAllContrbutesByOldCount(oldCount);
+		ArrayList<MeetingDetail> meetings = ContributesDao.selectAllContributesByOldCount(fake, oldCount);
 		HashMap<String, ArrayList<MeetingDetail>> map = new HashMap<String,ArrayList<MeetingDetail>>();
 		map.put("meetings", meetings);
 		return map;
@@ -947,8 +963,9 @@ public class ImController extends BaseController{
 	@RequestMapping(value = "/unapprovedcontributes",produces="application/json")
 	@ResponseBody
 	public HashMap<String,ArrayList<MeetingDetail>> getUnapprovedContributes(@RequestParam("count")int oldCount,
+			@RequestParam("fake") boolean fake,
 			HttpServletRequest request,HttpServletResponse response){
-		ArrayList<MeetingDetail> meetings = ContributesDao.selectUnapprovedContrbutesByOldCount(oldCount);
+		ArrayList<MeetingDetail> meetings = ContributesDao.selectUnapprovedContributesByOldCount(fake, oldCount);
 		HashMap<String, ArrayList<MeetingDetail>> map = new HashMap<String,ArrayList<MeetingDetail>>();
 		map.put("meetings", meetings);
 		return map;
@@ -960,8 +977,9 @@ public class ImController extends BaseController{
 	@RequestMapping(value = "/refusedcontributes",produces="application/json")
 	@ResponseBody
 	public HashMap<String,ArrayList<MeetingDetail>> getRefusedContributes(@RequestParam("count")int oldCount,
+			@RequestParam("fake") boolean fake,
 			HttpServletRequest request,HttpServletResponse response){
-		ArrayList<MeetingDetail> meetings = ContributesDao.selectRefusedContrbutesByOldCount(oldCount);
+		ArrayList<MeetingDetail> meetings = ContributesDao.selectRefusedContributesByOldCount(fake, oldCount);
 		HashMap<String, ArrayList<MeetingDetail>> map = new HashMap<String,ArrayList<MeetingDetail>>();
 		map.put("meetings", meetings);
 		return map;
@@ -972,11 +990,11 @@ public class ImController extends BaseController{
 	 */
 	@RequestMapping(value = "/changemeetingapprove",produces="application/json",method = RequestMethod.POST)
 	@ResponseBody
-	public int changeMeetingApprove(@RequestParam("meetingId")int meetingId,
+	public int changeMeetingApprove(@RequestParam("meetingId")int meetingId,@RequestParam("fake") boolean fake,
 			@RequestParam("approve")int approve,@RequestParam(value = "reason",required = false)String reason,
 			HttpServletRequest request,HttpServletResponse response){
 		System.out.println("reason"+reason);
-		int result = ContributesDao.changeMeetingApprove(meetingId,approve,reason);
+		int result = ContributesDao.changeMeetingApprove(fake, meetingId,approve,reason);
 		return result;
 	}
 	
@@ -986,8 +1004,9 @@ public class ImController extends BaseController{
 	@RequestMapping(value = "/morearticles",produces="application/json")
 	@ResponseBody
 	public HashMap<String,ArrayList<Article>> getAllMoreArticles(@RequestParam("count")int oldCount,
+			@RequestParam(value = "fake", required = false) boolean fake,
 			HttpServletRequest request,HttpServletResponse response){
-		ArrayList<Article> articles = ArticleDao.selectAllArticlesByOldCount(oldCount);
+		ArrayList<Article> articles = ArticleDao.selectAllArticlesByOldCount(fake, oldCount);
 		HashMap<String, ArrayList<Article>> map = new HashMap<String,ArrayList<Article>>();
 		map.put("articles", articles);
 		return map;
@@ -1008,12 +1027,13 @@ public class ImController extends BaseController{
 	
 	/**
 	 * for flutter server app，改article的approve
+	 * todo 可能需要改field
 	 */
 	@RequestMapping(value = "/changearticleapprove",produces="application/json",method = RequestMethod.POST)
 	@ResponseBody
-	public int changeArticleApprove(HttpServletRequest request,HttpServletResponse response){
+	public int changeArticleApprove(@RequestParam(value = "fake", required = false) boolean fake, HttpServletRequest request,HttpServletResponse response){
 		Article article = new Gson().fromJson(request.getParameter("article"), Article.class);
-		return ArticleDao.changeArticleApprove(article);
+		return ArticleDao.changeArticleApprove(fake, article);
 	}
 	
 	/**
@@ -1021,8 +1041,10 @@ public class ImController extends BaseController{
 	 */
 	@RequestMapping(value = "/changearticleperfect",produces="application/json",method = RequestMethod.POST)
 	@ResponseBody
-	public int changeArticlePerfect(@RequestParam("id")int id,HttpServletRequest request,HttpServletResponse response){
-		return ArticleDao.changeArticlePerfect(id);
+	public int changeArticlePerfect(@RequestParam("id")int id,
+									@RequestParam(value = "fake", required = false) boolean fake,
+									HttpServletRequest request,HttpServletResponse response){
+		return ArticleDao.changeArticlePerfect(fake, id);
 	}
 	
 	/**
@@ -1039,8 +1061,10 @@ public class ImController extends BaseController{
 	 */
 	@RequestMapping(value = "/topmeeting",produces="application/json",method = RequestMethod.POST)
 	@ResponseBody
-	public int topMeeting(@RequestParam("meetingid")int meetingid,@RequestParam("top")int top,HttpServletRequest request,HttpServletResponse response){
-		return ContributesDao.topMeeting(meetingid,top);
+	public int topMeeting(@RequestParam("meetingid")int meetingid,@RequestParam("top")int top,
+						  @RequestParam("fake") boolean fake,
+						  HttpServletRequest request,HttpServletResponse response){
+		return ContributesDao.topMeeting(fake, meetingid,top);
 	}
 	
 	/**
@@ -1116,9 +1140,9 @@ public class ImController extends BaseController{
 	 */
 	@RequestMapping(value = "/ischecking",produces="application/json")
 	@ResponseBody
-	public int isChecking(HttpServletRequest request,HttpServletResponse response){
+	public int isChecking(@RequestParam("version") String version, HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		return Constants.isChecking ? 1 : 0;
+		return Constants.isChecking(version) ? 1 : 0;
 	}
 	
 	/**
@@ -1486,9 +1510,11 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/getmeetingcomments",produces="application/json",method = RequestMethod.GET)
 	@ResponseBody
 	public HashMap<String,ArrayList<CommentDetail>> getMeetingComments(@RequestParam("meetingId") int meetingId,
+			@RequestParam(value = "version", required = false) String version,
 			@RequestParam("count") int count,HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		ArrayList<CommentDetail> comments = CommentsDao.selectCommentsByCount(true, meetingId, count);
+		boolean isChecking = Constants.isChecking(version);
+		ArrayList<CommentDetail> comments = CommentsDao.selectCommentsByCount(isChecking, true, meetingId, count);
 		HashMap<String,ArrayList<CommentDetail>> map = new HashMap<>();
 		map.put("comments", comments);
 		return map;
@@ -1533,9 +1559,11 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/getarticlecomments",produces="application/json",method = RequestMethod.GET)
 	@ResponseBody
 	public HashMap<String,ArrayList<CommentDetail>> getArticleComments(@RequestParam("articleId") int articleId,
+																	   @RequestParam(value = "version", required = false) String version,
 			@RequestParam("count") int count,HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		ArrayList<CommentDetail> comments = CommentsDao.selectCommentsByCount(false, articleId, count);
+		boolean isChecking = Constants.isChecking(version);
+		ArrayList<CommentDetail> comments = CommentsDao.selectCommentsByCount(isChecking, false, articleId, count);
 		HashMap<String,ArrayList<CommentDetail>> map = new HashMap<>();
 		map.put("comments", comments);
 		return map;
@@ -1592,14 +1620,16 @@ public class ImController extends BaseController{
 	 */
 	@RequestMapping(value = "/createarticle",method = RequestMethod.POST)
 	@ResponseBody
-	public int createArticle(@RequestParam("file") MultipartFile[] files,HttpServletRequest request,HttpServletResponse response
-			,ModelMap model){
+	public int createArticle(@RequestParam("file") MultipartFile[] files,
+							 @RequestParam(value = "version", required = false) String version,
+							 HttpServletRequest request,HttpServletResponse response, ModelMap model){
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
 		Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 		System.out.println(req.getParameter("article"));
 		TempArticle article = gson.fromJson(req.getParameter("article"), TempArticle.class);
-		int articleId = ArticleDao.addArticle(article, files.length);
+		boolean isChecking = Constants.isChecking(version);
+		int articleId = ArticleDao.addArticle(isChecking, article, files.length);
 		if (articleId != -1) {
 			System.out.println("have files " + files.length);
 			if ( files.length > 0) {
@@ -1642,7 +1672,7 @@ public class ImController extends BaseController{
 		Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 		System.out.println(req.getParameter("article").toString());
 		TempArticle article = gson.fromJson(req.getParameter("article"), TempArticle.class);
-		int articleId = ArticleDao.addArticle(article, files.length);
+		int articleId = ArticleDao.addArticle(false, article, files.length);
 		if (articleId != -1) {
 			System.out.println("have files " + files.length);
 			if (files.length > 0) {
@@ -1792,20 +1822,22 @@ public class ImController extends BaseController{
 	@RequestMapping(value = "/getarticles",produces="application/json")
 	@ResponseBody
 	public HashMap<String, ArrayList<Article>> getArticles(@RequestParam("userId")int userId,
+			@RequestParam(value = "version", required = false) String version,
 			@RequestParam("count")int count,@RequestParam("type")int type,HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		ArrayList<Article> articles = null;
+		boolean isChecking = Constants.isChecking(version);
 		if (userId == 11533){
 			articles = ArticleDao.getLockArticles();
 		} else {
 			if (userId != -1)//获取自己的反馈
-				articles = ArticleDao.getMyArticles(userId, count);
+				articles = ArticleDao.getMyArticles(isChecking, userId, count);
 			else if (type == 0)//根据最新
-				articles = ArticleDao.selectArticlesOrderByDate(count);
+				articles = ArticleDao.selectArticlesOrderByDate(isChecking, count);
 			else if (type == 1)//根据评论数排序hottest
-				articles = ArticleDao.selectArticlesOrderByComments(count);
+				articles = ArticleDao.selectArticlesOrderByComments(isChecking, count);
 			else if (type == 2)//根据加精perfect
-				articles = ArticleDao.selectPerfectArticles(count);
+				articles = ArticleDao.selectPerfectArticles(isChecking, count);
 		}
 		HashMap<String, ArrayList<Article>> map = new HashMap<String,ArrayList<Article>>();
 		map.put("articles", articles);
@@ -1818,13 +1850,15 @@ public class ImController extends BaseController{
 	@RequestMapping(value="/deletemeeting",produces="application/json",method = RequestMethod.POST)
 	@ResponseBody
 	public int deleteMeeting(@RequestParam("meetingid") int meetingId,@RequestParam("ismeeting") boolean isMeeting,
+			@RequestParam(value = "version", required = false) String version,
 			HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
+		boolean isChecking = Constants.isChecking(version);
 		int res;
 		if(isMeeting)
-			res = ContributesDao.deleteMeeting(meetingId);
+			res = ContributesDao.deleteMeeting(isChecking, meetingId);
 		else
-			res = ArticleDao.deleteArticle(meetingId);
+			res = ArticleDao.deleteArticle(isChecking, meetingId);
 		return res;
 	}
 	
@@ -1907,6 +1941,16 @@ public class ImController extends BaseController{
 	public void deleteMsgList(@RequestParam("user_id") int userId, @RequestParam("another_id") int anotherId, HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		NewMsgListDao.deleteMessage(userId, anotherId);
+	}
+
+	/**
+	 * for flutter,撤回某条消息
+	 */
+	@RequestMapping(value="/deletemessage",produces="application/json")
+	@ResponseBody
+	public int deleteMessage(@RequestParam("id") int messageId, HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		return NewChatListDao.deleteMessage(messageId);
 	}
 	
 	/**

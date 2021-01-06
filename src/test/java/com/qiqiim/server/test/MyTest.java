@@ -8,10 +8,7 @@ public class MyTest {
 	private static List<String> res = new ArrayList<>();
 	private static HashMap<Character, String[]> map = new HashMap<>();
 	public static void main(String[] args) {
-		List<Integer> max = maxInWindow(new int[]{2, 3, 4, 2, 6, 2, 5, 1}, 3);
-		for (int i : max) {
-			System.out.println(i);
-		}
+		System.out.println("1.2.1".compareTo("1.2.2"));
 	}
 
 	/**

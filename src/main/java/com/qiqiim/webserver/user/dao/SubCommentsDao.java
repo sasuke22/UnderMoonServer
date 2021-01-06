@@ -140,7 +140,7 @@ public class SubCommentsDao {
 		ps.setInt(1, comment.getFloorId());
 		rs = ps.executeQuery();
 		while (rs.next()) {
-			result = rs.getInt("count") < 3;
+			result = rs.getInt("count") < 4;
 		}
 		return result;
 	}

@@ -1,10 +1,7 @@
 package com.qiqiim.webserver.user.dao;
 
 import java.net.URLDecoder;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,5 +36,39 @@ public class NewChatListDao {
 			DBPool.close(con);
 		}
 		return chatList;
+	}
+
+	public static int deleteMessage(int messageId) {
+		String sql0 = "use first_mysql_test";
+		String sql1= "delete from messages where id = ?";
+		Connection con = DBPool.getConnection();
+		int res;
+		try {
+			con.setAutoCommit(false);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		PreparedStatement ps;
+		try {
+			ps = con.prepareStatement(sql0);
+			ps.execute();
+			ps = con.prepareStatement(sql1);
+			ps.setInt(1, messageId);
+			ps.execute();
+			con.commit();
+			res = 1;
+		} catch (SQLException e) {
+			System.out.println("正在回滚");
+			try {
+				con.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+			res = -1;
+		}finally{
+			DBPool.close(con);
+		}
+		return res;
 	}
 }

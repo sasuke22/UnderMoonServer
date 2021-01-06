@@ -11,16 +11,14 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.qiqiim.constant.Constants;
 import com.qiqiim.constant.MeetingDetail;
 
 public class ContributesDao {
-	static String TABLE = Constants.isChecking ? "meetings" : "fake_chat";
-
-	public static ArrayList<MeetingDetail> selectContrbutesOrderByComments(int userId,int count){
+	public static ArrayList<MeetingDetail> selectContrbutesOrderByComments(boolean isChecking, int userId, int count){
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
+		String table = isChecking ? "fake_chat" : "meetings";
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + TABLE + " a,user b " +
+		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + table + " a,user b " +
 			      "where a.approve = 1 and a.id = b.id and a.islock = 0 order by top desc,commentcount desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
@@ -56,10 +54,11 @@ public class ContributesDao {
 		return contributesList;
 	}
 	
-	public static ArrayList<MeetingDetail> selectContrbutesOrderByDate(int userId,int count){
+	public static ArrayList<MeetingDetail> selectContrbutesOrderByDate(boolean isChecking, int userId,int count){
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
+		String table = isChecking ? "fake_chat" : "meetings";
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + TABLE + " a,user b " +
+		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + table + " a,user b " +
 			      "where approve = 1 and a.id = b.id and a.islock = 0 order by top desc,date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
@@ -102,7 +101,7 @@ public class ContributesDao {
 	public static ArrayList<MeetingDetail> getLockMeetings(){
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + TABLE + " a,user b " +
+		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from meetings a,user b " +
 				"where approve = 1 and a.id = b.id and a.islock = 0 and commentcount = 0 order by top desc,date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
@@ -139,11 +138,11 @@ public class ContributesDao {
 		return contributesList;
 	}
 
-	public static ArrayList<MeetingDetail> selectWomanContrbutes(int userId,
-			int count) {
+	public static ArrayList<MeetingDetail> selectWomanContributes(boolean isChecking, int userId, int count) {
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
+		String table = isChecking ? "fake_chat" : "meetings";
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + TABLE + " a,user b " +
+		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + table + " a,user b " +
 			      "where a.gender = 0 and a.approve = 1 and a.id = b.id and a.islock = 0 order by top desc,date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
@@ -179,11 +178,11 @@ public class ContributesDao {
 		return contributesList;
 	}
 
-	public static ArrayList<MeetingDetail> selectManContrbutes(int userId,
-			int count) {
+	public static ArrayList<MeetingDetail> selectManContributes(boolean isChecking, int userId, int count) {
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
+		String table = isChecking ? "fake_chat" : "meetings";
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + TABLE + " a,user b " +
+		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + table + " a,user b " +
 			      "where a.gender = 1 and a.approve = 1 and a.id = b.id and a.islock = 0 order by top desc,date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
@@ -219,9 +218,10 @@ public class ContributesDao {
 		return contributesList;
 	}
 	
-	public static MeetingDetail getInvitationDetailById(int meetingId){
+	public static MeetingDetail getInvitationDetailById(boolean isChecking, int meetingId){
+		String table = isChecking ? "fake_chat" : "meetings";
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + TABLE + " a,user b where meetingId = ? and a.id = b.id" ;
+		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + table + " a,user b where meetingId = ? and a.id = b.id" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
@@ -263,9 +263,10 @@ public class ContributesDao {
 		return meetingDetail;
 	}
 	
-	public static int addContribute(MeetingDetail meetingDetail,int pics){
+	public static int addContribute(boolean isChecking, MeetingDetail meetingDetail, int pics){
+		String table = isChecking ? "fake_chat" : "meetings";
 		String sql0 = "use first_mysql_test";
-		String sql1= "insert into " + TABLE + "(id,city,summary,age,marry,height,job,xingzuo,content,photos,gender,audio) " +
+		String sql1= "insert into " + table + "(id,city,summary,age,marry,height,job,xingzuo,content,photos,gender,audio) " +
 				"values(?,?,?,?,?,?,?,?,?,?,?,?)";
 		Connection con = DBPool.getConnection();
 		try {
@@ -313,9 +314,10 @@ public class ContributesDao {
 		}
 	}
 
-	public static int updateContribute(MeetingDetail meetingDetail,int pics){
+	public static int updateContribute(boolean fake, MeetingDetail meetingDetail,int pics){
+		String table = fake ? "fake_chat" : "meetings";
 		String sql0 = "use first_mysql_test";
-		String sql1= "update " + TABLE + " set summary = ?,content = ?,photos = ? where meetingid = ?";
+		String sql1= "update " + table + " set summary = ?,content = ?,photos = ? where meetingid = ?";
 		Connection con = DBPool.getConnection();
 		try {
 			con.setAutoCommit(false);
@@ -349,10 +351,11 @@ public class ContributesDao {
 		}
 	}
 	
-	public static ArrayList<MeetingDetail> getMyContributes(int userId,int count){
+	public static ArrayList<MeetingDetail> getMyContributes(boolean isChecking, int userId, int count){
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
+		String table = isChecking ? "fake_chat" : "meetings";
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select * from " + TABLE +
+		String sql1 = "select * from " + table +
 			      " where id = ? and islock = 0 order by top desc,date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
@@ -400,7 +403,7 @@ public class ContributesDao {
 				idBuilder.append(enlist.get(i));
 		}
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select * from " + TABLE +
+		String sql1 = "select * from meetings" +
 			      " where meetingid in (" + idBuilder + ") order by top desc limit ?,?";
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
@@ -434,10 +437,11 @@ public class ContributesDao {
 		return contributesList;
 	}
 	
-	public static ArrayList<MeetingDetail> selectAllContrbutesByOldCount(int oldCount){
+	public static ArrayList<MeetingDetail> selectAllContributesByOldCount(boolean fake, int oldCount){
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
+		String table = fake ? "fake_chat" : "meetings";
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + TABLE + " a,user b where a.id = b.id and a.islock = 0 " +
+		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + table + " a,user b where a.id = b.id and a.islock = 0 " +
 			      "order by top desc,date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
@@ -474,10 +478,11 @@ public class ContributesDao {
 		return contributesList;
 	}
 	
-	public static ArrayList<MeetingDetail> selectUnapprovedContrbutesByOldCount(int oldCount){
+	public static ArrayList<MeetingDetail> selectUnapprovedContributesByOldCount(boolean fake, int oldCount){
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
+		String table = fake ? "fake_chat" : "meetings";
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + TABLE + " a,user b where approve = 0 and a.id = b.id and a.islock = 0 " +
+		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + table + " a,user b where approve = 0 and a.id = b.id and a.islock = 0 " +
 			      "order by top desc,date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
@@ -513,11 +518,11 @@ public class ContributesDao {
 		return contributesList;
 	}
 	
-	public static ArrayList<MeetingDetail> selectRefusedContrbutesByOldCount(
-			int oldCount) {
+	public static ArrayList<MeetingDetail> selectRefusedContributesByOldCount(boolean fake, int oldCount) {
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
+		String table = fake ? "fake_chat" : "meetings";
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + TABLE + " a,user b where approve = -1 and a.id = b.id and a.islock = 0 " +
+		String sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + table + " a,user b where approve = -1 and a.id = b.id and a.islock = 0 " +
 			      "order by top desc,date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
@@ -553,14 +558,15 @@ public class ContributesDao {
 		return contributesList;
 	}
 
-	public static int changeMeetingApprove(int meetingId, int approve, String reason) {
+	public static int changeMeetingApprove(boolean fake, int meetingId, int approve, String reason) {
 		String sql0 = "use first_mysql_test";
 		String sql1;
+		String table = fake ? "fake_chat" : "meetings";
 		int res;
 		if(approve == 1)
-			sql1 = "update " + TABLE + " SET approve = ?, reason = ? where meetingid = ? ";
+			sql1 = "update " + table + " SET approve = ?, reason = ? where meetingid = ? ";
 		else 
-			sql1 = "update " + TABLE + " a,user b set a.approve = ?,a.reason = ?,b.score = b.score + 30 where a.meetingid = ? and a.id = b.id and approve = 0";
+			sql1 = "update " + table + " a,user b set a.approve = ?,a.reason = ?,b.score = b.score + 30 where a.meetingid = ? and a.id = b.id and approve = 0";
 		Connection con = DBPool.getConnection();
 		try {
 			con.setAutoCommit(false);
@@ -589,7 +595,7 @@ public class ContributesDao {
 
 	public static int reduceCommentCount(int commentId) {
 		String sql0 = "use first_mysql_test";
-		String sql1 = "update " + TABLE + " SET commentcount = commentcount - 1 where meetingid = ? ";
+		String sql1 = "update meetings SET commentcount = commentcount - 1 where meetingid = ? ";
 		Connection con = DBPool.getConnection();
 		int res;
 		try {
@@ -617,7 +623,7 @@ public class ContributesDao {
 	
 	public static int addCommentCount(int commentId) {
 		String sql0 = "use first_mysql_test";
-		String sql1 = "update " + TABLE + " SET commentcount = commentcount + 1 where meetingid = ? ";
+		String sql1 = "update meetings SET commentcount = commentcount + 1 where meetingid = ? ";
 		Connection con = DBPool.getConnection();
 		int res;
 		try {
@@ -643,9 +649,10 @@ public class ContributesDao {
 		return res;
 	}
 
-	public static int deleteMeeting(int id){
+	public static int deleteMeeting(boolean isChecking, int id){
+		String table = isChecking ? "fake_chat" : "meetings";
 		String sql0 = "use first_mysql_test";
-		String sql1= "update " + TABLE + " SET islock = 1 where meetingid = ?";
+		String sql1= "update " + table + " SET islock = 1 where meetingid = ?";
 		Connection con = DBPool.getConnection();
 		int res;
 		try {
@@ -677,9 +684,10 @@ public class ContributesDao {
 		return res;
 	}
 
-	public static int topMeeting(int meetingid, int top) {
+	public static int topMeeting(boolean fake, int meetingid, int top) {
+		String table = fake ? "fake_chat" : "meetings";
 		String sql0 = "use first_mysql_test";
-		String sql1 = "update " + TABLE + " SET top = ? where meetingid = ? ";
+		String sql1 = "update " + table + " SET top = ? where meetingid = ? ";
 		Connection con = DBPool.getConnection();
 		int res;
 		try {
@@ -706,26 +714,27 @@ public class ContributesDao {
 		return res;
 	}
 
-	public static List<MeetingDetail> selectContributesByKeyword(String keyword, int type, int count) {
+	public static List<MeetingDetail> selectContributesByKeyword(boolean isChecking, String keyword, int type, int count) {
 		ArrayList<MeetingDetail> contributesList = new ArrayList<MeetingDetail>();
+		String table = isChecking ? "fake_chat" : "meetings";
 		String sq0 = "use first_mysql_test";
 		String sql1;
 		System.out.print("key:" + keyword);
 		switch(type){
 			case 1://女
-				sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + TABLE + " a,user b " +
+				sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + table + " a,user b " +
 					      "where approve = 1 and a.id = b.id and a.city like '%"+keyword+"%' and a.gender = 0 and a.islock = 0 order by top desc,date desc limit ?,?" ;
 				break;
 			case 2://男
-				sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + TABLE + " a,user b " +
+				sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + table + " a,user b " +
 					      "where approve = 1 and a.id = b.id and a.city like '%"+keyword+"%' and a.gender = 1 and a.islock = 0 order by top desc,date desc limit ?,?" ;
 				break;
 			case 3://热门
-				sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + TABLE + " a,user b " +
+				sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + table + " a,user b " +
 					      "where approve = 1 and a.id = b.id and a.city like '%"+keyword+"%' and a.islock = 0 order by top desc,commentcount desc,date desc limit ?,?" ;
 				break;
 			default://最新 type = 0
-				sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + TABLE + " a,user b " +
+				sql1 = "select a.*,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from " + table + " a,user b " +
 					      "where approve = 1 and a.id = b.id and a.city like '%"+keyword+"%' and a.islock = 0 order by top desc,date desc limit ?,?" ;
 				break;
 		}
