@@ -345,7 +345,7 @@ public class ArticleDao {
 		ArrayList<Article> articlesList = new ArrayList<Article>();
 		String table = fake ? "fake_articles" : "articles";
 		String sq0 = "use first_mysql_test";
-		String sql1 = "select * from " + table + " where approve > -1 " +
+		String sql1 = "select * from " + table + " where approve > -1 and islock = 0 " +
 			      "order by approve asc,date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;

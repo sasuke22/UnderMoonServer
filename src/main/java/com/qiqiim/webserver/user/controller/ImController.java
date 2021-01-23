@@ -1861,9 +1861,26 @@ public class ImController extends BaseController{
 			res = ArticleDao.deleteArticle(isChecking, meetingId);
 		return res;
 	}
+
+	/**
+	 * for flutter server,删除邀约或者反馈
+	 */
+	@RequestMapping(value="/removemeeting",produces="application/json",method = RequestMethod.POST)
+	@ResponseBody
+	public int removeMeeting(@RequestParam("meetingid") int meetingId,@RequestParam("ismeeting") boolean isMeeting,
+							 @RequestParam(value = "fake") boolean fake,
+							 HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		int res;
+		if(isMeeting)
+			res = ContributesDao.deleteMeeting(fake, meetingId);
+		else
+			res = ArticleDao.deleteArticle(fake, meetingId);
+		return res;
+	}
 	
 	/**
-	 * for flutter,删除邀约或者反馈
+	 * for flutter,获取当前金币
 	 */
 	@RequestMapping(value="/getscore",produces="application/json")
 	@ResponseBody

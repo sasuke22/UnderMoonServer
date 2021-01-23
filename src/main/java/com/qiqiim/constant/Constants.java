@@ -11,10 +11,10 @@ import io.netty.util.AttributeKey;
 import com.googlecode.protobuf.format.JsonFormat;
 
 public class Constants {
-	private static String latestVersion = "1.2.2";
+	private static String latestVersion = "1.2.1";
 
 	public static boolean isChecking(String version){
-		return version != null && version.equals(Constants.latestVersion);
+		return version != null && version.compareTo(Constants.latestVersion) > 0;
 	}
 
 	public static interface WebSite{
