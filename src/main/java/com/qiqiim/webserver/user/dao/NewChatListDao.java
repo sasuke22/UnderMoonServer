@@ -26,7 +26,14 @@ public class NewChatListDao {
 				chat.setUserId(rs.getInt("userId"));
 				chat.setAnotherId(rs.getInt("anotherId"));
 				chat.setTime(new Date(rs.getTimestamp("time").getTime()));
-				chat.setContent(URLDecoder.decode(rs.getString("content"),"utf-8"));
+				String content = URLDecoder.decode(rs.getString("content"),"utf-8");
+				int index = content.indexOf("/chat/");
+				String result;
+				if (index > 0) {
+					result = "http://45.120.52.176:8089"+content.substring(index);
+				} else
+					result = content;
+				chat.setContent(result);
 				chat.setType(rs.getInt("type"));
 				chatList.add(chat);
 			}

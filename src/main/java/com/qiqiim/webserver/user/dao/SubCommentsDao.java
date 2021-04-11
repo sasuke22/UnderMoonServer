@@ -73,13 +73,13 @@ public class SubCommentsDao {
 		String sql1 = null;
 		switch (type){
 			case 0://邀约
-				sql1 = "select d.floorid,d.userid,d.name,d.content,d.date,d.replyid,c.name as replyName,d.showname,d.she_show_name,d.vip,d.bigVip from user as c right join (select a.*,b.name,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from meeting_sub_comments a,user b where floorid = ? and a.userid = b.id order by bigVip desc,vip desc,date desc) as d on d.replyid = c.id;";
+				sql1 = "select d.floorid,d.userid,d.name,d.gender,d.content,d.date,d.replyid,c.name as replyName,d.showname,d.she_show_name,d.vip,d.bigVip from user as c right join (select a.*,b.name,b.gender,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from meeting_sub_comments a,user b where floorid = ? and a.userid = b.id order by bigVip desc,vip desc,date desc) as d on d.replyid = c.id;";
 				break;
 			case 1:
-				sql1 = "select d.floorid,d.userid,d.name,d.content,d.date,d.replyid,c.name as replyName,d.showname,d.she_show_name,d.vip,d.bigVip from user as c right join (select a.*,b.name,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from article_sub_comments a,user b where floorid = ? and a.userid = b.id order by bigVip desc,vip desc,date desc) as d on d.replyid = c.id;";
+				sql1 = "select d.floorid,d.userid,d.name,d.gender,d.content,d.date,d.replyid,c.name as replyName,d.showname,d.she_show_name,d.vip,d.bigVip from user as c right join (select a.*,b.name,b.gender,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from article_sub_comments a,user b where floorid = ? and a.userid = b.id order by bigVip desc,vip desc,date desc) as d on d.replyid = c.id;";
 				break;
 			case 2:
-				sql1 = "select d.floorid,d.userid,d.name,d.content,d.date,d.replyid,c.name as replyName,d.showname,d.she_show_name,d.vip,d.bigVip from user as c right join (select a.*,b.name,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from circle_sub_comments a,user b where floorid = ? and a.userid = b.id order by bigVip desc,vip desc,date desc) as d on d.replyid = c.id;";
+				sql1 = "select d.floorid,d.userid,d.name,d.gender,d.content,d.date,d.replyid,c.name as replyName,d.showname,d.she_show_name,d.vip,d.bigVip from user as c right join (select a.*,b.name,b.gender,(b.vip > now()) as vip,(b.bigVip > now()) as bigVip from circle_sub_comments a,user b where floorid = ? and a.userid = b.id order by bigVip desc,vip desc,date desc) as d on d.replyid = c.id;";
 				break;
 		}
 		Connection con = DBPool.getConnection();
@@ -105,6 +105,7 @@ public class SubCommentsDao {
 				comment.setSheShowName(rs.getInt("she_show_name") > 0);
 				comment.setIsVip(rs.getInt("vip") > 0);
 				comment.setBigVip(rs.getInt("bigVip") > 0);
+				comment.setCommentGender(rs.getInt("gender"));
 				commentsList.add(comment);
 			}
 		} catch (Exception e) {

@@ -14,6 +14,7 @@ public class SubComment {
     private boolean sheShowName;//回复的评论者是否显示名字
     private boolean isVip;//年会员
     private boolean bigVip;//至尊会员
+    private int commentGender;//性别
 
     public int getFloorId() {
         return floorId;
@@ -101,5 +102,13 @@ public class SubComment {
 
     public void setBigVip(boolean bigVip) {
         this.bigVip = bigVip;
+    }
+
+    public int getCommentGender() {
+        return commentGender;
+    }
+
+    public void setCommentGender(int commentGender) {
+        this.commentGender = commentGender;
     }
 }

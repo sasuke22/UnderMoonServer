@@ -8,7 +8,10 @@ public class MyTest {
 	private static List<String> res = new ArrayList<>();
 	private static HashMap<Character, String[]> map = new HashMap<>();
 	public static void main(String[] args) {
-		System.out.println("1.2.3".compareTo("1.2.1"));
+		String content = "http://103.244.2.254:8089/chat/1.jpg";
+		int index = content.indexOf("/chat/");
+		String result = "http://45.120.52.176:8089" + content.substring(Math.max(index, 0));
+		System.out.println(result);
 	}
 
 	/**

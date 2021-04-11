@@ -11,7 +11,7 @@ import io.netty.util.AttributeKey;
 import com.googlecode.protobuf.format.JsonFormat;
 
 public class Constants {
-	private static String latestVersion = "1.2.1";
+	private static String latestVersion = "1.2.5";
 
 	public static boolean isChecking(String version){
 		return version != null && version.compareTo(Constants.latestVersion) > 0;

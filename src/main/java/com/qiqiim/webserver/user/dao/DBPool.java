@@ -37,7 +37,7 @@ public class DBPool {
 		Connection con = null;
 		try {
 			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/first_mysql_test?&zeroDateTimeBehavior=convertToNull"
-					,"root","sasuke12");//ds.getConnection();
+					,"first_mysql_test","sasuke12");//ds.getConnection();
 		} catch (SQLException e) {
 			System.out.println("获取数据库连接失败....");
 			e.printStackTrace();

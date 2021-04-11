@@ -25,6 +25,10 @@ import com.qiqiim.webserver.util.SmsUtil;
 
 import net.coobird.thumbnailator.Thumbnails;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,7 +121,7 @@ public class ImController extends BaseController{
 		System.out.println("avatar:"+id);
 		if(id > 0){
 			if (!file.isEmpty()) {
-				String userIdPath = "D:\\images" + File.separator + id;
+				String userIdPath = "/www/wwwroot/images" + File.separator + id;
 				File parent = new File(userIdPath);
 				if (!parent.exists()) {
 					parent.mkdirs();
@@ -156,7 +160,7 @@ public class ImController extends BaseController{
 		System.out.println("avatar:"+id);
 		if(id > 0){
 			if (!file.isEmpty()) {
-				String userIdPath = "D:\\images" + File.separator + id;
+				String userIdPath = "/www/wwwroot/images" + File.separator + id;
 				File parent = new File(userIdPath);
 				if (!parent.exists()) {
 					parent.mkdirs();
@@ -307,7 +311,7 @@ public class ImController extends BaseController{
 				String[] photoId = photolist.split("\\|");
 				lastPhoto = Integer.parseInt(photoId[photoId.length-1]) + 1;
 			}
-			String path = "D:\\images" + File.separator + userId;
+			String path = "/www/wwwroot/images" + File.separator + userId;
 			File parent = new File(path);
 			if (!parent.exists()) {
 				parent.mkdirs();
@@ -471,7 +475,7 @@ public class ImController extends BaseController{
 				restScore = UserDao.updateScore(meetingDetail.id, - 30);
 			}
 			System.out.println("have files " + files.length);
-			String path = "D:\\images" + File.separator + "meeting" + File.separator + meetingId;
+			String path = "/www/wwwroot/images" + File.separator + "meeting" + File.separator + meetingId;
 			File parent = new File(path);
 			if (!parent.exists()) {
 				parent.mkdirs();
@@ -532,7 +536,7 @@ public class ImController extends BaseController{
 		if (result != -1) {
 			if (files.length > 0) {
 				MultipartFile file;
-				String path = "D:\\images" + File.separator + "meeting" + File.separator + meetingDetail.meetingId;
+				String path = "/www/wwwroot/images" + File.separator + "meeting" + File.separator + meetingDetail.meetingId;
 				File parent = new File(path);
 				if (!parent.exists()) {
 					parent.mkdirs();
@@ -577,7 +581,7 @@ public class ImController extends BaseController{
 				for (int i = 0;i < files.length;i++) {
 					file = files[i];
 					if (!file.isEmpty()) {
-						String path = "D:\\images" + File.separator + "meeting" + File.separator + meetingId;
+						String path = "/www/wwwroot/images" + File.separator + "meeting" + File.separator + meetingId;
 						File parent = new File(path);
 						if (!parent.exists()) {
 							parent.mkdirs();
@@ -860,7 +864,7 @@ public class ImController extends BaseController{
 			HttpServletResponse response, HttpServletRequest request) throws Exception {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		if (!file.isEmpty()) {
-			String path = "D:\\images" + File.separator + "chat";
+			String path = "/www/wwwroot/images" + File.separator + "chat";
 			File parent = new File(path);
 			if (!parent.exists()) {
 				parent.mkdirs();
@@ -885,7 +889,7 @@ public class ImController extends BaseController{
 			HttpServletResponse response, HttpServletRequest request) throws Exception {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		if (!file.isEmpty()) {
-			String path = "D:\\images" + File.separator + "chat";
+			String path = "/www/wwwroot/images" + File.separator + "chat";
 			File parent = new File(path);
 			if (!parent.exists()) {
 				parent.mkdirs();
@@ -934,7 +938,7 @@ public class ImController extends BaseController{
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		boolean isChecking = Constants.isChecking(version);
 		Article articleDetail = ArticleDao.getArticleDetail(isChecking, articleId);
-		String path = "D:\\images"+File.separator+"article" + File.separator + articleId;
+		String path = "/www/wwwroot/images"+File.separator+"article" + File.separator + articleId;
 		File dir = new File(path);
 		if (dir.exists()) {
 			articleDetail.setPics(dir.listFiles().length);
@@ -1108,17 +1112,27 @@ public class ImController extends BaseController{
 	 */
 	@RequestMapping(value = "/checkupdate",produces="application/json")
 	@ResponseBody
-	public String checkUpdate(HttpServletRequest request,HttpServletResponse response){
+	public String checkUpdate(@RequestParam(value = "ios", required = false) boolean ios, HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		File webRootDir = new File("D:\\update");
-		File[] files = webRootDir.listFiles();
-		if(files == null)
-			return "1.0.0";
-		else{
-			return files[0].getName().substring(0, 5);
+		if (ios) {
+			File webRootDir = new File("/www/wwwroot/ios");
+			File[] files = webRootDir.listFiles();
+			if(files == null)
+				return "false";
+			else{
+				return files[0].getName();
+			}
+		} else {
+			File webRootDir = new File("/www/wwwroot/update");
+			File[] files = webRootDir.listFiles();
+			if(files == null)
+				return "1.0.0";
+			else{
+				return files[0].getName().substring(0, 5);
+			}
 		}
 	}
-	
+
 	/**
 	 * for flutter,获取每次邀约需要的金币数
 	 */
@@ -1126,7 +1140,7 @@ public class ImController extends BaseController{
 	@ResponseBody
 	public int checkScore(HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		File webRootDir = new File("D:\\score");
+		File webRootDir = new File("/www/wwwroot/score");
 		File[] files = webRootDir.listFiles();
 		if(files == null)
 			return 30;
@@ -1140,7 +1154,7 @@ public class ImController extends BaseController{
 	 */
 	@RequestMapping(value = "/ischecking",produces="application/json")
 	@ResponseBody
-	public int isChecking(@RequestParam("version") String version, HttpServletRequest request,HttpServletResponse response){
+	public int isChecking(@RequestParam(value = "version", required = false) String version, HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		return Constants.isChecking(version) ? 1 : 0;
 	}
@@ -1239,7 +1253,7 @@ public class ImController extends BaseController{
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		int result = 0;
 		if(file != null){
-			String path = "D:\\images" + File.separator + userId;
+			String path = "/www/wwwroot/images" + File.separator + userId;
 			File parent = new File(path);
 			if (!parent.exists()) {
 				parent.mkdirs();
@@ -1270,7 +1284,7 @@ public class ImController extends BaseController{
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		int result = 0;
 		if(file != null){
-			String path = "D:\\images" + File.separator + userId;
+			String path = "/www/wwwroot/images" + File.separator + userId;
 			File parent = new File(path);
 			if (!parent.exists()) {
 				parent.mkdirs();
@@ -1362,7 +1376,7 @@ public class ImController extends BaseController{
 				String[] photoId = photolist.split("\\|");
 				lastPhoto = Integer.parseInt(photoId[photoId.length-1]);
 			}
-			String path = "D:\\images" + File.separator + userId;
+			String path = "/www/wwwroot/images" + File.separator + userId;
 			File parent = new File(path);
 			if (!parent.exists()) {
 				parent.mkdirs();
@@ -1411,7 +1425,7 @@ public class ImController extends BaseController{
 				String[] photoId = photolist.split("\\|");
 				lastPhoto = Integer.parseInt(photoId[photoId.length-1]);
 			}
-			String path = "D:\\images" + File.separator + userId;
+			String path = "/www/wwwroot/images" + File.separator + userId;
 			File parent = new File(path);
 			if (!parent.exists()) {
 				parent.mkdirs();
@@ -1439,7 +1453,7 @@ public class ImController extends BaseController{
 	}
 	
 	/**
-	 * for flutter,更改用户密码
+	 * for flutter,删除用户图片
 	 */
 	@RequestMapping(value="/deletepic",produces="application/json",method = RequestMethod.GET)
 	@ResponseBody
@@ -1447,7 +1461,7 @@ public class ImController extends BaseController{
 			@RequestParam("removedPicId") int removedPicId,HttpServletRequest request,HttpServletResponse response){
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		int result = UserDao.deletePic(userId,index);
-		String pic = "D:\\images" + File.separator + userId + File.separator + removedPicId + ".jpg";
+		String pic = "/www/wwwroot/images" + File.separator + userId + File.separator + removedPicId + ".jpg";
 		File picFile = new File(pic);
 		picFile.delete();
 		return result;
@@ -1637,7 +1651,7 @@ public class ImController extends BaseController{
 				for (int i = 0;i < files.length;i++) {
 					file = files[i];
 					if (!file.isEmpty()) {
-						String path = "D:\\images" + File.separator + "article" + File.separator + articleId;
+						String path = "/www/wwwroot/images" + File.separator + "article" + File.separator + articleId;
 						File parent = new File(path);
 						if (!parent.exists()) {
 							parent.mkdirs();
@@ -1680,7 +1694,7 @@ public class ImController extends BaseController{
 				for (int i = 0;i < files.length;i++) {
 					file = files[i];
 					if (!file.isEmpty()) {
-						String path = "D:\\images" + File.separator + "article" + File.separator + articleId;
+						String path = "/www/wwwroot/images" + File.separator + "article" + File.separator + articleId;
 						File parent = new File(path);
 						if (!parent.exists()) {
 							parent.mkdirs();
@@ -1723,7 +1737,7 @@ public class ImController extends BaseController{
 				for (int i = 0;i < files.length;i++) {
 					file = files[i];
 					if (!file.isEmpty()) {
-						String path = "D:\\images" + File.separator + "complain" + File.separator + complainId;
+						String path = "/www/wwwroot/images" + File.separator + "complain" + File.separator + complainId;
 						File parent = new File(path);
 						if (!parent.exists()) {
 							parent.mkdirs();
@@ -1764,7 +1778,7 @@ public class ImController extends BaseController{
 				for (int i = 0;i < files.length;i++) {
 					file = files[i];
 					if (!file.isEmpty()) {
-						String path = "D:\\images" + File.separator + "complain" + File.separator + complainId;
+						String path = "/www/wwwroot/images" + File.separator + "complain" + File.separator + complainId;
 						File parent = new File(path);
 						if (!parent.exists()) {
 							if(parent.mkdirs()){
@@ -1994,11 +2008,11 @@ public class ImController extends BaseController{
 	}
 	
 	/**
-	 * for flutter,创建一个订单并且跳转url
+	 * for flutter,创建一个订单并且跳转url(码支付)
 	 */
-	@RequestMapping(value="/createorder",produces="application/json")
+	@RequestMapping(value="/createorder1",produces="application/json")
 	@ResponseBody
-	public void createOrder(@RequestParam("userid") int userId,@RequestParam("price") int price,@RequestParam("remark") String remark,
+	public void createOrder1(@RequestParam("userid") int userId,@RequestParam("price") int price,@RequestParam("remark") String remark,
 			HttpServletRequest request,HttpServletResponse response){
 		String token = "uAq9Uxb64dPitb3HMJrPrRPYHKWeCFVv"; //记得更改 http://codepay.fateqq.com 后台可设置
 		String codepay_id ="229949" ;//记得更改 http://codepay.fateqq.com 后台可获得
@@ -2008,18 +2022,71 @@ public class ImController extends BaseController{
 //		String pay_id=request.getParameter("pay_id"); //支付人的唯一标识
 //		String param=request.getParameter("param"); //自定义一些参数 支付后返回
 		
-		String notify_url="http://103.244.2.254:8080/qiqiim-server/payresult";//通知地址
+		String notify_url="http://45.120.52.176:8080/qiqiim-server/payresult";//通知地址
 //		String return_url="";//支付后同步跳转地址
 
 		//参数有中文则需要URL编码
 		String url="http://api2.xiuxiu888.com/creat_order?id="
-				+codepay_id+"&pay_id="+userId+"&price="+price+"&type="+1+"&token="+token
+				+codepay_id+"&pay_id="+userId+"&price="+price+"&type="+3+"&token="+token
 				+"&param="+remark+"&notify_url="+notify_url;//+"&return_url="+return_url;
 
 		try {
 			response.sendRedirect(url);
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * for flutter,创建一个订单并且跳转url（站长付）
+	 */
+	@RequestMapping(value="/createorder",produces="application/json")
+	@ResponseBody
+	public void createOrder(@RequestParam("userid") int userId,@RequestParam("price") int price,@RequestParam("remark") String remark,
+							HttpServletRequest request,HttpServletResponse response){
+		String url = "https://admin.zhanzhangfu.com/order/createOrder";
+		HttpClient client = new HttpClient();
+		PostMethod postMethod = new PostMethod(url);
+		postMethod.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
+		HttpConnectionManagerParams managerParams = client.getHttpConnectionManager().getParams();
+		// 设置连接超时时间(单位毫秒)
+		managerParams.setConnectionTimeout(5000);
+		// 设置读数据超时时间(单位毫秒)
+		managerParams.setSoTimeout(5000);
+		// 头信息
+		postMethod.addRequestHeader("Payment-Key", "ed02e12e9e2f4a8e");
+		postMethod.addRequestHeader("Payment-Secret", "a7798073206745e0a75cbcc89f3fd353");
+		postMethod.addParameter("price", String.valueOf(price));
+		postMethod.addParameter("name", "score");
+		postMethod.addParameter("thirduid", String.valueOf(userId));
+		postMethod.addParameter("remarks", remark);
+		try {
+			System.out.println(postMethod.getURI());
+			int code = client.executeMethod(postMethod);
+			if (code == 200) {
+				String res = postMethod.getResponseBodyAsString();
+				System.out.println(res);
+				//解析站长付返回数据
+				// 成功：{ "msg": "下单成功", "other": "", "code": "10001", "orderId": "oderpay-7ae379d1-e4c1-4acd-8d9a-584a208b28b7", "price": "99.13", "name": "开通超级VIP", "reurl": "", "thirduid": "15811111111", "originalprice ": "100", "remarks": "" }
+				//失败：{ "msg": "下单失败，支付金额有误","code": "10002", }
+				JSONObject jsonObject = JSONObject.parseObject(res);
+				if (jsonObject.getString("code").equals("10001")) {
+					//成功
+					request.setAttribute("name", jsonObject.getString("name"));
+					request.setAttribute("price", jsonObject.getString("price"));
+					request.setAttribute("orderId", jsonObject.getString("orderId"));
+					response.sendRedirect(jsonObject.getString("wxcode"));
+				} else {
+					//有误
+					request.setAttribute("name", jsonObject.getString("msg"));
+					request.setAttribute("price", jsonObject.getString("msg"));
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("错误：" + e.getMessage());
+			e.printStackTrace();
+			request.setAttribute("name", e.getMessage());
+			request.setAttribute("price", e.getMessage());
 		}
 	}
 
@@ -2038,7 +2105,7 @@ public class ImController extends BaseController{
 //		String pay_id=request.getParameter("pay_id"); //支付人的唯一标识
 //		String param=request.getParameter("param"); //自定义一些参数 支付后返回
 
-		String notify_url="http://103.244.2.254:8080/qiqiim-server/payGoodsresult";//通知地址
+		String notify_url="http://45.120.52.176:8080/qiqiim-server/payGoodsresult";//通知地址
 //		String return_url="";//支付后同步跳转地址
 		OrderBean goods = new Gson().fromJson(param, OrderBean.class);
 		int order_id = OrderDao.createOrder(goods);
@@ -2133,6 +2200,96 @@ public class ImController extends BaseController{
 //		if(mySign.equals(sign)){ 
 			//编码要匹配 编码不一致中文会导致加密结果不一致
 			//参数合法处理业务
+//			request.getParameter("pay_no"); //流水号
+//			request.getParameter("pay_id"); //用户唯一标识
+//			request.getParameter("money"); //付款金额
+//			request.getParameter("price"); //提交的金额
+//			System.out.println("success");
+//		}else{
+//			//参数不合法
+//			System.out.println("fail");
+//		}
+	}
+
+	/**
+	 * for flutter,用户支付结果通知地址
+	 */
+	@RequestMapping(value="/scoreresult",produces="text/html",method = RequestMethod.POST)
+	@ResponseBody
+	public void scoreResult(HttpServletRequest request,HttpServletResponse response){
+		/*
+		 *验证通知 处理自己的业务
+		 */
+//		String key = "nMVsggorZ4XPr2VwXja5WiMtpJTwjaGq"; //记得更改 http://codepay.fateqq.com 后台可设置
+//		Map<String,String> params = new HashMap<String,String>(); //申明hashMap变量储存接收到的参数名用于排序
+		Map<String, String[]> requestParams = request.getParameterMap(); //获取请求的全部参数
+		System.out.println("receive response:"+requestParams.get("money")[0]);
+		System.out.println("pay param:"+requestParams.get("param")[0]);
+//		String valueStr = ""; //申明字符变量 保存接收到的变量
+		String[] pay_no = requestParams.get("pay_no");
+		String result;
+		if(pay_no[0].length() == 0){
+			result = "fail";
+		}else{
+			String[] id = requestParams.get("pay_id");
+			String[] money = requestParams.get("money");
+			int int_money = Double.valueOf(money[0]).intValue();
+			if(int_money >= 999){//充值的是至尊会员
+				UserDao.makeUserBigVIP(Integer.parseInt(id[0]));
+			} else if(int_money >= 240){//充值的是会员
+				UserDao.makeUserVIP(Integer.parseInt(id[0]));
+			}else{
+				System.out.println("id:"+id[0]);
+				System.out.println("price:"+id[0]);
+				UserDao.updateScore(Integer.parseInt(id[0]), int_money);
+			}
+			result = "ok";
+		}
+		try (PrintWriter pw = response.getWriter()) {
+			pw.write(result);
+			pw.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+//		for (Iterator<String> iter = requestParams.keySet().iterator(); iter.hasNext();) {
+//			String name = (String) iter.next();
+//			System.out.println("key:"+name);
+//			String[] values = (String[]) requestParams.get(name);
+//			valueStr = values[0];
+//			System.out.println("value:"+valueStr);
+		//乱码解决，这段代码在出现乱码时使用。如果sign不相等也可以使用这段代码转化
+		//valueStr = new String(valueStr.getBytes("ISO-8859-1"), "gbk");
+//			params.put(name, valueStr);//增加到params保存
+//		}
+//		List<String> keys = new ArrayList<String>(params.keySet()); //转为数组
+//	  	Collections.sort(keys); //重新排序
+//		String prestr = "";
+//		String sign= params.get("sign"); //获取接收到的sign 参数
+//
+//	        for (int i = 0; i < keys.size(); i++) { //遍历拼接url 拼接成a=1&b=2 进行MD5签名
+//	            String key_name = keys.get(i);
+//	            String value = params.get(key_name);
+//		    	if(value== null || value.equals("") ||key_name.equals("sign")){ //跳过这些 不签名
+//		    		continue;
+//		    	}
+//		    	if (prestr.equals("")){
+//		    		prestr =  key_name + "=" + value;
+//		    	}else{
+//					prestr =  prestr +"&" + key_name + "=" + value;
+//		    	}
+//	        }
+//		MessageDigest md = null;
+//		try {
+//			md = MessageDigest.getInstance("MD5");
+//		} catch (NoSuchAlgorithmException e) {
+//			e.printStackTrace();
+//		}
+//		md.update((prestr+key).getBytes());
+//		String  mySign = new BigInteger(1, md.digest()).toString(16).toLowerCase();
+//		if(mySign.length()!=32)mySign="0"+mySign;
+//		if(mySign.equals(sign)){
+		//编码要匹配 编码不一致中文会导致加密结果不一致
+		//参数合法处理业务
 //			request.getParameter("pay_no"); //流水号
 //			request.getParameter("pay_id"); //用户唯一标识
 //			request.getParameter("money"); //付款金额

@@ -135,7 +135,7 @@ public class SessionController extends BaseController{
 		User user = new Gson().fromJson(req.getParameter("user"), User.class);
 		int userId = UserDao.insertInfo(user);
 		if (!file.isEmpty()) {
-			String userIdPath = "D:\\images" + File.separator + userId;
+			String userIdPath = "/www/wwwroot/images" + File.separator + userId;
 			File parent = new File(userIdPath);
 			if (!parent.exists()) {
 				parent.mkdirs();

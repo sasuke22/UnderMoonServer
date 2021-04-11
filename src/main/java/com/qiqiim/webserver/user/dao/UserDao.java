@@ -708,9 +708,9 @@ public class UserDao {
 	public static int updateScore(int id,int value){
 		String sql0 = "use first_mysql_test";
 		String sql1;
-		if(value == -1){//评论减分
-			sql1 = "update user SET commentDate = CURDATE(),score = score + " + value + " where id = ?";
-		} else
+//		if(value == -1){//评论减分
+//			sql1 = "update user SET commentDate = CURDATE(),score = score + " + value + " where id = ?";
+//		} else
 			sql1 = "update user SET score = score + " + value + " where id = ?";
 		Connection con = DBPool.getConnection();
 		int res = 0;

@@ -467,6 +467,7 @@ public class ContributesDao {
 				meetingDetail.setTop(rs.getInt("top"));
 				meetingDetail.setVip(rs.getInt("vip") > 0);
 				meetingDetail.setBigVip(rs.getInt("bigVip") > 0);
+				meetingDetail.setPics(rs.getInt("photos"));
 				contributesList.add(meetingDetail);
 			}
 		} catch (Exception e) {

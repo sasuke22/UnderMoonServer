@@ -18,9 +18,9 @@ public class CommentsDao {
 		String sql0 = "use first_mysql_test";
 		String sql1;
 		if(isMeeting)
-			sql1 = "insert into meetingComments (commentid,userid,commentname,commentgender,content,showname) values(?,?,?,?,?,?)";
+			sql1 = "insert into meetingcomments (commentid,userid,commentname,commentgender,content,showname) values(?,?,?,?,?,?)";
 		else
-			sql1 = "insert into articleComments (commentid,userid,commentname,commentgender,content) values(?,?,?,?,?)";
+			sql1 = "insert into articlecomments (commentid,userid,commentname,commentgender,content) values(?,?,?,?,?)";
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		int result = 0;
@@ -122,9 +122,9 @@ public class CommentsDao {
 					comment.setCommentGender(rs.getInt("commentgender"));
 					comment.setCommentContent(URLDecoder.decode(rs.getString("d.content"),"utf-8"));
 					comment.setCommentDate(new Date(rs.getTimestamp("d.date").getTime()));
-					comment.setShow(rs.getInt("d.showname") > 0);
 					comment.setIsVip(rs.getInt("vip") > 0);
 					comment.setBigVip(rs.getInt("bigVip") > 0);
+					comment.setShow(rs.getInt("d.showname") > 0 && (comment.isVip || comment.bigVip || comment.commentGender == 0));
 					List<SubComment> subList = new ArrayList<>();
 					if(rs.getTimestamp("c.date") != null)
 						subList.add(subComment);
@@ -144,9 +144,9 @@ public class CommentsDao {
 		String sql0 = "use first_mysql_test";
 		String sql1;
 		if(isMeeting)
-			sql1 = "delete from meetingComments where id = ?";
+			sql1 = "delete from meetingcomments where id = ?";
 		else
-			sql1 = "delete from articleComments where id = ?";
+			sql1 = "delete from articlecomments where id = ?";
 		Connection con = DBPool.getConnection();
 		try {
 			con.setAutoCommit(false);
@@ -180,9 +180,9 @@ public class CommentsDao {
 		String sql0 = "use first_mysql_test";
 		String sql1;
 		if(isMeeting)
-			sql1 = "update meetingComments set iscomplained = 1 where id = ?";
+			sql1 = "update meetingcomments set iscomplained = 1 where id = ?";
 		else
-			sql1 = "update articleComments set iscomplained = 1 where id = ?";
+			sql1 = "update articlecomments set iscomplained = 1 where id = ?";
 		Connection con = DBPool.getConnection();
 		try {
 			con.setAutoCommit(false);
@@ -217,9 +217,9 @@ public class CommentsDao {
 		String sq0 = "use first_mysql_test";
 		String sql1;
 		if(isMeeting)
-			sql1 = "select a.*,b.showname,(b.vip > now()) as vip from meetingComments a,user b where iscomplained = 1 order by date desc limit ?,?" ;
+			sql1 = "select a.*,b.showname,(b.vip > now()) as vip from meetingcomments a,user b where iscomplained = 1 order by date desc limit ?,?" ;
 		else
-			sql1 = "select a.*,b.showname,(b.vip > now()) as vip from articleComments a,user b where iscomplained = 1 order by date desc limit ?,?" ;
+			sql1 = "select a.*,b.showname,(b.vip > now()) as vip from articlecomments a,user b where iscomplained = 1 order by date desc limit ?,?" ;
 		Connection con = DBPool.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
